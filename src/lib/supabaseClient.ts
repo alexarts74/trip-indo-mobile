@@ -13,24 +13,3 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false,
   },
 });
-
-// Test de connexion initial
-export const testConnection = async () => {
-  try {
-    const { data, error } = await supabase
-      .from("trips")
-      .select("count")
-      .limit(1);
-
-    if (error) {
-      console.error("❌ Erreur de connexion Supabase:", error.message);
-      return { success: false, error: error.message };
-    } else {
-      console.log("✅ Connexion Supabase réussie!");
-      return { success: true, data };
-    }
-  } catch (err) {
-    console.error("❌ Erreur de connexion:", err);
-    return { success: false, error: String(err) };
-  }
-};

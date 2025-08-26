@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
-import TripOverview from "@/components/trip/TripOverview";
-import { useAuth } from "@/src/contexts/AuthContext";
+import TripDestinations from "@/components/trip/TripDestinations";
 import { useTrip } from "@/src/contexts/TripContext";
 import { Trip } from "@/src/types/trip";
 import { Destination } from "@/src/types/destination";
+import { destinationsService } from "@/src/services/destinationsService";
 
-export default function OverviewScreen() {
-  const { user, loading, signOut } = useAuth();
+export default function DestinationsScreen() {
   const { selectedTrip } = useTrip();
 
   const [trip, setTrip] = useState<Trip | null>(null);
@@ -17,31 +16,31 @@ export default function OverviewScreen() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!selectedTrip) {
+    console.log("🔄 useEffect - selectedTrip:", selectedTrip?.title);
+    if (selectedTrip) {
       console.log(
-        "⚠️ Overview - selectedTrip est undefined, redirection vers l'écran principal"
+        "✅ useEffect - selectedTrip trouvé, chargement des destinations"
+      );
+      setTrip(selectedTrip);
+      fetchDestinations(selectedTrip.id);
+    } else {
+      console.log(
+        "⚠️ useEffect - selectedTrip est undefined, redirection vers l'écran principal"
       );
       router.replace("/(main)");
-    } else {
-      console.log("✅ Overview - selectedTrip trouvé:", selectedTrip.title);
-      setTrip(selectedTrip);
-      // Charger les destinations directement
-      fetchDestinations(selectedTrip.id);
     }
   }, [selectedTrip]);
 
   const fetchDestinations = async (tripId: string) => {
     try {
       setIsLoading(true);
-      // TODO: Implémenter l'appel au service des destinations
-      console.log(
-        "🔄 Overview - Chargement des destinations pour le voyage:",
-        tripId
-      );
-      // Pour l'instant, on met un tableau vide
-      setDestinations([]);
+      console.log("🔄 fetchDestinations - Début pour le voyage:", tripId);
+      const destinations = await destinationsService.fetchDestinations(tripId);
+      setDestinations(destinations);
+      console.log("✅ fetchDestinations - Succès:", destinations);
       setError("");
     } catch (error: any) {
+      console.error("❌ fetchDestinations - Erreur:", error);
       setError(error.message);
     } finally {
       setIsLoading(false);
@@ -49,11 +48,11 @@ export default function OverviewScreen() {
   };
 
   const handleBackToTrips = () => {
-    console.log("handleBackToTrips");
     router.replace("/(main)");
   };
 
-  if (loading) {
+  if (isLoading) {
+    console.log("🔄 Rendu - isLoading = true, affichage du loading");
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
         <Text className="text-lg text-gray-600">Chargement...</Text>
@@ -61,16 +60,8 @@ export default function OverviewScreen() {
     );
   }
 
-  if (!user) {
-    return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <Text className="text-lg text-gray-600">Veuillez vous connecter</Text>
-      </View>
-    );
-  }
-
   if (!trip) {
-    console.log("trip", trip);
+    console.log("🔄 Rendu - trip = null, affichage 'Voyage non trouvé'");
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
         <Text className="text-lg text-gray-600">Voyage non trouvé</Text>
@@ -78,6 +69,12 @@ export default function OverviewScreen() {
     );
   }
 
+  console.log(
+    "🔄 Rendu - Affichage du contenu principal, trip:",
+    trip?.title,
+    "destinations:",
+    destinations.length
+  );
   return (
     <View className="flex-1 bg-gray-50">
       <View className="bg-white pt-12 pb-4 px-5 border-b border-gray-200">
@@ -91,18 +88,19 @@ export default function OverviewScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-        <Text className="text-xl font-bold text-gray-800">Vue d'ensemble</Text>
+        <Text className="text-xl font-bold text-gray-800">Destinations</Text>
         <Text className="text-sm text-gray-500 mt-1">
-          Statistiques et informations générales
+          Gérez les lieux et activités de votre voyage
         </Text>
       </View>
 
       <ScrollView className="flex-1 px-4 py-4">
-        <TripOverview
+        <TripDestinations
           trip={trip}
           destinations={destinations}
           isLoading={isLoading}
           error={error}
+          onDestinationsUpdate={() => fetchDestinations(trip.id)}
         />
       </ScrollView>
     </View>
