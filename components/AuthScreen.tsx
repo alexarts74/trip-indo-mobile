@@ -47,7 +47,10 @@ export default function AuthScreen() {
       className="flex-1 bg-gray-50"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ScrollView className="flex-1 justify-center p-6">
+      <ScrollView 
+        className="flex-1"
+        contentContainerStyle={{ justifyContent: 'center', padding: 24 }}
+      >
         <View className="items-center mb-12">
           <Text className="text-6xl mb-4">🌏</Text>
           <Text className="text-3xl font-bold text-gray-800 mb-2 text-center">
