@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, StatusBar } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import TripOverview from "@/components/trip/TripOverview";
 import { useAuth } from "@/src/contexts/AuthContext";
 import { useTrip } from "@/src/contexts/TripContext";
+import { useTheme } from "@/src/contexts/ThemeContext";
 import { Trip } from "@/src/types/trip";
 import { Destination } from "@/src/types/destination";
 
 export default function OverviewScreen() {
   const { user, loading, signOut } = useAuth();
   const { selectedTrip } = useTrip();
+  const { theme, toggleTheme, colors } = useTheme();
+  const [showMenu, setShowMenu] = useState(false);
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [destinations, setDestinations] = useState<Destination[]>([]);
@@ -53,18 +57,33 @@ export default function OverviewScreen() {
     router.replace("/(main)");
   };
 
+  // Extraire le nom d'utilisateur de l'email
+  const getUserDisplayName = () => {
+    if (!user?.email) return "Utilisateur";
+    const emailParts = user.email.split("@");
+    return emailParts[0].charAt(0).toUpperCase() + emailParts[0].slice(1);
+  };
+
+  // Obtenir les initiales pour l'avatar
+  const getInitials = () => {
+    if (!user?.email) return "U";
+    const emailParts = user.email.split("@");
+    const name = emailParts[0];
+    return name.charAt(0).toUpperCase();
+  };
+
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <Text className="text-lg text-gray-600">Chargement...</Text>
+      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Chargement...</Text>
       </View>
     );
   }
 
   if (!user) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <Text className="text-lg text-gray-600">Veuillez vous connecter</Text>
+      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Veuillez vous connecter</Text>
       </View>
     );
   }
@@ -72,32 +91,81 @@ export default function OverviewScreen() {
   if (!trip) {
     console.log("trip", trip);
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
-        <Text className="text-lg text-gray-600">Voyage non trouvé</Text>
+      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Voyage non trouvé</Text>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
-      <View className="bg-white pt-12 pb-4 px-5 border-b border-gray-200">
-        <View className="flex-row items-center mb-3">
-          <TouchableOpacity
-            className="p-2 mr-4 rounded-lg bg-gray-100"
-            onPress={handleBackToTrips}
-          >
-            <Text className="text-orange-600 text-base font-medium">
-              ← Retour aux voyages
-            </Text>
-          </TouchableOpacity>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar 
+        barStyle={theme === "dark" ? "light-content" : "dark-content"} 
+        backgroundColor={colors.surface} 
+      />
+      
+      {/* Header moderne avec profil */}
+      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border, zIndex: 1000 }]}>
+        <View style={styles.headerTop}>
+          <View style={styles.profileSection}>
+            <View style={[styles.avatarContainer, { backgroundColor: colors.primary }]}>
+              <Text style={styles.avatarText}>{getInitials()}</Text>
+            </View>
+            <View style={styles.profileInfo}>
+              <Text style={[styles.greeting, { color: colors.textSecondary }]}>Bonjour</Text>
+              <Text style={[styles.userName, { color: colors.text }]}>{getUserDisplayName()}</Text>
+            </View>
+          </View>
+          <View style={styles.headerActions}>
+            <TouchableOpacity
+              style={[styles.themeButton, { backgroundColor: colors.card }]}
+              onPress={toggleTheme}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.themeIcon}>{theme === "dark" ? "☀️" : "🌙"}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.menuButton, { backgroundColor: colors.card }]}
+              onPress={() => setShowMenu(!showMenu)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.menuIcon, { color: colors.text }]}>⋯</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text className="text-xl font-bold text-gray-800">Vue d'ensemble</Text>
-        <Text className="text-sm text-gray-500 mt-1">
-          Statistiques et informations générales
-        </Text>
+        
+        {showMenu && (
+          <View style={[styles.menuDropdown, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => {
+                setShowMenu(false);
+                router.push("/(main)/profile");
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.menuItemText, { color: colors.text }]}>Mon profil</Text>
+            </TouchableOpacity>
+            <View style={[styles.menuDivider, { backgroundColor: colors.border }]} />
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => {
+                setShowMenu(false);
+                router.push("/(main)/invitations");
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.menuItemText, { color: colors.text }]}>Mes invitations</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
-      <ScrollView className="flex-1 px-4 py-4">
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <TripOverview
           trip={trip}
           destinations={destinations}
@@ -108,3 +176,141 @@ export default function OverviewScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+  },
+  header: {
+    paddingTop: 50,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 2,
+    zIndex: 1000,
+    overflow: "visible",
+  },
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  profileSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  avatarContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+    shadowColor: "#f97316",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  avatarText: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#ffffff",
+    letterSpacing: 0.5,
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  greeting: {
+    fontSize: 14,
+    marginBottom: 2,
+  },
+  userName: {
+    fontSize: 20,
+    fontWeight: "700",
+    letterSpacing: -0.3,
+  },
+  headerActions: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  themeButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+  },
+  themeIcon: {
+    fontSize: 20,
+  },
+  menuButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+  },
+  menuIcon: {
+    fontSize: 24,
+    fontWeight: "600",
+    lineHeight: 24,
+  },
+  menuDropdown: {
+    position: "absolute",
+    top: 100,
+    right: 20,
+    borderRadius: 12,
+    paddingVertical: 8,
+    minWidth: 160,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 10,
+    borderWidth: 1,
+    zIndex: 1001,
+  },
+  menuItem: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  menuItemText: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  menuDivider: {
+    height: 1,
+    marginVertical: 4,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 100,
+  },
+});

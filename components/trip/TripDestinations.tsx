@@ -1,7 +1,9 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 import { Trip } from "../../src/types/trip";
 import { Destination } from "../../src/types/destination";
+import { useTheme } from "../../src/contexts/ThemeContext";
+import AddDestinationModal from "./AddDestinationModal";
 
 interface TripDestinationsProps {
   trip: Trip;
@@ -18,15 +20,22 @@ export default function TripDestinations({
   error,
   onDestinationsUpdate,
 }: TripDestinationsProps) {
+  const { colors } = useTheme();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  
   const handleAddDestination = () => {
-    // TODO: Implémenter l'ajout de destination
-    console.log("Ajouter une destination");
+    setIsAddModalOpen(true);
+  };
+
+  const handleDestinationAdded = () => {
+    onDestinationsUpdate();
   };
 
   if (isLoading) {
     return (
-      <View className="items-center py-12">
-        <Text className="text-base text-gray-600">
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
           Chargement des destinations...
         </Text>
       </View>
@@ -35,29 +44,26 @@ export default function TripDestinations({
 
   if (error) {
     return (
-      <View className="bg-red-50 border border-red-500 rounded-md p-4">
-        <Text className="text-red-600 text-center text-sm">
-          Erreur: {error}
-        </Text>
+      <View style={[styles.errorContainer, { backgroundColor: colors.error + "20", borderColor: colors.error }]}>
+        <Text style={[styles.errorText, { color: colors.error }]}>Erreur: {error}</Text>
       </View>
     );
   }
 
   if (destinations.length === 0) {
     return (
-      <View className="items-center py-12 px-4">
-        <Text className="text-5xl mb-4">🗺️</Text>
-        <Text className="text-xl font-semibold text-gray-800 mb-2 text-center">
-          Aucune destination ajoutée
-        </Text>
-        <Text className="text-base text-gray-500 mb-8 text-center">
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyEmoji}>🗺️</Text>
+        <Text style={[styles.emptyTitle, { color: colors.text }]}>Aucune destination ajoutée</Text>
+        <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
           Commencez par ajouter vos premières destinations !
         </Text>
         <TouchableOpacity
-          className="bg-orange-500 px-6 py-3 rounded-md"
+          style={[styles.emptyButton, { backgroundColor: colors.primary }]}
           onPress={handleAddDestination}
+          activeOpacity={0.8}
         >
-          <Text className="text-white font-medium text-base">
+          <Text style={styles.emptyButtonText}>
             Ajouter ma première destination
           </Text>
         </TouchableOpacity>
@@ -66,66 +72,286 @@ export default function TripDestinations({
   }
 
   return (
-    <View className="gap-4">
+    <View style={styles.container}>
       {/* En-tête des destinations */}
-      <View className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 flex-row justify-between items-start">
-        <View className="flex-1 mr-4">
-          <Text className="text-xl font-semibold text-gray-800 mb-2">
-            Destinations du voyage
-          </Text>
-          <Text className="text-base text-gray-600">
+      <View style={[styles.headerCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
+        <View style={styles.headerContent}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Destinations du voyage</Text>
+          <Text style={[styles.headerDescription, { color: colors.textSecondary }]}>
             Gérez vos lieux de visite et leurs activités
           </Text>
         </View>
         <TouchableOpacity
-          className="bg-orange-500 px-4 py-2 rounded-md"
+          style={[styles.addButton, { backgroundColor: colors.primary }]}
           onPress={handleAddDestination}
+          activeOpacity={0.8}
         >
-          <Text className="text-white font-medium text-sm">
-            + Ajouter une destination
-          </Text>
+          <Text style={styles.addButtonIcon}>+</Text>
+          <Text style={styles.addButtonText}>Ajouter</Text>
         </TouchableOpacity>
       </View>
 
       {/* Liste des destinations */}
-      <View className="gap-4">
+      <View style={styles.destinationsList}>
         {destinations.map((destination) => (
-          <View
-            key={destination.id}
-            className="bg-white rounded-lg p-4 shadow-sm border border-gray-200"
-          >
-            <View className="flex-row justify-between items-start">
-              <View className="flex-1 mr-4">
-                <Text className="text-lg font-semibold text-gray-800 mb-2">
-                  {destination.name}
-                </Text>
-                {destination.description && (
-                  <Text className="text-sm text-gray-600 mb-4 leading-5">
-                    {destination.description}
+          <View key={destination.id} style={[styles.destinationCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
+            <View style={styles.destinationContent}>
+              <View style={styles.destinationHeader}>
+                <View style={styles.destinationTitleSection}>
+                  <Text style={[styles.destinationTitle, { color: colors.text }]}>
+                    {destination.name}
                   </Text>
-                )}
-                <View className="gap-2">
-                  <Text className="text-sm text-gray-500">
-                    📍 {destination.address}
+                  {destination.description && (
+                    <Text style={[styles.destinationDescription, { color: colors.textSecondary }]} numberOfLines={2}>
+                      {destination.description}
+                    </Text>
+                  )}
+                </View>
+                <View style={styles.destinationPriceSection}>
+                  <Text style={[styles.destinationPrice, { color: colors.text }]}>
+                    {destination.price || 0}€
                   </Text>
-                  <Text className="text-sm text-gray-500">
-                    💰 {destination.price}€
-                  </Text>
+                  {destination.price && (
+                    <Text style={[styles.destinationPercentage, { color: colors.textSecondary }]}>
+                      {((destination.price / trip.budget) * 100).toFixed(1)}% du budget
+                    </Text>
+                  )}
                 </View>
               </View>
-              <View className="items-end">
-                <Text className="text-xl font-bold text-gray-800 mb-1">
-                  {destination.price}€
-                </Text>
-                <Text className="text-xs text-gray-500 text-right">
-                  {((destination.price / trip.budget) * 100).toFixed(1)}% du
-                  budget
-                </Text>
+
+              <View style={[styles.destinationMeta, { borderTopColor: colors.border }]}>
+                <View style={styles.metaItem}>
+                  <View style={[styles.metaIconContainer, { backgroundColor: colors.card }]}>
+                    <Text style={styles.metaIcon}>📍</Text>
+                  </View>
+                  <Text style={[styles.metaText, { color: colors.textSecondary }]} numberOfLines={1}>
+                    {destination.address || "Adresse non renseignée"}
+                  </Text>
+                </View>
+                {destination.country && (
+                  <View style={styles.metaItem}>
+                    <View style={[styles.metaIconContainer, { backgroundColor: colors.card }]}>
+                      <Text style={styles.metaIcon}>🌍</Text>
+                    </View>
+                    <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+                      {destination.country}
+                    </Text>
+                  </View>
+                )}
+                {destination.price && (
+                  <View style={styles.metaItem}>
+                    <View style={[styles.metaIconContainer, { backgroundColor: colors.card }]}>
+                      <Text style={styles.metaIcon}>💰</Text>
+                    </View>
+                    <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+                      {destination.price}€
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
           </View>
         ))}
       </View>
+
+      {/* Modal d'ajout de destination */}
+      <AddDestinationModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        tripId={trip.id}
+        onDestinationAdded={handleDestinationAdded}
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 20,
+  },
+  loadingContainer: {
+    padding: 40,
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+  },
+  errorContainer: {
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 16,
+  },
+  errorText: {
+    fontSize: 14,
+    textAlign: "center",
+  },
+  emptyContainer: {
+    alignItems: "center",
+    paddingVertical: 64,
+    paddingHorizontal: 24,
+  },
+  emptyEmoji: {
+    fontSize: 64,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  emptySubtitle: {
+    fontSize: 15,
+    marginBottom: 32,
+    textAlign: "center",
+  },
+  emptyButton: {
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 12,
+    shadowColor: "#f97316",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  emptyButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  headerCard: {
+    borderRadius: 20,
+    padding: 24,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 1,
+  },
+  headerContent: {
+    flex: 1,
+    marginRight: 16,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 8,
+    letterSpacing: -0.3,
+  },
+  headerDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  addButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    shadowColor: "#f97316",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  addButtonIcon: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "700",
+    marginRight: 6,
+  },
+  addButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  destinationsList: {
+    gap: 16,
+  },
+  destinationCard: {
+    borderRadius: 20,
+    padding: 24,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 1,
+  },
+  destinationContent: {
+    gap: 16,
+  },
+  destinationHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  destinationTitleSection: {
+    flex: 1,
+    marginRight: 16,
+  },
+  destinationTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 8,
+    letterSpacing: -0.3,
+  },
+  destinationDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  destinationPriceSection: {
+    alignItems: "flex-end",
+  },
+  destinationPrice: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 4,
+    letterSpacing: -0.5,
+  },
+  destinationPercentage: {
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  destinationMeta: {
+    gap: 12,
+    paddingTop: 16,
+    borderTopWidth: 1,
+  },
+  metaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  metaIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  metaIcon: {
+    fontSize: 16,
+  },
+  metaText: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+});

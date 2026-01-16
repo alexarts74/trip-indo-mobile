@@ -8,8 +8,11 @@ import {
   Platform,
   ScrollView,
   Alert,
+  StyleSheet,
+  StatusBar,
 } from "react-native";
 import { useAuth } from "../src/contexts/AuthContext";
+import { useTheme } from "../src/contexts/ThemeContext";
 
 export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,6 +20,7 @@ export default function AuthScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
+  const { theme, colors } = useTheme();
 
   const handleAuth = async () => {
     if (!email || !password) {
@@ -44,51 +48,84 @@ export default function AuthScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gray-50"
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ScrollView 
-        className="flex-1"
-        contentContainerStyle={{ justifyContent: 'center', padding: 24 }}
-      >
-        <View className="items-center mb-12">
-          <Text className="text-6xl mb-4">🌏</Text>
-          <Text className="text-3xl font-bold text-gray-800 mb-2 text-center">
-            TripMate
-          </Text>
-          <Text className="text-lg text-gray-600 text-center">
-            {isLogin ? "Connectez-vous" : "Créez votre compte"}
+      <StatusBar 
+        barStyle={theme === "dark" ? "light-content" : "dark-content"} 
+        backgroundColor={colors.surface} 
+      />
+      
+      {/* Header moderne */}
+      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        <View style={styles.headerContent}>
+          <View style={styles.logoWrapper}>
+            <View style={[styles.logoContainer, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
+              <Text style={styles.logoEmoji}>🌏</Text>
+            </View>
+          </View>
+          <Text style={[styles.title, { color: colors.text }]}>TripMate</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            {isLogin ? "Connectez-vous à votre compte" : "Créez votre compte"}
           </Text>
         </View>
+      </View>
 
-        <View className="space-y-4">
-          <TextInput
-            className="bg-white border border-gray-300 rounded-xl p-4 text-base"
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.formContainer}>
+          <View style={styles.inputContainer}>
+            <Text style={[styles.label, { color: colors.text }]}>Email</Text>
+            <TextInput
+              style={[styles.input, { 
+                backgroundColor: colors.input, 
+                borderColor: colors.inputBorder,
+                color: colors.text 
+              }]}
+              placeholder="votre@email.com"
+              placeholderTextColor={colors.textSecondary}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="email"
+            />
+          </View>
 
-          <TextInput
-            className="bg-white border border-gray-300 rounded-xl p-4 text-base"
-            placeholder="Mot de passe"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoCapitalize="none"
-          />
+          <View style={styles.inputContainer}>
+            <Text style={[styles.label, { color: colors.text }]}>Mot de passe</Text>
+            <TextInput
+              style={[styles.input, { 
+                backgroundColor: colors.input, 
+                borderColor: colors.inputBorder,
+                color: colors.text 
+              }]}
+              placeholder="••••••••"
+              placeholderTextColor={colors.textSecondary}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
+              autoComplete="password"
+            />
+          </View>
 
           <TouchableOpacity
-            className={`bg-primary-500 p-4 rounded-xl items-center mt-2 ${
-              loading ? "opacity-60" : ""
-            }`}
+            style={[
+              styles.button,
+              { backgroundColor: colors.primary },
+              loading && styles.buttonDisabled,
+            ]}
             onPress={handleAuth}
             disabled={loading}
+            activeOpacity={0.8}
           >
-            <Text className="text-white text-base font-semibold">
+            <Text style={styles.buttonText}>
               {loading
                 ? "Chargement..."
                 : isLogin
@@ -98,13 +135,16 @@ export default function AuthScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="items-center mt-4"
+            style={styles.switchAuth}
             onPress={() => setIsLogin(!isLogin)}
+            activeOpacity={0.7}
           >
-            <Text className="text-primary-500 text-sm underline">
+            <Text style={[styles.switchAuthText, { color: colors.textSecondary }]}>
               {isLogin
-                ? "Pas encore de compte ? S'inscrire"
-                : "Déjà un compte ? Se connecter"}
+                ? "Pas encore de compte ? " : "Déjà un compte ? "}
+              <Text style={[styles.switchAuthLink, { color: colors.primary }]}>
+                {isLogin ? "S'inscrire" : "Se connecter"}
+              </Text>
             </Text>
           </TouchableOpacity>
         </View>
@@ -112,3 +152,134 @@ export default function AuthScreen() {
     </KeyboardAvoidingView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    paddingTop: 60,
+    paddingBottom: 32,
+    paddingHorizontal: 24,
+    borderBottomWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  headerContent: {
+    alignItems: 'center',
+  },
+  logoWrapper: {
+    marginBottom: 20,
+  },
+  logoContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    shadowColor: '#f97316',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  logoEmoji: {
+    fontSize: 56,
+  },
+  title: {
+    fontSize: 36,
+    fontWeight: '700',
+    marginBottom: 8,
+    textAlign: 'center',
+    letterSpacing: -0.8,
+  },
+  subtitle: {
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 40,
+  },
+  formContainer: {
+    width: '100%',
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 10,
+    letterSpacing: 0.2,
+  },
+  input: {
+    borderWidth: 1.5,
+    borderRadius: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    fontSize: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
+  },
+  button: {
+    borderRadius: 14,
+    paddingVertical: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    shadowColor: '#f97316',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 17,
+    fontWeight: '700',
+    letterSpacing: 0.4,
+  },
+  switchAuth: {
+    marginTop: 28,
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  switchAuthText: {
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  switchAuthLink: {
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+  },
+});

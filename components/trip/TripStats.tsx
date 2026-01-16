@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { supabase } from "../../src/lib/supabaseClient";
+import { useTheme } from "../../src/contexts/ThemeContext";
 
 interface Place {
   id: string;
@@ -48,6 +49,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const { colors } = useTheme();
 
   useEffect(() => {
     fetchData();
@@ -71,7 +73,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
 
       if (activitiesError) throw activitiesError;
 
-      // Récupérer les dépenses (sans les relations complexes pour l'instant)
+      // Récupérer les dépenses
       const { data: expensesData, error: expensesError } = await supabase
         .from("expenses")
         .select(
@@ -93,16 +95,17 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
 
   if (isLoading) {
     return (
-      <View className="items-center p-10">
-        <Text className="text-gray-600">Chargement des statistiques...</Text>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Chargement des statistiques...</Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View className="bg-error-50 border-error-500 border-2 rounded-lg p-4">
-        <Text className="text-error-600">Erreur: {error}</Text>
+      <View style={[styles.errorContainer, { backgroundColor: colors.error + "20", borderColor: colors.error }]}>
+        <Text style={[styles.errorText, { color: colors.error }]}>Erreur: {error}</Text>
       </View>
     );
   }
@@ -146,180 +149,398 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
   };
 
   return (
-    <View className="gap-4">
-      <Text className="text-lg font-bold text-gray-800 mb-2">
-        Statistiques du voyage
-      </Text>
+    <View style={styles.container}>
+      {/* Titre de section */}
+      <Text style={[styles.sectionTitle, { color: colors.text }]}>Statistiques du voyage</Text>
 
-      {/* Vue d'ensemble du budget */}
-      <View className="flex-row flex-wrap gap-2">
-        <View className="bg-white border-gray-200 border-2 rounded-lg p-4">
-          <Text className="text-sm font-medium text-gray-600 mb-1">
-            Budget total
-          </Text>
-          <Text className="text-lg font-bold text-gray-800 mb-1">
-            {tripBudget}€
-          </Text>
+      {/* Cartes de statistiques principales */}
+      <View style={styles.statsGrid}>
+        <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Budget total</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>{tripBudget}€</Text>
         </View>
 
-        <View className="bg-white border-gray-200 border-2 rounded-lg p-4">
-          <Text className="text-sm font-medium text-gray-600 mb-1">
-            Dépensé
-          </Text>
-          <Text className="text-lg font-bold text-primary-600 mb-1">
+        <View style={[
+          styles.statCard, 
+          { backgroundColor: colors.card, borderColor: colors.primary, borderWidth: 2, shadowColor: colors.shadow }
+        ]}>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Dépensé</Text>
+          <Text style={[styles.statValue, { color: colors.primary }]}>
             {totalCost}€
           </Text>
-          <Text className="text-sm text-gray-500">
+          <Text style={[styles.statPercentage, { color: colors.textSecondary }]}>
             {budgetUsagePercentage.toFixed(1)}% utilisé
           </Text>
         </View>
 
-        <View className="bg-white border-gray-200 border-2 rounded-lg p-4">
-          <Text className="text-sm font-medium text-gray-600 mb-1">
-            Restant
-          </Text>
+        <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Restant</Text>
           <Text
-            className={`text-lg font-bold ${
-              remainingBudget >= 0 ? "text-success-600" : "text-error-600"
-            }`}
+            style={[
+              styles.statValue,
+              { color: remainingBudget >= 0 ? colors.success : colors.error },
+            ]}
           >
             {remainingBudget}€
           </Text>
         </View>
 
-        <View className="bg-white border-gray-200 border-2 rounded-lg p-4">
-          <Text className="text-sm font-medium text-gray-600 mb-1">Total</Text>
-          <Text className="text-lg font-bold text-primary-400 mb-1">
+        <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Éléments</Text>
+          <Text style={[styles.statValue, { color: colors.text }]}>
             {places.length + activities.length + expenses.length}
           </Text>
-          <Text className="text-gray-500">éléments planifiés</Text>
+          <Text style={[styles.statSubtext, { color: colors.textSecondary }]}>planifiés</Text>
         </View>
       </View>
 
       {/* Barre de progression du budget */}
-      <View className="bg-white border-gray-200 border-2 rounded-lg p-4">
-        <Text className="text-lg font-bold text-gray-800 mb-2">
-          Utilisation du budget
-        </Text>
-        <View className="gap-2">
-          <View className="flex-row justify-between items-center">
-            <Text className="text-sm text-gray-600">Progression</Text>
-            <Text className="text-sm text-gray-600">
-              {budgetUsagePercentage.toFixed(1)}%
-            </Text>
-          </View>
-          <View className="h-2 bg-gray-200 rounded-full overflow-hidden">
-            <View
-              className={`h-2 bg-gray-200 rounded-full overflow-hidden ${
-                budgetUsagePercentage > 100
-                  ? "bg-error-500"
-                  : budgetUsagePercentage > 80
-                  ? "bg-primary-600"
-                  : "bg-primary-500"
-              }`}
-            />
-          </View>
-          <View className="flex-row justify-between items-center">
-            <Text className="text-sm text-gray-500">0€</Text>
-            <Text className="text-sm text-gray-500">{tripBudget}€</Text>
-          </View>
+      <View style={[styles.progressCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
+        <View style={styles.progressHeader}>
+          <Text style={[styles.progressTitle, { color: colors.text }]}>Utilisation du budget</Text>
+          <Text style={[styles.progressPercentage, { color: colors.primary }]}>
+            {budgetUsagePercentage.toFixed(1)}%
+          </Text>
+        </View>
+        <View style={[styles.progressBarContainer, { backgroundColor: colors.border }]}>
+          <View
+            style={[
+              styles.progressBarFill,
+              {
+                width: `${Math.min(budgetUsagePercentage, 100)}%`,
+                backgroundColor:
+                  budgetUsagePercentage > 100
+                    ? colors.error
+                    : budgetUsagePercentage > 80
+                    ? colors.primaryDark
+                    : colors.primary,
+              },
+            ]}
+          />
+        </View>
+        <View style={styles.progressLabels}>
+          <Text style={[styles.progressLabel, { color: colors.textSecondary }]}>0€</Text>
+          <Text style={[styles.progressLabel, { color: colors.textSecondary }]}>{tripBudget}€</Text>
         </View>
       </View>
 
-      {/* Répartition des coûts */}
-      <View className="flex-row gap-2">
-        <View className="bg-white border-gray-200 border-2 rounded-lg p-4">
-          <Text className="text-lg font-bold text-gray-800 mb-2">
-            Répartition des coûts
-          </Text>
-          <View className="gap-2">
-            <View className="flex-row justify-between items-center">
-              <Text className="text-sm text-gray-600">Destinations</Text>
-              <View className="flex-row items-center gap-2">
-                <View className="w-2 h-2 rounded-full bg-primary-500" />
-                <Text className="text-gray-800">{totalPlacesCost}€</Text>
+      {/* Répartition et Top dépenses */}
+      <View style={styles.detailsRow}>
+        <View style={[styles.detailCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
+          <Text style={[styles.detailCardTitle, { color: colors.text }]}>Répartition</Text>
+          <View style={styles.distributionList}>
+            <View style={styles.distributionItem}>
+              <View style={[styles.distributionDot, { backgroundColor: colors.primary }]} />
+              <View style={styles.distributionContent}>
+                <Text style={[styles.distributionLabel, { color: colors.textSecondary }]}>Destinations</Text>
+                <Text style={[styles.distributionValue, { color: colors.text }]}>{totalPlacesCost}€</Text>
               </View>
             </View>
-            <View className="flex-row justify-between items-center">
-              <Text className="text-gray-600">Activités</Text>
-              <View className="flex-row items-center gap-2">
-                <View className="w-2 h-2 rounded-full bg-primary-400" />
-                <Text className="text-gray-800">{totalActivitiesCost}€</Text>
+            <View style={styles.distributionItem}>
+              <View style={[styles.distributionDot, { backgroundColor: "#fb923c" }]} />
+              <View style={styles.distributionContent}>
+                <Text style={[styles.distributionLabel, { color: colors.textSecondary }]}>Activités</Text>
+                <Text style={[styles.distributionValue, { color: colors.text }]}>{totalActivitiesCost}€</Text>
               </View>
             </View>
-            <View className="flex-row justify-between items-center">
-              <Text className="text-gray-600">Dépenses</Text>
-              <View className="flex-row items-center gap-2">
-                <View className="w-2 h-2 rounded-full bg-primary-300" />
-                <Text className="text-gray-800">{totalExpensesCost}€</Text>
+            <View style={styles.distributionItem}>
+              <View style={[styles.distributionDot, { backgroundColor: "#fdba74" }]} />
+              <View style={styles.distributionContent}>
+                <Text style={[styles.distributionLabel, { color: colors.textSecondary }]}>Dépenses</Text>
+                <Text style={[styles.distributionValue, { color: colors.text }]}>{totalExpensesCost}€</Text>
               </View>
             </View>
           </View>
         </View>
 
-        <View className="bg-white border-gray-200 border-2 rounded-lg p-4">
-          <Text className="text-lg font-bold text-gray-800 mb-2">
-            Top 5 des dépenses
-          </Text>
-          <View className="gap-1">
-            {topExpenses.map((expense, index) => {
-              const name = "name" in expense ? expense.name : expense.title;
-              const price = "price" in expense ? expense.price : expense.amount;
+        <View style={[styles.detailCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
+          <Text style={[styles.detailCardTitle, { color: colors.text }]}>Top 5 dépenses</Text>
+          <View style={styles.topExpensesList}>
+            {topExpenses.length > 0 ? (
+              topExpenses.map((expense, index) => {
+                const name = "name" in expense ? expense.name : expense.title;
+                const price = "price" in expense ? expense.price : expense.amount;
 
-              return (
-                <View key={expense.id} className="gap-1">
-                  <View className="flex-row justify-between items-start">
-                    <Text className="text-sm text-gray-600" numberOfLines={1}>
-                      {index + 1}. {name}
-                    </Text>
-                    <Text className="text-sm text-gray-600">{price}€</Text>
+                return (
+                  <View key={expense.id} style={styles.topExpenseItem}>
+                    <View style={[styles.topExpenseRank, { backgroundColor: colors.card }]}>
+                      <Text style={[styles.topExpenseRankText, { color: colors.textSecondary }]}>{index + 1}</Text>
+                    </View>
+                    <View style={styles.topExpenseContent}>
+                      <Text style={[styles.topExpenseName, { color: colors.text }]} numberOfLines={1}>
+                        {name}
+                      </Text>
+                      {"paid_by_user_id" in expense && (
+                        <Text style={[styles.topExpenseDescription, { color: colors.textSecondary }]} numberOfLines={1}>
+                          {getExpenseDescription(expense)}
+                        </Text>
+                      )}
+                    </View>
+                    <Text style={[styles.topExpensePrice, { color: colors.primary }]}>{price}€</Text>
                   </View>
-                  {"paid_by_user_id" in expense && (
-                    <Text className="text-sm text-gray-500 ml-6">
-                      {getExpenseDescription(expense)}
-                    </Text>
-                  )}
-                </View>
-              );
-            })}
+                );
+              })
+            ) : (
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Aucune dépense</Text>
+            )}
           </View>
         </View>
       </View>
 
       {/* Alertes */}
       {budgetUsagePercentage > 100 && (
-        <View className="bg-error-50 border-error-500 border-2 rounded-lg p-4">
-          <View className="flex-row items-start">
-            <Text className="text-2xl mr-2 mt-1">⚠️</Text>
-            <View className="flex-1">
-              <Text className="text-lg font-bold text-error-800 mb-2">
-                Budget dépassé !
-              </Text>
-              <Text className="text-sm text-error-700">
-                Vous avez dépassé votre budget de {Math.abs(remainingBudget)}€.
-                Considérez ajuster vos plans ou augmenter votre budget.
-              </Text>
-            </View>
+        <View style={[styles.alertCardError, { backgroundColor: colors.error + "20", borderColor: colors.error }]}>
+          <Text style={styles.alertIcon}>⚠️</Text>
+          <View style={styles.alertContent}>
+            <Text style={[styles.alertTitle, { color: colors.error }]}>Budget dépassé !</Text>
+            <Text style={[styles.alertText, { color: colors.error }]}>
+              Vous avez dépassé votre budget de {Math.abs(remainingBudget)}€.
+              Considérez ajuster vos plans ou augmenter votre budget.
+            </Text>
           </View>
         </View>
       )}
 
       {budgetUsagePercentage > 80 && budgetUsagePercentage <= 100 && (
-        <View className="bg-primary-50 border-primary-200 border-2 rounded-lg p-4">
-          <View className="flex-row items-start">
-            <Text className="text-2xl mr-2 mt-1">⚠️</Text>
-            <View className="flex-1">
-              <Text className="text-lg font-bold text-primary-800 mb-2">
-                Budget presque épuisé
-              </Text>
-              <Text className="text-sm text-primary-700">
-                Vous avez utilisé {budgetUsagePercentage.toFixed(1)}% de votre
-                budget. Il ne vous reste que {remainingBudget}€.
-              </Text>
-            </View>
+        <View style={[styles.alertCardWarning, { backgroundColor: colors.primaryLight + "40", borderColor: colors.primary }]}>
+          <Text style={styles.alertIcon}>⚠️</Text>
+          <View style={styles.alertContent}>
+            <Text style={[styles.alertTitle, { color: colors.primaryDark }]}>Budget presque épuisé</Text>
+            <Text style={[styles.alertText, { color: colors.primaryDark }]}>
+              Vous avez utilisé {budgetUsagePercentage.toFixed(1)}% de votre budget.
+              Il ne vous reste que {remainingBudget}€.
+            </Text>
           </View>
         </View>
       )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 20,
+  },
+  loadingContainer: {
+    padding: 40,
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+  },
+  errorContainer: {
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+  },
+  errorText: {
+    fontSize: 14,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 4,
+    letterSpacing: -0.3,
+  },
+  statsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  statCard: {
+    borderRadius: 16,
+    padding: 16,
+    flex: 1,
+    minWidth: "47%",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+    borderWidth: 1,
+  },
+  statLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    marginBottom: 8,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  statValue: {
+    fontSize: 24,
+    fontWeight: "700",
+    letterSpacing: -0.5,
+  },
+  statPercentage: {
+    fontSize: 12,
+    marginTop: 4,
+  },
+  statSubtext: {
+    fontSize: 12,
+    marginTop: 4,
+  },
+  progressCard: {
+    borderRadius: 20,
+    padding: 24,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 1,
+  },
+  progressHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  progressTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  progressPercentage: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  progressBarContainer: {
+    height: 12,
+    borderRadius: 6,
+    overflow: "hidden",
+    marginBottom: 12,
+  },
+  progressBarFill: {
+    height: "100%",
+    borderRadius: 6,
+  },
+  progressLabels: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  progressLabel: {
+    fontSize: 12,
+  },
+  detailsRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  detailCard: {
+    borderRadius: 20,
+    padding: 20,
+    flex: 1,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 1,
+  },
+  detailCardTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 16,
+  },
+  distributionList: {
+    gap: 16,
+  },
+  distributionItem: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  distributionDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 12,
+  },
+  distributionContent: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  distributionLabel: {
+    fontSize: 14,
+  },
+  distributionValue: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  topExpensesList: {
+    gap: 12,
+  },
+  topExpenseItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  topExpenseRank: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  topExpenseRankText: {
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  topExpenseContent: {
+    flex: 1,
+    marginRight: 8,
+  },
+  topExpenseName: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 2,
+  },
+  topExpenseDescription: {
+    fontSize: 11,
+  },
+  topExpensePrice: {
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  emptyText: {
+    fontSize: 14,
+    fontStyle: "italic",
+    textAlign: "center",
+    paddingVertical: 20,
+  },
+  alertCardError: {
+    borderRadius: 16,
+    padding: 20,
+    flexDirection: "row",
+    borderWidth: 1,
+  },
+  alertCardWarning: {
+    borderRadius: 16,
+    padding: 20,
+    flexDirection: "row",
+    borderWidth: 1,
+  },
+  alertIcon: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  alertContent: {
+    flex: 1,
+  },
+  alertTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    marginBottom: 6,
+  },
+  alertText: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+});

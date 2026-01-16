@@ -29,6 +29,9 @@ export interface Destination {
   id: string;
   trip_id: string;
   name: string;
-  description: string;
+  description?: string;
+  country?: string;
+  price?: number;
+  address?: string;
   created_at: string;
 }

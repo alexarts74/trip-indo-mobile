@@ -1,11 +1,16 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
 import {
-  colors,
-  spacing,
-  borderRadius,
-  shadows,
-} from "../../src/constants/theme";
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+} from "react-native";
+import { useTheme } from "../../src/contexts/ThemeContext";
+import { expenseService, Expense } from "../../src/services/expenseService";
+import AddExpenseModal from "./AddExpenseModal";
 
 interface TripExpensesProps {
   tripId: string;
@@ -13,46 +18,531 @@ interface TripExpensesProps {
 }
 
 export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
+  const { colors } = useTheme();
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+  useEffect(() => {
+    fetchExpenses();
+  }, [tripId]);
+
+  const fetchExpenses = async () => {
+    try {
+      setIsLoading(true);
+      setError("");
+      const data = await expenseService.getTripExpenses(tripId);
+      setExpenses(data);
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddExpense = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const handleExpenseAdded = () => {
+    fetchExpenses();
+  };
+
+  const handleDeleteExpense = async (expenseId: string) => {
+    Alert.alert(
+      "Supprimer la dépense",
+      "Êtes-vous sûr de vouloir supprimer cette dépense ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Supprimer",
+          style: "destructive",
+          onPress: async () => {
+            setDeletingExpenseId(expenseId);
+            try {
+              await expenseService.deleteExpense(expenseId);
+              await fetchExpenses();
+            } catch (error: any) {
+              Alert.alert("Erreur", "Erreur lors de la suppression de la dépense");
+            } finally {
+              setDeletingExpenseId(null);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const formatAmount = (amount: number) => {
+    return new Intl.NumberFormat("fr-FR", {
+      style: "currency",
+      currency: "EUR",
+    }).format(amount);
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+            Chargement des dépenses...
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <View
+          style={[
+            styles.errorContainer,
+            {
+              backgroundColor: colors.error + "20",
+              borderColor: colors.error,
+            },
+          ]}
+        >
+          <Text style={[styles.errorText, { color: colors.error }]}>Erreur: {error}</Text>
+        </View>
+      </View>
+    );
+  }
+
+  const totalExpenses = expenses.reduce((total, expense) => total + expense.amount, 0);
+
   return (
     <View style={styles.container}>
-      <View style={styles.placeholderCard}>
-        <Text style={styles.placeholderIcon}>💰</Text>
-        <Text style={styles.placeholderTitle}>Gestion des dépenses</Text>
-        <Text style={styles.placeholderDescription}>
-          Fonctionnalité à implémenter pour {tripName}
-        </Text>
+      {/* Carte d'en-tête */}
+      <View
+        style={[
+          styles.headerCard,
+          {
+            backgroundColor: colors.card,
+            borderColor: colors.cardBorder,
+            shadowColor: colors.shadow,
+          },
+        ]}
+      >
+        <View style={styles.headerContent}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Gestion des dépenses</Text>
+          <Text style={[styles.headerDescription, { color: colors.textSecondary }]}>
+            Suivez et gérez toutes les dépenses de votre voyage
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={[styles.addButton, { backgroundColor: colors.primary }]}
+          onPress={handleAddExpense}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addButtonIcon}>+</Text>
+          <Text style={styles.addButtonText}>Ajouter</Text>
+        </TouchableOpacity>
       </View>
+
+      {expenses.length === 0 ? (
+        <View
+          style={[
+            styles.emptyContainer,
+            {
+              backgroundColor: colors.card,
+              borderColor: colors.cardBorder,
+              shadowColor: colors.shadow,
+            },
+          ]}
+        >
+          <Text style={styles.emptyEmoji}>💰</Text>
+          <Text style={[styles.emptyTitle, { color: colors.text }]}>
+            Aucune dépense enregistrée
+          </Text>
+          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+            Commencez par ajouter vos premières dépenses pour ce voyage !
+          </Text>
+        </View>
+      ) : (
+        <ScrollView
+          style={styles.expensesList}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.expensesListContent}
+        >
+          {expenses.map((expense) => (
+            <View
+              key={expense.id}
+              style={[
+                styles.expenseCard,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.cardBorder,
+                  shadowColor: colors.shadow,
+                },
+              ]}
+            >
+              <View style={styles.expenseHeader}>
+                <View
+                  style={[
+                    styles.categoryIconContainer,
+                    {
+                      backgroundColor: expense.category?.color || colors.primary,
+                    },
+                  ]}
+                >
+                  <Text style={styles.categoryIcon}>
+                    {expense.category?.icon || "💰"}
+                  </Text>
+                </View>
+                <View style={styles.expenseInfo}>
+                  <Text style={[styles.expenseTitle, { color: colors.text }]}>
+                    {expense.title}
+                  </Text>
+                  {expense.description && (
+                    <Text style={[styles.expenseDescription, { color: colors.textSecondary }]}>
+                      {expense.description}
+                    </Text>
+                  )}
+                  <View style={styles.expenseMeta}>
+                    <Text style={[styles.expenseMetaText, { color: colors.textSecondary }]}>
+                      📅 {formatDate(expense.date)}
+                    </Text>
+                    <Text style={[styles.expenseMetaText, { color: colors.textSecondary }]}>
+                      👤{" "}
+                      {expense.paid_by_user?.first_name ||
+                        expense.paid_by_user?.email ||
+                        "Inconnu"}
+                    </Text>
+                    {expense.category && (
+                      <Text style={[styles.expenseMetaText, { color: colors.textSecondary }]}>
+                        🏷️ {expense.category.name}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                <View style={styles.expenseActions}>
+                  <Text style={[styles.expenseAmount, { color: colors.text }]}>
+                    {formatAmount(expense.amount)}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => handleDeleteExpense(expense.id)}
+                    disabled={deletingExpenseId === expense.id}
+                    style={styles.deleteButton}
+                    activeOpacity={0.7}
+                  >
+                    {deletingExpenseId === expense.id ? (
+                      <ActivityIndicator size="small" color={colors.error} />
+                    ) : (
+                      <Text style={[styles.deleteIcon, { color: colors.error }]}>🗑️</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Participants et parts */}
+              {expense.shares && expense.shares.length > 0 && (
+                <View
+                  style={[
+                    styles.sharesContainer,
+                    {
+                      backgroundColor: colors.input,
+                      borderTopColor: colors.border,
+                    },
+                  ]}
+                >
+                  <Text style={[styles.sharesTitle, { color: colors.textSecondary }]}>
+                    Répartition entre {expense.shares.length} participant(s) :
+                  </Text>
+                  <View style={styles.sharesList}>
+                    {expense.shares.map((share) => (
+                      <View
+                        key={share.id}
+                        style={[
+                          styles.shareBadge,
+                          {
+                            backgroundColor: colors.card,
+                            borderColor: colors.border,
+                          },
+                        ]}
+                      >
+                        <Text style={[styles.shareText, { color: colors.textSecondary }]}>
+                          {share.user?.first_name || share.user?.email} :{" "}
+                          {formatAmount(share.share_amount)}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              )}
+            </View>
+          ))}
+
+          {/* Résumé des dépenses */}
+          <View
+            style={[
+              styles.summaryCard,
+              {
+                backgroundColor: colors.primaryLight + "40",
+                borderColor: colors.primary,
+              },
+            ]}
+          >
+            <View style={styles.summaryContent}>
+              <View>
+                <Text style={[styles.summaryTitle, { color: colors.primaryDark }]}>
+                  Total des dépenses
+                </Text>
+                <Text style={[styles.summarySubtitle, { color: colors.primaryDark }]}>
+                  {expenses.length} dépense{expenses.length > 1 ? "s" : ""} enregistrée
+                  {expenses.length > 1 ? "s" : ""}
+                </Text>
+              </View>
+              <Text style={[styles.summaryAmount, { color: colors.primaryDark }]}>
+                {formatAmount(totalExpenses)}
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
+      )}
+
+      {/* Modal d'ajout de dépense */}
+      <AddExpenseModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        tripId={tripId}
+        onExpenseAdded={handleExpenseAdded}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    gap: spacing.md,
+    gap: 20,
   },
-  placeholderCard: {
-    backgroundColor: colors.white,
-    borderRadius: borderRadius.lg,
-    padding: spacing.xxxl,
-    ...shadows.sm,
-    borderWidth: 1,
-    borderColor: colors.gray[200],
+  loadingContainer: {
+    padding: 40,
     alignItems: "center",
   },
-  placeholderIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
   },
-  placeholderTitle: {
-    fontSize: 20,
+  errorContainer: {
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+  },
+  errorText: {
+    fontSize: 14,
+    textAlign: "center",
+  },
+  headerCard: {
+    borderRadius: 20,
+    padding: 24,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 1,
+  },
+  headerContent: {
+    flex: 1,
+    marginRight: 16,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    marginBottom: 8,
+    letterSpacing: -0.3,
+  },
+  headerDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  addButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    shadowColor: "#f97316",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  addButtonIcon: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "700",
+    marginRight: 6,
+  },
+  addButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
     fontWeight: "600",
-    color: colors.gray[800],
-    marginBottom: spacing.sm,
+  },
+  emptyContainer: {
+    borderRadius: 20,
+    padding: 32,
+    alignItems: "center",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 1,
+  },
+  emptyEmoji: {
+    fontSize: 64,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 8,
     textAlign: "center",
   },
-  placeholderDescription: {
-    fontSize: 16,
-    color: colors.gray[600],
+  emptySubtitle: {
+    fontSize: 15,
     textAlign: "center",
+  },
+  expensesList: {
+    flex: 1,
+  },
+  expensesListContent: {
+    gap: 16,
+    paddingBottom: 20,
+  },
+  expenseCard: {
+    borderRadius: 20,
+    padding: 20,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 1,
+  },
+  expenseHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+  categoryIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  categoryIcon: {
+    fontSize: 20,
+    color: "#ffffff",
+  },
+  expenseInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  expenseTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 4,
+  },
+  expenseDescription: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  expenseMeta: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  expenseMetaText: {
+    fontSize: 12,
+  },
+  expenseActions: {
+    alignItems: "flex-end",
+    gap: 8,
+  },
+  expenseAmount: {
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  deleteButton: {
+    padding: 8,
+  },
+  deleteIcon: {
+    fontSize: 18,
+  },
+  sharesContainer: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+  },
+  sharesTitle: {
+    fontSize: 12,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  sharesList: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  shareBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  shareText: {
+    fontSize: 12,
+  },
+  summaryCard: {
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    marginTop: 8,
+  },
+  summaryContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  summaryTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 4,
+  },
+  summarySubtitle: {
+    fontSize: 14,
+  },
+  summaryAmount: {
+    fontSize: 24,
+    fontWeight: "700",
   },
 });
