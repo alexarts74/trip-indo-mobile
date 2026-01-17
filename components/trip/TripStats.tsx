@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { supabase } from "../../src/lib/supabaseClient";
 import { useTheme } from "../../src/contexts/ThemeContext";
+import { AlertTriangle } from "lucide-react-native";
 
 interface Place {
   id: string;
@@ -199,25 +200,25 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
         <View style={styles.progressHeader}>
           <Text style={[styles.progressTitle, { color: colors.text }]}>Utilisation du budget</Text>
           <Text style={[styles.progressPercentage, { color: colors.primary }]}>
-            {budgetUsagePercentage.toFixed(1)}%
-          </Text>
-        </View>
+              {budgetUsagePercentage.toFixed(1)}%
+            </Text>
+          </View>
         <View style={[styles.progressBarContainer, { backgroundColor: colors.border }]}>
-          <View
+            <View
             style={[
               styles.progressBarFill,
               {
                 width: `${Math.min(budgetUsagePercentage, 100)}%`,
                 backgroundColor:
-                  budgetUsagePercentage > 100
+                budgetUsagePercentage > 100
                     ? colors.error
-                    : budgetUsagePercentage > 80
+                  : budgetUsagePercentage > 80
                     ? colors.primaryDark
                     : colors.primary,
               },
             ]}
-          />
-        </View>
+            />
+          </View>
         <View style={styles.progressLabels}>
           <Text style={[styles.progressLabel, { color: colors.textSecondary }]}>0€</Text>
           <Text style={[styles.progressLabel, { color: colors.textSecondary }]}>{tripBudget}€</Text>
@@ -258,10 +259,10 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
           <View style={styles.topExpensesList}>
             {topExpenses.length > 0 ? (
               topExpenses.map((expense, index) => {
-                const name = "name" in expense ? expense.name : expense.title;
-                const price = "price" in expense ? expense.price : expense.amount;
+              const name = "name" in expense ? expense.name : expense.title;
+              const price = "price" in expense ? expense.price : expense.amount;
 
-                return (
+              return (
                   <View key={expense.id} style={styles.topExpenseItem}>
                     <View style={[styles.topExpenseRank, { backgroundColor: colors.card }]}>
                       <Text style={[styles.topExpenseRankText, { color: colors.textSecondary }]}>{index + 1}</Text>
@@ -269,16 +270,16 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
                     <View style={styles.topExpenseContent}>
                       <Text style={[styles.topExpenseName, { color: colors.text }]} numberOfLines={1}>
                         {name}
-                      </Text>
-                      {"paid_by_user_id" in expense && (
+                    </Text>
+                  {"paid_by_user_id" in expense && (
                         <Text style={[styles.topExpenseDescription, { color: colors.textSecondary }]} numberOfLines={1}>
-                          {getExpenseDescription(expense)}
-                        </Text>
-                      )}
+                      {getExpenseDescription(expense)}
+                    </Text>
+                  )}
                     </View>
                     <Text style={[styles.topExpensePrice, { color: colors.primary }]}>{price}€</Text>
-                  </View>
-                );
+                </View>
+              );
               })
             ) : (
               <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Aucune dépense</Text>
@@ -290,26 +291,26 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
       {/* Alertes */}
       {budgetUsagePercentage > 100 && (
         <View style={[styles.alertCardError, { backgroundColor: colors.error + "20", borderColor: colors.error }]}>
-          <Text style={styles.alertIcon}>⚠️</Text>
+          <AlertTriangle size={20} color={colors.error} />
           <View style={styles.alertContent}>
             <Text style={[styles.alertTitle, { color: colors.error }]}>Budget dépassé !</Text>
             <Text style={[styles.alertText, { color: colors.error }]}>
-              Vous avez dépassé votre budget de {Math.abs(remainingBudget)}€.
-              Considérez ajuster vos plans ou augmenter votre budget.
-            </Text>
+                Vous avez dépassé votre budget de {Math.abs(remainingBudget)}€.
+                Considérez ajuster vos plans ou augmenter votre budget.
+              </Text>
           </View>
         </View>
       )}
 
       {budgetUsagePercentage > 80 && budgetUsagePercentage <= 100 && (
         <View style={[styles.alertCardWarning, { backgroundColor: colors.primaryLight + "40", borderColor: colors.primary }]}>
-          <Text style={styles.alertIcon}>⚠️</Text>
+          <AlertTriangle size={20} color={colors.primaryDark} />
           <View style={styles.alertContent}>
             <Text style={[styles.alertTitle, { color: colors.primaryDark }]}>Budget presque épuisé</Text>
             <Text style={[styles.alertText, { color: colors.primaryDark }]}>
               Vous avez utilisé {budgetUsagePercentage.toFixed(1)}% de votre budget.
               Il ne vous reste que {remainingBudget}€.
-            </Text>
+              </Text>
           </View>
         </View>
       )}
@@ -328,6 +329,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     fontSize: 14,
+    fontFamily: "Ubuntu-Regular",
   },
   errorContainer: {
     borderWidth: 1,
@@ -336,10 +338,12 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
+    fontFamily: "Ubuntu-Regular",
   },
   sectionTitle: {
     fontSize: 22,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 4,
     letterSpacing: -0.3,
   },
@@ -365,6 +369,7 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 12,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     marginBottom: 8,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -372,15 +377,18 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     letterSpacing: -0.5,
   },
   statPercentage: {
     fontSize: 12,
     marginTop: 4,
+    fontFamily: "Ubuntu-Regular",
   },
   statSubtext: {
     fontSize: 12,
     marginTop: 4,
+    fontFamily: "Ubuntu-Regular",
   },
   progressCard: {
     borderRadius: 20,
@@ -403,10 +411,12 @@ const styles = StyleSheet.create({
   progressTitle: {
     fontSize: 18,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
   },
   progressPercentage: {
     fontSize: 18,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
   },
   progressBarContainer: {
     height: 12,
@@ -424,6 +434,7 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontSize: 12,
+    fontFamily: "Ubuntu-Regular",
   },
   detailsRow: {
     flexDirection: "row",
@@ -445,6 +456,7 @@ const styles = StyleSheet.create({
   detailCardTitle: {
     fontSize: 18,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 16,
   },
   distributionList: {
@@ -468,10 +480,12 @@ const styles = StyleSheet.create({
   },
   distributionLabel: {
     fontSize: 14,
+    fontFamily: "Ubuntu-Regular",
   },
   distributionValue: {
     fontSize: 15,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
   topExpensesList: {
     gap: 12,
@@ -492,6 +506,7 @@ const styles = StyleSheet.create({
   topExpenseRankText: {
     fontSize: 12,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
   },
   topExpenseContent: {
     flex: 1,
@@ -500,20 +515,24 @@ const styles = StyleSheet.create({
   topExpenseName: {
     fontSize: 14,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     marginBottom: 2,
   },
   topExpenseDescription: {
     fontSize: 11,
+    fontFamily: "Ubuntu-Regular",
   },
   topExpensePrice: {
     fontSize: 15,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
   },
   emptyText: {
     fontSize: 14,
     fontStyle: "italic",
     textAlign: "center",
     paddingVertical: 20,
+    fontFamily: "Ubuntu-Regular",
   },
   alertCardError: {
     borderRadius: 16,
@@ -527,20 +546,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderWidth: 1,
   },
-  alertIcon: {
-    fontSize: 24,
-    marginRight: 12,
-  },
   alertContent: {
     flex: 1,
   },
   alertTitle: {
     fontSize: 16,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 6,
   },
   alertText: {
     fontSize: 14,
     lineHeight: 20,
+    fontFamily: "Ubuntu-Regular",
   },
 });

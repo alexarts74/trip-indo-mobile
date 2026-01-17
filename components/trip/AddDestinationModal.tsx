@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { useTheme } from "../../src/contexts/ThemeContext";
 import { supabase } from "../../src/lib/supabaseClient";
+import { MapPin, Tag, FileText, Globe, Wallet, AlertTriangle, X, Check } from "lucide-react-native";
 
 interface AddDestinationModalProps {
   isOpen: boolean;
@@ -148,7 +149,7 @@ export default function AddDestinationModal({
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
               <View style={styles.headerIconContainer}>
                 <View style={[styles.headerIcon, { backgroundColor: colors.primary + "20" }]}>
-                  <Text style={styles.headerIconEmoji}>📍</Text>
+                  <MapPin size={18} color={colors.primary} />
                 </View>
               </View>
               <View style={styles.headerTextContainer}>
@@ -164,7 +165,7 @@ export default function AddDestinationModal({
                 onPress={onClose}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.closeIcon, { color: colors.textSecondary }]}>✕</Text>
+                <X size={18} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
@@ -177,7 +178,7 @@ export default function AddDestinationModal({
               {/* Nom de la destination */}
               <View style={styles.inputContainer}>
                 <View style={styles.labelContainer}>
-                  <Text style={[styles.labelIcon, { color: colors.primary }]}>🏷️</Text>
+                  <Tag size={14} color={colors.primary} style={{ marginRight: 6 }} />
                   <Text style={[styles.label, { color: colors.textSecondary }]}>
                     Nom de la destination *
                   </Text>
@@ -206,7 +207,7 @@ export default function AddDestinationModal({
               {/* Description */}
               <View style={styles.inputContainer}>
                 <View style={styles.labelContainer}>
-                  <Text style={[styles.labelIcon, { color: colors.primary }]}>📝</Text>
+                  <FileText size={14} color={colors.primary} style={{ marginRight: 6 }} />
                   <Text style={[styles.label, { color: colors.textSecondary }]}>Description</Text>
                 </View>
                 <TextInput
@@ -235,7 +236,7 @@ export default function AddDestinationModal({
               {/* Pays */}
               <View style={styles.inputContainer}>
                 <View style={styles.labelContainer}>
-                  <Text style={[styles.labelIcon, { color: colors.primary }]}>🌍</Text>
+                  <Globe size={14} color={colors.primary} style={{ marginRight: 6 }} />
                   <Text style={[styles.label, { color: colors.textSecondary }]}>Pays *</Text>
                 </View>
                 <TextInput
@@ -262,7 +263,7 @@ export default function AddDestinationModal({
               {/* Coût estimé */}
               <View style={styles.inputContainer}>
                 <View style={styles.labelContainer}>
-                  <Text style={[styles.labelIcon, { color: colors.primary }]}>💰</Text>
+                  <Wallet size={14} color={colors.primary} style={{ marginRight: 6 }} />
                   <Text style={[styles.label, { color: colors.textSecondary }]}>
                     Coût estimé (€) *
                   </Text>
@@ -304,7 +305,7 @@ export default function AddDestinationModal({
                     },
                   ]}
                 >
-                  <Text style={styles.errorIcon}>⚠️</Text>
+                  <AlertTriangle size={16} color={colors.error} />
                   <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
                 </View>
               )}
@@ -343,7 +344,7 @@ export default function AddDestinationModal({
                   ) : (
                     <>
                       <Text style={styles.submitButtonText}>Ajouter</Text>
-                      <Text style={styles.submitButtonIcon}>✓</Text>
+                      <Check size={16} color="#ffffff" />
                     </>
                   )}
                 </TouchableOpacity>
@@ -414,21 +415,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerIconEmoji: {
-    fontSize: 18,
-  },
   headerTextContainer: {
     flex: 1,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     letterSpacing: -0.3,
     marginBottom: 2,
   },
   modalSubtitle: {
     fontSize: 12,
     fontWeight: "500",
+    fontFamily: "Ubuntu-Medium",
   },
   closeButton: {
     width: 32,
@@ -437,10 +437,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 10,
-  },
-  closeIcon: {
-    fontSize: 18,
-    fontWeight: "600",
   },
   scrollView: {
     maxHeight: 500,
@@ -457,13 +453,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 6,
   },
-  labelIcon: {
-    fontSize: 14,
-    marginRight: 6,
-  },
   label: {
     fontSize: 13,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     letterSpacing: 0.1,
   },
   input: {
@@ -473,6 +466,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 15,
     fontWeight: "500",
+    fontFamily: "Ubuntu-Medium",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
@@ -491,6 +485,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 15,
     fontWeight: "500",
+    fontFamily: "Ubuntu-Medium",
     minHeight: 80,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -510,6 +505,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 15,
     fontWeight: "500",
+    fontFamily: "Ubuntu-Medium",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
@@ -525,6 +521,7 @@ const styles = StyleSheet.create({
   currencyText: {
     fontSize: 16,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
   },
   errorContainer: {
     flexDirection: "row",
@@ -536,13 +533,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     gap: 8,
   },
-  errorIcon: {
-    fontSize: 16,
-  },
   errorText: {
     flex: 1,
     fontSize: 13,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
   buttonsContainer: {
     flexDirection: "row",
@@ -563,6 +558,7 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 15,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     letterSpacing: 0.2,
   },
   submitButton: {
@@ -585,11 +581,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 15,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     letterSpacing: 0.2,
-  },
-  submitButtonIcon: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "700",
   },
 });

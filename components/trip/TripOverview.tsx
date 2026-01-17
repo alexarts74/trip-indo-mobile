@@ -4,6 +4,7 @@ import { Trip } from "../../src/types/trip";
 import { Destination } from "../../src/types/destination";
 import { useTheme } from "../../src/contexts/ThemeContext";
 import TripStats from "./TripStats";
+import { Calendar, Clock, Wallet, Map, Users } from "lucide-react-native";
 
 interface TripOverviewProps {
   trip: Trip;
@@ -71,35 +72,35 @@ export default function TripOverview({
           </View>
         </View>
 
-        <View style={styles.tripMeta}>
+            <View style={styles.tripMeta}>
           <View style={styles.metaRow}>
             <View style={[styles.metaIconContainer, { backgroundColor: colors.primaryLight }]}>
-              <Text style={styles.metaIcon}>📅</Text>
+                <Calendar size={18} color={colors.primary} />
             </View>
             <View style={styles.metaContent}>
               <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>Dates</Text>
               <Text style={[styles.metaText, { color: colors.text }]}>
-                {formatDate(trip.start_date)} - {formatDate(trip.end_date)}
-              </Text>
-            </View>
+                  {formatDate(trip.start_date)} - {formatDate(trip.end_date)}
+                </Text>
+              </View>
           </View>
 
           <View style={styles.metaRow}>
             <View style={[styles.metaIconContainer, { backgroundColor: colors.primaryLight }]}>
-              <Text style={styles.metaIcon}>⏱️</Text>
+                <Clock size={18} color={colors.primary} />
             </View>
             <View style={styles.metaContent}>
               <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>Durée</Text>
               <Text style={[styles.metaText, { color: colors.text }]}>
                 {calculateDuration(trip.start_date, trip.end_date)}
-              </Text>
-            </View>
+                </Text>
+              </View>
           </View>
 
           <View style={styles.metaRow}>
             <View style={[styles.metaIconContainer, { backgroundColor: colors.primaryLight }]}>
-              <Text style={styles.metaIcon}>💰</Text>
-            </View>
+                <Wallet size={18} color={colors.primary} />
+              </View>
             <View style={styles.metaContent}>
               <Text style={[styles.metaLabel, { color: colors.textSecondary }]}>Budget</Text>
               <Text style={[styles.metaText, { color: colors.text }]}>{trip.budget}€</Text>
@@ -117,7 +118,7 @@ export default function TripOverview({
         <View style={styles.stepsList}>
           <View style={styles.stepItem}>
             <View style={[styles.stepIconContainer, { backgroundColor: colors.card }]}>
-              <Text style={styles.stepIcon}>🗺️</Text>
+            <Map size={20} color={colors.primary} />
             </View>
             <View style={styles.stepContent}>
               <Text style={[styles.stepTitle, { color: colors.text }]}>Ajouter des destinations</Text>
@@ -129,7 +130,7 @@ export default function TripOverview({
 
           <View style={styles.stepItem}>
             <View style={[styles.stepIconContainer, { backgroundColor: colors.card }]}>
-              <Text style={styles.stepIcon}>👥</Text>
+            <Users size={20} color={colors.primary} />
             </View>
             <View style={styles.stepContent}>
               <Text style={[styles.stepTitle, { color: colors.text }]}>Inviter des participants</Text>
@@ -141,7 +142,7 @@ export default function TripOverview({
 
           <View style={styles.stepItem}>
             <View style={[styles.stepIconContainer, { backgroundColor: colors.card }]}>
-              <Text style={styles.stepIcon}>💰</Text>
+            <Wallet size={20} color={colors.primary} />
             </View>
             <View style={styles.stepContent}>
               <Text style={[styles.stepTitle, { color: colors.text }]}>Gérer les dépenses</Text>
@@ -185,12 +186,14 @@ const styles = StyleSheet.create({
   tripTitle: {
     fontSize: 28,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 8,
     letterSpacing: -0.5,
   },
   tripDescription: {
     fontSize: 15,
     lineHeight: 22,
+    fontFamily: "Ubuntu-Regular",
   },
   destinationsBadge: {
     borderRadius: 16,
@@ -212,11 +215,13 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 20,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
   },
   destinationsLabel: {
     color: "#ffffff",
     fontSize: 11,
     fontWeight: "500",
+    fontFamily: "Ubuntu-Medium",
     marginTop: 2,
     opacity: 0.9,
   },
@@ -235,9 +240,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 12,
   },
-  metaIcon: {
-    fontSize: 18,
-  },
   metaContent: {
     flex: 1,
     paddingTop: 2,
@@ -245,6 +247,7 @@ const styles = StyleSheet.create({
   metaLabel: {
     fontSize: 12,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     marginBottom: 4,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -252,6 +255,7 @@ const styles = StyleSheet.create({
   metaText: {
     fontSize: 15,
     fontWeight: "500",
+    fontFamily: "Ubuntu-Medium",
   },
   nextStepsCard: {
     borderRadius: 20,
@@ -268,6 +272,7 @@ const styles = StyleSheet.create({
   nextStepsTitle: {
     fontSize: 20,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 20,
     letterSpacing: -0.3,
   },
@@ -286,9 +291,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 16,
   },
-  stepIcon: {
-    fontSize: 20,
-  },
   stepContent: {
     flex: 1,
     paddingTop: 4,
@@ -296,10 +298,12 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 16,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     marginBottom: 6,
   },
   stepDescription: {
     fontSize: 14,
     lineHeight: 20,
+    fontFamily: "Ubuntu-Regular",
   },
 });

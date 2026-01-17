@@ -1,15 +1,33 @@
 import { supabase } from "../lib/supabaseClient";
 
+export interface TripInvitation {
+  id: string;
+  trip_id: string;
+  inviter_id: string;
+  invitee_email: string;
+  status: "pending" | "accepted" | "declined";
+  created_at: string;
+  updated_at: string;
+  trips?: {
+    name: string;
+    description?: string;
+    start_date: string;
+    end_date: string;
+    budget: number;
+  };
+}
+
 export interface Invitation {
   id: string;
   trip_id: string;
   inviter_id: string;
   invitee_email: string;
-  status: string;
+  status: "pending" | "accepted" | "declined";
   created_at: string;
+  updated_at: string;
   trips: {
     name: string;
-    description: string;
+    description?: string;
     start_date: string;
     end_date: string;
     budget: number;
@@ -20,106 +38,223 @@ export interface Invitation {
   };
 }
 
+/**
+ * Créer une invitation pour un voyage
+ */
+export async function createInvitation(
+  tripId: string,
+  inviterId: string,
+  inviteeEmail: string
+): Promise<TripInvitation> {
+  const { data, error } = await supabase
+    .from("trip_invitations")
+    .insert({
+      trip_id: tripId,
+      inviter_id: inviterId,
+      invitee_email: inviteeEmail.toLowerCase().trim(),
+      status: "pending",
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("❌ Erreur création invitation:", error);
+    throw error;
+  }
+
+  return data;
+}
+
+/**
+ * Récupérer les invitations reçues par l'utilisateur connecté
+ */
+export async function fetchReceivedInvitations(
+  userEmail: string
+): Promise<TripInvitation[]> {
+  const { data, error } = await supabase
+    .from("trip_invitations")
+    .select(
+      `
+      *,
+      trips (
+        name,
+        description,
+        start_date,
+        end_date,
+        budget
+      )
+    `
+    )
+    .eq("invitee_email", userEmail.toLowerCase())
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("❌ Erreur récupération invitations reçues:", error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+/**
+ * Récupérer les invitations envoyées par l'utilisateur
+ */
+export async function fetchSentInvitations(
+  userId: string
+): Promise<TripInvitation[]> {
+  const { data, error } = await supabase
+    .from("trip_invitations")
+    .select(
+      `
+      *,
+      trips (
+        name,
+        description,
+        start_date,
+        end_date,
+        budget
+      )
+    `
+    )
+    .eq("inviter_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("❌ Erreur récupération invitations envoyées:", error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+/**
+ * Mettre à jour le statut d'une invitation
+ */
+export async function updateInvitationStatus(
+  invitationId: string,
+  status: "accepted" | "declined"
+): Promise<void> {
+  const { error } = await supabase
+    .from("trip_invitations")
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq("id", invitationId);
+
+  if (error) {
+    console.error("❌ Erreur mise à jour invitation:", error);
+    throw error;
+  }
+}
+
+/**
+ * Récupérer les invitations en attente pour un email
+ */
+export async function getPendingInvitations(userEmail: string): Promise<Invitation[]> {
+  const { data, error } = await supabase
+    .from("trip_invitations")
+    .select(
+      `
+      *,
+      trips (
+        name,
+        description,
+        start_date,
+        end_date,
+        budget
+      ),
+      profiles:inviter_id (
+        first_name,
+        last_name
+      )
+    `
+    )
+    .eq("invitee_email", userEmail.toLowerCase())
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("❌ Erreur récupération invitations en attente:", error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+/**
+ * Accepter une invitation et ajouter l'utilisateur comme participant
+ */
+export async function acceptInvitation(
+  invitationId: string,
+  tripId: string,
+  userId: string
+): Promise<void> {
+  // Mettre à jour le statut de l'invitation
+  await updateInvitationStatus(invitationId, "accepted");
+
+  // Ajouter l'utilisateur comme participant
+  const { error: participantError } = await supabase
+    .from("trip_participants")
+    .insert({
+      trip_id: tripId,
+      user_id: userId,
+      role: "participant",
+    });
+
+  if (participantError) {
+    // Si l'utilisateur est déjà participant, ce n'est pas une erreur critique
+    if (participantError.code !== "23505") {
+      console.error("❌ Erreur ajout participant:", participantError);
+      throw participantError;
+    }
+  }
+}
+
+/**
+ * Décliner une invitation
+ */
+export async function declineInvitation(invitationId: string): Promise<void> {
+  await updateInvitationStatus(invitationId, "declined");
+}
+
+/**
+ * Envoyer un email d'invitation via Supabase Edge Function
+ */
+export async function sendInvitationEmail(
+  tripName: string,
+  inviterEmail: string,
+  inviteeEmail: string,
+  tripId: string
+): Promise<void> {
+  try {
+    const { data, error } = await supabase.functions.invoke("send-invitation", {
+      body: {
+        tripName,
+        inviterEmail,
+        inviteeEmail: inviteeEmail.toLowerCase().trim(),
+        tripId,
+      },
+    });
+
+    if (error) {
+      console.error("❌ Erreur envoi email:", error);
+      throw error;
+    }
+
+    return data;
+  } catch (error: any) {
+    // Si la fonction n'existe pas encore, on log mais on ne bloque pas
+    console.warn("⚠️ Edge Function send-invitation non disponible:", error.message);
+    // On ne throw pas pour permettre de créer l'invitation même sans email
+  }
+}
+
+// Export du service comme objet pour compatibilité
 export const invitationService = {
-  // Récupérer les invitations en attente de l'utilisateur
-  async getPendingInvitations(userEmail: string): Promise<Invitation[]> {
-    try {
-      // Récupérer les invitations
-      const { data: invitations, error: invitationsError } = await supabase
-        .from("trip_invitations")
-        .select("*")
-        .eq("invitee_email", userEmail.toLowerCase())
-        .eq("status", "pending")
-        .order("created_at", { ascending: false });
-
-      if (invitationsError) throw invitationsError;
-      if (!invitations || invitations.length === 0) return [];
-
-      // Récupérer les IDs des voyages et des inviters
-      const tripIds = [...new Set(invitations.map((inv) => inv.trip_id))];
-      const inviterIds = [...new Set(invitations.map((inv) => inv.inviter_id))];
-
-      // Récupérer les voyages
-      const { data: trips, error: tripsError } = await supabase
-        .from("trips")
-        .select("id, name, description, start_date, end_date, budget")
-        .in("id", tripIds);
-
-      if (tripsError) throw tripsError;
-
-      // Récupérer les profils
-      const { data: profiles, error: profilesError } = await supabase
-        .from("profiles")
-        .select("id, first_name, last_name")
-        .in("id", inviterIds);
-
-      if (profilesError) throw profilesError;
-
-      // Combiner les données
-      const tripsMap = new Map(trips?.map((trip) => [trip.id, trip]) || []);
-      const profilesMap = new Map(profiles?.map((profile) => [profile.id, profile]) || []);
-
-      return invitations.map((invitation) => ({
-        ...invitation,
-        trips: tripsMap.get(invitation.trip_id) || {
-          name: "",
-          description: "",
-          start_date: "",
-          end_date: "",
-          budget: 0,
-        },
-        profiles: profilesMap.get(invitation.inviter_id) || {
-          first_name: "",
-          last_name: "",
-        },
-      }));
-    } catch (error: any) {
-      console.error("Erreur lors de la récupération des invitations:", error);
-      throw error;
-    }
-  },
-
-  // Accepter une invitation
-  async acceptInvitation(invitationId: string, tripId: string, userId: string): Promise<void> {
-    try {
-      // Mettre à jour le statut de l'invitation
-      const { error: updateError } = await supabase
-        .from("trip_invitations")
-        .update({ status: "accepted" })
-        .eq("id", invitationId);
-
-      if (updateError) throw updateError;
-
-      // Ajouter l'utilisateur comme participant
-      const { error: participantError } = await supabase
-        .from("trip_participants")
-        .insert([
-          {
-            trip_id: tripId,
-            user_id: userId,
-            role: "participant",
-          },
-        ]);
-
-      if (participantError) throw participantError;
-    } catch (error: any) {
-      console.error("Erreur lors de l'acceptation de l'invitation:", error);
-      throw error;
-    }
-  },
-
-  // Décliner une invitation
-  async declineInvitation(invitationId: string): Promise<void> {
-    try {
-      const { error } = await supabase
-        .from("trip_invitations")
-        .update({ status: "declined" })
-        .eq("id", invitationId);
-
-      if (error) throw error;
-    } catch (error: any) {
-      console.error("Erreur lors du refus de l'invitation:", error);
-      throw error;
-    }
-  },
+  createInvitation,
+  fetchReceivedInvitations,
+  fetchSentInvitations,
+  updateInvitationStatus,
+  acceptInvitation,
+  declineInvitation,
+  sendInvitationEmail,
+  getPendingInvitations,
 };

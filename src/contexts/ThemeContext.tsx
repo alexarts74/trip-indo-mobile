@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getFontStyle } from "../constants/fonts";
 
 export type ThemeMode = "light" | "dark";
 
@@ -22,6 +23,13 @@ interface ThemeContextType {
     input: string;
     inputBorder: string;
     shadow: string;
+  };
+  fonts: {
+    regular: string;
+    light: string;
+    medium: string;
+    bold: string;
+    getFont: (fontWeight?: string | number, fontStyle?: "normal" | "italic") => { fontFamily: string };
   };
 }
 
@@ -82,9 +90,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   };
 
   const colors = theme === "light" ? lightColors : darkColors;
+  
+  const fonts = {
+    regular: "Ubuntu-Regular",
+    light: "Ubuntu-Light",
+    medium: "Ubuntu-Medium",
+    bold: "Ubuntu-Bold",
+    getFont: (fontWeight?: string | number, fontStyle?: "normal" | "italic") => {
+      return getFontStyle(fontWeight, fontStyle);
+    },
+  };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, colors }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, colors, fonts }}>
       {children}
     </ThemeContext.Provider>
   );

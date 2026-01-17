@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { useTheme } from "../../src/contexts/ThemeContext";
 import { supabase } from "../../src/lib/supabaseClient";
+import { Wallet, FileText, Euro, Calendar, User, Target, Users, AlertTriangle, X, Car, UtensilsCrossed, ShoppingBag, Crosshair, Hotel, Tag, Check } from "lucide-react-native";
 
 interface AddExpenseModalProps {
   isOpen: boolean;
@@ -52,12 +53,12 @@ export default function AddExpenseModal({
   });
 
   const categories: Category[] = [
-    { id: "transport", name: "Transport", icon: "🚗" },
-    { id: "nourriture", name: "Nourriture", icon: "🍽️" },
-    { id: "shopping", name: "Shopping", icon: "🛍️" },
-    { id: "activites", name: "Activités", icon: "🎯" },
-    { id: "hebergement", name: "Hébergement", icon: "🏨" },
-    { id: "autres", name: "Autres", icon: "📝" },
+    { id: "transport", name: "Transport", icon: "car" },
+    { id: "nourriture", name: "Nourriture", icon: "utensils" },
+    { id: "shopping", name: "Shopping", icon: "shopping" },
+    { id: "activites", name: "Activités", icon: "target" },
+    { id: "hebergement", name: "Hébergement", icon: "hotel" },
+    { id: "autres", name: "Autres", icon: "tag" },
   ];
 
   const [tripParticipants, setTripParticipants] = useState<TripParticipant[]>([]);
@@ -242,7 +243,7 @@ export default function AddExpenseModal({
             <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
               <View style={styles.headerIconContainer}>
                 <View style={[styles.headerIcon, { backgroundColor: colors.primary + "20" }]}>
-                  <Text style={styles.headerIconEmoji}>💰</Text>
+                  <Wallet size={18} color={colors.primary} />
                 </View>
               </View>
               <View style={styles.headerTextContainer}>
@@ -258,7 +259,7 @@ export default function AddExpenseModal({
                 onPress={onClose}
                 activeOpacity={0.7}
               >
-                <Text style={[styles.closeIcon, { color: colors.textSecondary }]}>✕</Text>
+                <X size={18} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
@@ -271,7 +272,7 @@ export default function AddExpenseModal({
               {/* Titre */}
               <View style={styles.inputContainer}>
                 <View style={styles.labelContainer}>
-                  <Text style={[styles.labelIcon, { color: colors.primary }]}>📝</Text>
+                  <FileText size={14} color={colors.primary} style={{ marginRight: 6 }} />
                   <Text style={[styles.label, { color: colors.textSecondary }]}>Titre *</Text>
                 </View>
                 <TextInput
@@ -298,7 +299,7 @@ export default function AddExpenseModal({
               <View style={styles.row}>
                 <View style={[styles.inputContainer, { flex: 1, marginRight: 8 }]}>
                   <View style={styles.labelContainer}>
-                    <Text style={[styles.labelIcon, { color: colors.primary }]}>💶</Text>
+                    <Euro size={14} color={colors.primary} style={{ marginRight: 6 }} />
                     <Text style={[styles.label, { color: colors.textSecondary }]}>
                       Montant (€) *
                     </Text>
@@ -326,9 +327,12 @@ export default function AddExpenseModal({
 
                 <View style={[styles.inputContainer, { flex: 1, marginLeft: 8 }]}>
                   <View style={styles.labelContainer}>
-                    <Text style={[styles.labelIcon, { color: colors.primary }]}>
-                      {selectedCategory?.icon || "🏷️"}
-                    </Text>
+                    {selectedCategory?.icon === "car" && <Car size={14} color={colors.primary} style={{ marginRight: 6 }} />}
+                    {selectedCategory?.icon === "utensils" && <UtensilsCrossed size={14} color={colors.primary} style={{ marginRight: 6 }} />}
+                    {selectedCategory?.icon === "shopping" && <ShoppingBag size={14} color={colors.primary} style={{ marginRight: 6 }} />}
+                    {selectedCategory?.icon === "target" && <Crosshair size={14} color={colors.primary} style={{ marginRight: 6 }} />}
+                    {selectedCategory?.icon === "hotel" && <Hotel size={14} color={colors.primary} style={{ marginRight: 6 }} />}
+                    {(selectedCategory?.icon === "tag" || !selectedCategory) && <Tag size={14} color={colors.primary} style={{ marginRight: 6 }} />}
                     <Text style={[styles.label, { color: colors.textSecondary }]}>Catégorie</Text>
                   </View>
                   <View
@@ -361,7 +365,12 @@ export default function AddExpenseModal({
                             onPress={() => handleInputChange("category", category.name)}
                             activeOpacity={0.7}
                           >
-                            <Text style={styles.categoryIcon}>{category.icon}</Text>
+                            {category.icon === "car" && <Car size={14} color={formData.category === category.name ? "#ffffff" : colors.text} />}
+                            {category.icon === "utensils" && <UtensilsCrossed size={14} color={formData.category === category.name ? "#ffffff" : colors.text} />}
+                            {category.icon === "shopping" && <ShoppingBag size={14} color={formData.category === category.name ? "#ffffff" : colors.text} />}
+                            {category.icon === "target" && <Crosshair size={14} color={formData.category === category.name ? "#ffffff" : colors.text} />}
+                            {category.icon === "hotel" && <Hotel size={14} color={formData.category === category.name ? "#ffffff" : colors.text} />}
+                            {category.icon === "tag" && <Tag size={14} color={formData.category === category.name ? "#ffffff" : colors.text} />}
                             <Text
                               style={[
                                 styles.categoryText,
@@ -386,7 +395,7 @@ export default function AddExpenseModal({
               {/* Date */}
               <View style={styles.inputContainer}>
                 <View style={styles.labelContainer}>
-                  <Text style={[styles.labelIcon, { color: colors.primary }]}>📅</Text>
+                  <Calendar size={14} color={colors.primary} style={{ marginRight: 6 }} />
                   <Text style={[styles.label, { color: colors.textSecondary }]}>Date</Text>
                 </View>
                 <TextInput
@@ -412,7 +421,7 @@ export default function AddExpenseModal({
               {/* Payé par */}
               <View style={styles.inputContainer}>
                 <View style={styles.labelContainer}>
-                  <Text style={[styles.labelIcon, { color: colors.primary }]}>👤</Text>
+                  <User size={14} color={colors.primary} style={{ marginRight: 6 }} />
                   <Text style={[styles.label, { color: colors.textSecondary }]}>Payé par *</Text>
                 </View>
                 <View
@@ -474,7 +483,7 @@ export default function AddExpenseModal({
               {/* Payé pour */}
               <View style={styles.inputContainer}>
                 <View style={styles.labelContainer}>
-                  <Text style={[styles.labelIcon, { color: colors.primary }]}>🎯</Text>
+                  <Target size={14} color={colors.primary} style={{ marginRight: 6 }} />
                   <Text style={[styles.label, { color: colors.textSecondary }]}>Payé pour</Text>
                 </View>
                 <View style={styles.radioContainer}>
@@ -546,7 +555,7 @@ export default function AddExpenseModal({
               {formData.paidFor === "specific" && (
                 <View style={styles.inputContainer}>
                   <View style={styles.labelContainer}>
-                    <Text style={[styles.labelIcon, { color: colors.primary }]}>👥</Text>
+                    <Users size={14} color={colors.primary} style={{ marginRight: 6 }} />
                     <Text style={[styles.label, { color: colors.textSecondary }]}>
                       Participant *
                     </Text>
@@ -621,7 +630,7 @@ export default function AddExpenseModal({
                     },
                   ]}
                 >
-                  <Text style={styles.errorIcon}>⚠️</Text>
+                  <AlertTriangle size={16} color={colors.error} />
                   <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
                 </View>
               )}
@@ -660,7 +669,7 @@ export default function AddExpenseModal({
                   ) : (
                     <>
                       <Text style={styles.submitButtonText}>Ajouter</Text>
-                      <Text style={styles.submitButtonIcon}>✓</Text>
+                      <Check size={16} color="#ffffff" />
                     </>
                   )}
                 </TouchableOpacity>
@@ -731,21 +740,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerIconEmoji: {
-    fontSize: 18,
-  },
   headerTextContainer: {
     flex: 1,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     letterSpacing: -0.3,
     marginBottom: 2,
   },
   modalSubtitle: {
     fontSize: 12,
     fontWeight: "500",
+    fontFamily: "Ubuntu-Medium",
   },
   closeButton: {
     width: 32,
@@ -754,10 +762,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 10,
-  },
-  closeIcon: {
-    fontSize: 18,
-    fontWeight: "600",
   },
   scrollView: {
     maxHeight: 500,
@@ -777,13 +781,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 6,
   },
-  labelIcon: {
-    fontSize: 14,
-    marginRight: 6,
-  },
   label: {
     fontSize: 13,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     letterSpacing: 0.1,
   },
   input: {
@@ -793,6 +794,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 15,
     fontWeight: "500",
+    fontFamily: "Ubuntu-Medium",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
@@ -823,12 +825,10 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     gap: 6,
   },
-  categoryIcon: {
-    fontSize: 14,
-  },
   categoryText: {
     fontSize: 12,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
   pickerContainer: {
     borderWidth: 1.5,
@@ -851,11 +851,13 @@ const styles = StyleSheet.create({
   participantText: {
     fontSize: 13,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
   emptyText: {
     fontSize: 13,
     textAlign: "center",
     paddingVertical: 12,
+    fontFamily: "Ubuntu-Regular",
   },
   radioContainer: {
     gap: 10,
@@ -884,6 +886,7 @@ const styles = StyleSheet.create({
   radioText: {
     fontSize: 14,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
   errorContainer: {
     flexDirection: "row",
@@ -895,13 +898,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     gap: 8,
   },
-  errorIcon: {
-    fontSize: 16,
-  },
   errorText: {
     flex: 1,
     fontSize: 13,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
   buttonsContainer: {
     flexDirection: "row",
@@ -922,6 +923,7 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     fontSize: 15,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     letterSpacing: 0.2,
   },
   submitButton: {
@@ -944,11 +946,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 15,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     letterSpacing: 0.2,
-  },
-  submitButtonIcon: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "700",
   },
 });

@@ -5,17 +5,16 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
   StatusBar,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { tripService } from "@/src/services/tripService";
 import { supabase } from "@/src/lib/supabaseClient";
+import { X } from "lucide-react-native";
 
 export default function CreateTripModal() {
   const { theme, colors } = useTheme();
@@ -89,7 +88,8 @@ export default function CreateTripModal() {
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      className="flex-1"
+      style={{ backgroundColor: colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <StatusBar
@@ -98,44 +98,60 @@ export default function CreateTripModal() {
       />
 
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      <View 
+        className="pt-[50px] pb-4 px-5 flex-row items-center border-b"
+        style={{ backgroundColor: colors.surface, borderBottomColor: colors.border }}
+      >
         <TouchableOpacity
-          style={styles.closeButton}
+          className="w-10 h-10 justify-center items-center mr-3"
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
-          <Text style={[styles.closeIcon, { color: colors.text }]}>✕</Text>
+          <X size={20} color={colors.text} />
         </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Créer un nouveau voyage</Text>
-          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+        <View className="flex-1">
+          <Text 
+            className="text-2xl font-bold mb-1 font-['Ubuntu-Bold'] tracking-tight"
+            style={{ color: colors.text }}
+          >
+            Créer un nouveau voyage
+          </Text>
+          <Text 
+            className="text-sm font-['Ubuntu-Regular']"
+            style={{ color: colors.textSecondary }}
+          >
             Planifiez votre prochaine aventure
           </Text>
         </View>
       </View>
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 24, paddingBottom: 32 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.formContainer}>
+        <View className="gap-5">
           {/* Nom du voyage */}
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>
+          <View className="mb-1">
+            <Text 
+              className="text-[15px] font-semibold mb-2 font-['Ubuntu-Medium']"
+              style={{ color: colors.textSecondary }}
+            >
               Nom du voyage *
             </Text>
             <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: colors.input,
-                  borderColor: colors.inputBorder,
-                  color: colors.text,
-                  shadowColor: colors.shadow,
-                },
-              ]}
+              className="border-[1.5px] rounded-[14px] px-[18px] py-[15px] text-base font-['Ubuntu-Regular']"
+              style={{
+                backgroundColor: colors.input,
+                borderColor: colors.inputBorder,
+                color: colors.text,
+                shadowColor: colors.shadow,
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 2,
+                elevation: 1,
+              }}
               placeholder="Ex: Bali & Java 2024"
               placeholderTextColor={colors.textSecondary}
               value={formData.title}
@@ -145,18 +161,25 @@ export default function CreateTripModal() {
           </View>
 
           {/* Description */}
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>Description</Text>
+          <View className="mb-1">
+            <Text 
+              className="text-[15px] font-semibold mb-2 font-['Ubuntu-Medium']"
+              style={{ color: colors.textSecondary }}
+            >
+              Description
+            </Text>
             <TextInput
-              style={[
-                styles.textArea,
-                {
-                  backgroundColor: colors.input,
-                  borderColor: colors.inputBorder,
-                  color: colors.text,
-                  shadowColor: colors.shadow,
-                },
-              ]}
+              className="border-[1.5px] rounded-[14px] px-[18px] py-[15px] text-base min-h-[100px] font-['Ubuntu-Regular']"
+              style={{
+                backgroundColor: colors.input,
+                borderColor: colors.inputBorder,
+                color: colors.text,
+                shadowColor: colors.shadow,
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 2,
+                elevation: 1,
+              }}
               placeholder="Décrivez votre voyage..."
               placeholderTextColor={colors.textSecondary}
               value={formData.description}
@@ -168,19 +191,26 @@ export default function CreateTripModal() {
           </View>
 
           {/* Dates */}
-          <View style={styles.row}>
-            <View style={[styles.inputContainer, { flex: 1, marginRight: 8 }]}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Date de début *</Text>
+          <View className="flex-row">
+            <View className="flex-1 mr-2 mb-1">
+              <Text 
+                className="text-[15px] font-semibold mb-2 font-['Ubuntu-Medium']"
+                style={{ color: colors.textSecondary }}
+              >
+                Date de début *
+              </Text>
               <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: colors.input,
-                    borderColor: colors.inputBorder,
-                    color: colors.text,
-                    shadowColor: colors.shadow,
-                  },
-                ]}
+                className="border-[1.5px] rounded-[14px] px-[18px] py-[15px] text-base font-['Ubuntu-Regular']"
+                style={{
+                  backgroundColor: colors.input,
+                  borderColor: colors.inputBorder,
+                  color: colors.text,
+                  shadowColor: colors.shadow,
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 2,
+                  elevation: 1,
+                }}
                 placeholder="YYYY-MM-DD"
                 placeholderTextColor={colors.textSecondary}
                 value={formData.startDate}
@@ -188,18 +218,25 @@ export default function CreateTripModal() {
               />
             </View>
 
-            <View style={[styles.inputContainer, { flex: 1, marginLeft: 8 }]}>
-              <Text style={[styles.label, { color: colors.textSecondary }]}>Date de fin *</Text>
+            <View className="flex-1 ml-2 mb-1">
+              <Text 
+                className="text-[15px] font-semibold mb-2 font-['Ubuntu-Medium']"
+                style={{ color: colors.textSecondary }}
+              >
+                Date de fin *
+              </Text>
               <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: colors.input,
-                    borderColor: colors.inputBorder,
-                    color: colors.text,
-                    shadowColor: colors.shadow,
-                  },
-                ]}
+                className="border-[1.5px] rounded-[14px] px-[18px] py-[15px] text-base font-['Ubuntu-Regular']"
+                style={{
+                  backgroundColor: colors.input,
+                  borderColor: colors.inputBorder,
+                  color: colors.text,
+                  shadowColor: colors.shadow,
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 2,
+                  elevation: 1,
+                }}
                 placeholder="YYYY-MM-DD"
                 placeholderTextColor={colors.textSecondary}
                 value={formData.endDate}
@@ -209,20 +246,25 @@ export default function CreateTripModal() {
           </View>
 
           {/* Budget */}
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>
+          <View className="mb-1">
+            <Text 
+              className="text-[15px] font-semibold mb-2 font-['Ubuntu-Medium']"
+              style={{ color: colors.textSecondary }}
+            >
               Budget estimé (€) *
             </Text>
             <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: colors.input,
-                  borderColor: colors.inputBorder,
-                  color: colors.text,
-                  shadowColor: colors.shadow,
-                },
-              ]}
+              className="border-[1.5px] rounded-[14px] px-[18px] py-[15px] text-base font-['Ubuntu-Regular']"
+              style={{
+                backgroundColor: colors.input,
+                borderColor: colors.inputBorder,
+                color: colors.text,
+                shadowColor: colors.shadow,
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.05,
+                shadowRadius: 2,
+                elevation: 1,
+              }}
               placeholder="3500"
               placeholderTextColor={colors.textSecondary}
               value={formData.budget}
@@ -234,43 +276,50 @@ export default function CreateTripModal() {
           {/* Erreur */}
           {error && (
             <View
-              style={[
-                styles.errorContainer,
-                {
-                  backgroundColor: colors.error + "20",
-                  borderColor: colors.error,
-                },
-              ]}
+              className="border rounded-xl p-4 mt-2"
+              style={{
+                backgroundColor: colors.error + "20",
+                borderColor: colors.error,
+              }}
             >
-              <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+              <Text 
+                className="text-sm text-center font-['Ubuntu-Regular']"
+                style={{ color: colors.error }}
+              >
+                {error}
+              </Text>
             </View>
           )}
 
           {/* Boutons */}
-          <View style={styles.buttonsContainer}>
+          <View className="flex-row gap-3 mt-2">
             <TouchableOpacity
-              style={[
-                styles.cancelButton,
-                {
-                  backgroundColor: colors.input,
-                  borderColor: colors.border,
-                },
-              ]}
+              className="flex-1 py-4 rounded-[14px] items-center justify-center border"
+              style={{
+                backgroundColor: colors.input,
+                borderColor: colors.border,
+              }}
               onPress={() => router.back()}
               activeOpacity={0.7}
             >
-              <Text style={[styles.cancelButtonText, { color: colors.text }]}>Annuler</Text>
+              <Text 
+                className="text-base font-semibold font-['Ubuntu-Medium']"
+                style={{ color: colors.text }}
+              >
+                Annuler
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[
-                styles.submitButton,
-                {
-                  backgroundColor: colors.primary,
-                  shadowColor: colors.primary,
-                },
-                isLoading && styles.submitButtonDisabled,
-              ]}
+              className={`flex-1 py-4 rounded-[14px] items-center justify-center ${isLoading ? 'opacity-60' : ''}`}
+              style={{
+                backgroundColor: colors.primary,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
               onPress={handleSubmit}
               disabled={isLoading}
               activeOpacity={0.8}
@@ -278,7 +327,9 @@ export default function CreateTripModal() {
               {isLoading ? (
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (
-                <Text style={styles.submitButtonText}>Créer le voyage</Text>
+                <Text className="text-white text-base font-bold font-['Ubuntu-Bold']">
+                  Créer le voyage
+                </Text>
               )}
             </TouchableOpacity>
           </View>
@@ -288,130 +339,3 @@ export default function CreateTripModal() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingTop: 50,
-    paddingBottom: 16,
-    paddingHorizontal: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-  },
-  closeButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  closeIcon: {
-    fontSize: 24,
-    fontWeight: "600",
-  },
-  headerContent: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    marginBottom: 4,
-    letterSpacing: -0.3,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 32,
-  },
-  formContainer: {
-    gap: 20,
-  },
-  inputContainer: {
-    marginBottom: 4,
-  },
-  label: {
-    fontSize: 15,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1.5,
-    borderRadius: 14,
-    paddingHorizontal: 18,
-    paddingVertical: 15,
-    fontSize: 16,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  textArea: {
-    borderWidth: 1.5,
-    borderRadius: 14,
-    paddingHorizontal: 18,
-    paddingVertical: 15,
-    fontSize: 16,
-    minHeight: 100,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  row: {
-    flexDirection: "row",
-  },
-  errorContainer: {
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 8,
-  },
-  errorText: {
-    fontSize: 14,
-    textAlign: "center",
-  },
-  buttonsContainer: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 8,
-  },
-  cancelButton: {
-    flex: 1,
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-  },
-  cancelButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  submitButton: {
-    flex: 1,
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  submitButtonDisabled: {
-    opacity: 0.6,
-  },
-  submitButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-});

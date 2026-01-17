@@ -11,6 +11,7 @@ import {
 import { useTheme } from "../../src/contexts/ThemeContext";
 import { expenseService, Expense } from "../../src/services/expenseService";
 import AddExpenseModal from "./AddExpenseModal";
+import { Wallet, Calendar, User, Tag, Trash2 } from "lucide-react-native";
 
 interface TripExpensesProps {
   tripId: string;
@@ -140,7 +141,7 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
           <Text style={[styles.headerTitle, { color: colors.text }]}>Gestion des dépenses</Text>
           <Text style={[styles.headerDescription, { color: colors.textSecondary }]}>
             Suivez et gérez toutes les dépenses de votre voyage
-          </Text>
+        </Text>
         </View>
         <TouchableOpacity
           style={[styles.addButton, { backgroundColor: colors.primary }]}
@@ -163,7 +164,7 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
             },
           ]}
         >
-          <Text style={styles.emptyEmoji}>💰</Text>
+          <Wallet size={64} color={colors.primary} />
           <Text style={[styles.emptyTitle, { color: colors.text }]}>
             Aucune dépense enregistrée
           </Text>
@@ -198,9 +199,7 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
                     },
                   ]}
                 >
-                  <Text style={styles.categoryIcon}>
-                    {expense.category?.icon || "💰"}
-                  </Text>
+                  <Wallet size={20} color="#ffffff" />
                 </View>
                 <View style={styles.expenseInfo}>
                   <Text style={[styles.expenseTitle, { color: colors.text }]}>
@@ -212,19 +211,27 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
                     </Text>
                   )}
                   <View style={styles.expenseMeta}>
-                    <Text style={[styles.expenseMetaText, { color: colors.textSecondary }]}>
-                      📅 {formatDate(expense.date)}
-                    </Text>
-                    <Text style={[styles.expenseMetaText, { color: colors.textSecondary }]}>
-                      👤{" "}
-                      {expense.paid_by_user?.first_name ||
-                        expense.paid_by_user?.email ||
-                        "Inconnu"}
-                    </Text>
-                    {expense.category && (
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                      <Calendar size={12} color={colors.textSecondary} />
                       <Text style={[styles.expenseMetaText, { color: colors.textSecondary }]}>
-                        🏷️ {expense.category.name}
+                        {formatDate(expense.date)}
                       </Text>
+                    </View>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                      <User size={12} color={colors.textSecondary} />
+                      <Text style={[styles.expenseMetaText, { color: colors.textSecondary }]}>
+                        {expense.paid_by_user?.first_name ||
+                          expense.paid_by_user?.email ||
+                          "Inconnu"}
+                      </Text>
+                    </View>
+                    {expense.category && (
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                        <Tag size={12} color={colors.textSecondary} />
+                        <Text style={[styles.expenseMetaText, { color: colors.textSecondary }]}>
+                          {expense.category.name}
+                        </Text>
+                      </View>
                     )}
                   </View>
                 </View>
@@ -241,7 +248,7 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
                     {deletingExpenseId === expense.id ? (
                       <ActivityIndicator size="small" color={colors.error} />
                     ) : (
-                      <Text style={[styles.deleteIcon, { color: colors.error }]}>🗑️</Text>
+                      <Trash2 size={18} color={colors.error} />
                     )}
                   </TouchableOpacity>
                 </View>
@@ -335,6 +342,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     fontSize: 14,
+    fontFamily: "Ubuntu-Regular",
   },
   errorContainer: {
     borderWidth: 1,
@@ -344,6 +352,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 14,
     textAlign: "center",
+    fontFamily: "Ubuntu-Regular",
   },
   headerCard: {
     borderRadius: 20,
@@ -367,12 +376,14 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 8,
     letterSpacing: -0.3,
   },
   headerDescription: {
     fontSize: 14,
     lineHeight: 20,
+    fontFamily: "Ubuntu-Regular",
   },
   addButton: {
     flexDirection: "row",
@@ -393,12 +404,14 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 18,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginRight: 6,
   },
   addButtonText: {
     color: "#ffffff",
     fontSize: 14,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
   emptyContainer: {
     borderRadius: 20,
@@ -413,19 +426,17 @@ const styles = StyleSheet.create({
     elevation: 4,
     borderWidth: 1,
   },
-  emptyEmoji: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
   emptyTitle: {
     fontSize: 20,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 8,
     textAlign: "center",
   },
   emptySubtitle: {
     fontSize: 15,
     textAlign: "center",
+    fontFamily: "Ubuntu-Regular",
   },
   expensesList: {
     flex: 1,
@@ -458,10 +469,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 12,
   },
-  categoryIcon: {
-    fontSize: 20,
-    color: "#ffffff",
-  },
   expenseInfo: {
     flex: 1,
     marginRight: 12,
@@ -469,12 +476,14 @@ const styles = StyleSheet.create({
   expenseTitle: {
     fontSize: 18,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 4,
   },
   expenseDescription: {
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 8,
+    fontFamily: "Ubuntu-Regular",
   },
   expenseMeta: {
     flexDirection: "row",
@@ -483,6 +492,7 @@ const styles = StyleSheet.create({
   },
   expenseMetaText: {
     fontSize: 12,
+    fontFamily: "Ubuntu-Regular",
   },
   expenseActions: {
     alignItems: "flex-end",
@@ -491,12 +501,10 @@ const styles = StyleSheet.create({
   expenseAmount: {
     fontSize: 20,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
   },
   deleteButton: {
     padding: 8,
-  },
-  deleteIcon: {
-    fontSize: 18,
   },
   sharesContainer: {
     marginTop: 16,
@@ -506,6 +514,7 @@ const styles = StyleSheet.create({
   sharesTitle: {
     fontSize: 12,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     marginBottom: 8,
   },
   sharesList: {
@@ -521,6 +530,7 @@ const styles = StyleSheet.create({
   },
   shareText: {
     fontSize: 12,
+    fontFamily: "Ubuntu-Regular",
   },
   summaryCard: {
     borderRadius: 20,
@@ -536,13 +546,16 @@ const styles = StyleSheet.create({
   summaryTitle: {
     fontSize: 18,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 4,
   },
   summarySubtitle: {
     fontSize: 14,
+    fontFamily: "Ubuntu-Regular",
   },
   summaryAmount: {
     fontSize: 24,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
   },
 });

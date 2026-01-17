@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, StatusBar } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { ArrowLeft, Sun, Moon, FilePlus, Inbox, MoreVertical } from "lucide-react-native";
 import { router } from "expo-router";
 import TripOverview from "@/components/trip/TripOverview";
 import { useAuth } from "@/src/contexts/AuthContext";
@@ -13,7 +13,6 @@ export default function OverviewScreen() {
   const { user, loading, signOut } = useAuth();
   const { selectedTrip } = useTrip();
   const { theme, toggleTheme, colors } = useTheme();
-  const [showMenu, setShowMenu] = useState(false);
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [destinations, setDestinations] = useState<Destination[]>([]);
@@ -104,61 +103,67 @@ export default function OverviewScreen() {
         backgroundColor={colors.surface} 
       />
       
-      {/* Header moderne avec profil */}
-      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border, zIndex: 1000 }]}>
-        <View style={styles.headerTop}>
-          <View style={styles.profileSection}>
-            <View style={[styles.avatarContainer, { backgroundColor: colors.primary }]}>
-              <Text style={styles.avatarText}>{getInitials()}</Text>
-            </View>
-            <View style={styles.profileInfo}>
-              <Text style={[styles.greeting, { color: colors.textSecondary }]}>Bonjour</Text>
-              <Text style={[styles.userName, { color: colors.text }]}>{getUserDisplayName()}</Text>
-            </View>
-          </View>
-          <View style={styles.headerActions}>
-            <TouchableOpacity
-              style={[styles.themeButton, { backgroundColor: colors.card }]}
-              onPress={toggleTheme}
-              activeOpacity={0.7}
+      {/* Header principal avec greeting et actions */}
+      <View style={[styles.mainHeader, { backgroundColor: colors.surface }]}>
+        <View style={styles.mainHeaderContent}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={handleBackToTrips}
+            activeOpacity={0.6}
+          >
+            <ArrowLeft size={20} color={colors.text} strokeWidth={2} />
+          </TouchableOpacity>
+          <View style={styles.greetingSection}>
+            <Text 
+              style={[styles.mainGreeting, { color: colors.text }]}
             >
-              <Text style={styles.themeIcon}>{theme === "dark" ? "☀️" : "🌙"}</Text>
+              Bonjour,{" "}
+              <Text 
+                style={[styles.userNameGreeting, { color: colors.textSecondary }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {getUserDisplayName()}!
+              </Text>
+            </Text>
+          </View>
+          <View style={styles.headerActionsRow}>
+            <TouchableOpacity
+              style={styles.actionIcon}
+              onPress={() => router.push("/modal")}
+              activeOpacity={0.6}
+            >
+              <FilePlus size={20} color={colors.text} strokeWidth={2} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.menuButton, { backgroundColor: colors.card }]}
-              onPress={() => setShowMenu(!showMenu)}
-              activeOpacity={0.7}
+              style={styles.actionIcon}
+              onPress={() => router.push("/(main)/invitations")}
+              activeOpacity={0.6}
             >
-              <Text style={[styles.menuIcon, { color: colors.text }]}>⋯</Text>
+              <Inbox size={20} color={colors.text} strokeWidth={2} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionIcon}
+              onPress={toggleTheme}
+              activeOpacity={0.6}
+            >
+              {theme === "dark" ? (
+                <Sun size={20} color={colors.text} strokeWidth={2} />
+              ) : (
+                <Moon size={20} color={colors.text} strokeWidth={2} />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionIcon}
+              onPress={() => router.push("/(main)/profile")}
+              activeOpacity={0.6}
+            >
+              <View style={[styles.avatarContainer, { backgroundColor: colors.primary }]}>
+                <Text style={styles.avatarText}>{getInitials()}</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
-        
-        {showMenu && (
-          <View style={[styles.menuDropdown, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => {
-                setShowMenu(false);
-                router.push("/(main)/profile");
-              }}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.menuItemText, { color: colors.text }]}>Mon profil</Text>
-            </TouchableOpacity>
-            <View style={[styles.menuDivider, { backgroundColor: colors.border }]} />
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => {
-                setShowMenu(false);
-                router.push("/(main)/invitations");
-              }}
-              activeOpacity={0.7}
-            >
-              <Text style={[styles.menuItemText, { color: colors.text }]}>Mes invitations</Text>
-            </TouchableOpacity>
-          </View>
-        )}
       </View>
 
       <ScrollView
@@ -188,40 +193,68 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
+    fontFamily: "Ubuntu-Regular",
   },
-  header: {
-    paddingTop: 50,
-    paddingBottom: 20,
+  mainHeader: {
+    paddingTop: 45,
+    paddingBottom: 12,
     paddingHorizontal: 20,
-    borderBottomWidth: 1,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 2,
     },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
     zIndex: 1000,
     overflow: "visible",
   },
-  headerTop: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  profileSection: {
+  mainHeaderContent: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1,
+    gap: 12,
   },
-  avatarContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+  backButton: {
+    padding: 4,
+    marginLeft: -4,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 12,
+  },
+  greetingSection: {
+    flex: 1,
+    marginRight: 8,
+  },
+  mainGreeting: {
+    fontSize: 22,
+    fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
+    letterSpacing: -0.3,
+    lineHeight: 28,
+  },
+  userNameGreeting: {
+    fontSize: 16,
+    fontWeight: "400",
+    fontFamily: "Ubuntu-Regular",
+  },
+  headerActionsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  actionIcon: {
+    padding: 2,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  avatarContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
     shadowColor: "#f97316",
     shadowOffset: {
       width: 0,
@@ -232,78 +265,11 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   avatarText: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     color: "#ffffff",
     letterSpacing: 0.5,
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  greeting: {
-    fontSize: 14,
-    marginBottom: 2,
-  },
-  userName: {
-    fontSize: 20,
-    fontWeight: "700",
-    letterSpacing: -0.3,
-  },
-  headerActions: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  themeButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-  },
-  themeIcon: {
-    fontSize: 20,
-  },
-  menuButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-  },
-  menuIcon: {
-    fontSize: 24,
-    fontWeight: "600",
-    lineHeight: 24,
-  },
-  menuDropdown: {
-    position: "absolute",
-    top: 100,
-    right: 20,
-    borderRadius: 12,
-    paddingVertical: 8,
-    minWidth: 160,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 10,
-    borderWidth: 1,
-    zIndex: 1001,
-  },
-  menuItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  menuItemText: {
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  menuDivider: {
-    height: 1,
-    marginVertical: 4,
   },
   scrollView: {
     flex: 1,

@@ -6,6 +6,7 @@ import {
   borderRadius,
   shadows,
 } from "../../src/constants/theme";
+import { Mail } from "lucide-react-native";
 
 interface TripInvitationsProps {
   tripId: string;
@@ -21,7 +22,7 @@ export default function TripInvitations({
   return (
     <View style={styles.container}>
       <View style={styles.placeholderCard}>
-        <Text style={styles.placeholderIcon}>✉️</Text>
+        <Mail size={48} color={colors.gray[600]} />
         <Text style={styles.placeholderTitle}>Gestion des invitations</Text>
         <Text style={styles.placeholderDescription}>
           Fonctionnalité à implémenter pour {tripName}
@@ -44,13 +45,10 @@ const styles = StyleSheet.create({
     borderColor: colors.gray[200],
     alignItems: "center",
   },
-  placeholderIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
-  },
   placeholderTitle: {
     fontSize: 20,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     color: colors.gray[800],
     marginBottom: spacing.sm,
     textAlign: "center",
@@ -59,5 +57,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.gray[600],
     textAlign: "center",
+    fontFamily: "Ubuntu-Regular",
   },
 });

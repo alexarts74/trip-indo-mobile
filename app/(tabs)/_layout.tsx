@@ -120,6 +120,7 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontSize: 10,
           fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
           marginTop: -4,
           textAlign: "center",
         },

@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useAuth } from "../src/contexts/AuthContext";
 import { useTheme } from "../src/contexts/ThemeContext";
+import { Globe } from "lucide-react-native";
 
 export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -61,7 +62,7 @@ export default function AuthScreen() {
         <View style={styles.headerContent}>
           <View style={styles.logoWrapper}>
             <View style={[styles.logoContainer, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
-              <Text style={styles.logoEmoji}>🌏</Text>
+              <Globe size={56} color={colors.primary} />
             </View>
           </View>
           <Text style={[styles.title, { color: colors.text }]}>TripMate</Text>
@@ -69,7 +70,7 @@ export default function AuthScreen() {
             {isLogin ? "Connectez-vous à votre compte" : "Créez votre compte"}
           </Text>
         </View>
-      </View>
+        </View>
 
       <ScrollView 
         style={styles.scrollView}
@@ -80,7 +81,7 @@ export default function AuthScreen() {
         <View style={styles.formContainer}>
           <View style={styles.inputContainer}>
             <Text style={[styles.label, { color: colors.text }]}>Email</Text>
-            <TextInput
+          <TextInput
               style={[styles.input, { 
                 backgroundColor: colors.input, 
                 borderColor: colors.inputBorder,
@@ -88,18 +89,18 @@ export default function AuthScreen() {
               }]}
               placeholder="votre@email.com"
               placeholderTextColor={colors.textSecondary}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
               autoComplete="email"
-            />
+          />
           </View>
 
           <View style={styles.inputContainer}>
             <Text style={[styles.label, { color: colors.text }]}>Mot de passe</Text>
-            <TextInput
+          <TextInput
               style={[styles.input, { 
                 backgroundColor: colors.input, 
                 borderColor: colors.inputBorder,
@@ -107,12 +108,12 @@ export default function AuthScreen() {
               }]}
               placeholder="••••••••"
               placeholderTextColor={colors.textSecondary}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoCapitalize="none"
               autoComplete="password"
-            />
+          />
           </View>
 
           <TouchableOpacity
@@ -193,12 +194,10 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 4,
   },
-  logoEmoji: {
-    fontSize: 56,
-  },
   title: {
     fontSize: 36,
     fontWeight: '700',
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 8,
     textAlign: 'center',
     letterSpacing: -0.8,
@@ -207,6 +206,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center',
     lineHeight: 22,
+    fontFamily: "Ubuntu-Regular",
   },
   scrollView: {
     flex: 1,
@@ -226,6 +226,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
+    fontFamily: "Ubuntu-Medium",
     marginBottom: 10,
     letterSpacing: 0.2,
   },
@@ -266,6 +267,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 17,
     fontWeight: '700',
+    fontFamily: "Ubuntu-Bold",
     letterSpacing: 0.4,
   },
   switchAuth: {
@@ -277,9 +279,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center',
     lineHeight: 22,
+    fontFamily: "Ubuntu-Regular",
   },
   switchAuthLink: {
     fontWeight: '700',
+    fontFamily: "Ubuntu-Bold",
     textDecorationLine: 'underline',
   },
 });

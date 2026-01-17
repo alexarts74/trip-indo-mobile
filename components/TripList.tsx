@@ -12,6 +12,7 @@ import { router } from "expo-router";
 import { tripService } from "../src/services/tripService";
 import { Trip } from "../src/types/trip";
 import { useTheme } from "../src/contexts/ThemeContext";
+import { ChevronRight, Plane, Globe, Calendar, Wallet } from "lucide-react-native";
 
 interface TripListProps {
   onTripSelect: (trip: Trip) => void;
@@ -92,7 +93,7 @@ export default function TripList({ onTripSelect }: TripListProps) {
   if (trips.length === 0) {
     return (
       <View style={[styles.emptyContainer, { backgroundColor: colors.background }]}>
-        <Text style={styles.emptyEmoji}>🌏</Text>
+        <Globe size={64} color={colors.primary} />
         <Text style={[styles.emptyTitle, { color: colors.text }]}>Aucun voyage créé</Text>
         <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
           Commencez par créer votre premier voyage !
@@ -151,7 +152,7 @@ export default function TripList({ onTripSelect }: TripListProps) {
           >
             <View style={styles.cardHeader}>
               <View style={[styles.iconContainer, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
-                <Text style={styles.iconEmoji}>✈️</Text>
+                <Plane size={24} color={colors.primary} />
               </View>
               <View style={[styles.durationBadge, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <Text style={[styles.durationText, { color: colors.textSecondary }]}>
@@ -172,21 +173,22 @@ export default function TripList({ onTripSelect }: TripListProps) {
 
             <View style={styles.tripInfo}>
               <View style={styles.infoRow}>
-                <Text style={styles.infoIcon}>📅</Text>
+                <Calendar size={16} color={colors.textSecondary} style={{ marginRight: 10 }} />
                 <Text style={[styles.infoText, { color: colors.textSecondary }]}>
                   {formatDate(trip.start_date)} - {formatDate(trip.end_date)}
                 </Text>
               </View>
               <View style={styles.infoRow}>
-                <Text style={styles.infoIcon}>💰</Text>
+                <Wallet size={16} color={colors.textSecondary} style={{ marginRight: 10 }} />
                 <Text style={[styles.infoText, { color: colors.textSecondary }]}>Budget: {trip.budget}€</Text>
               </View>
             </View>
 
             <View style={[styles.cardFooter, { borderTopColor: colors.border }]}>
               <Text style={[styles.footerText, { color: colors.primary }]}>
-                Voir les détails →
+                Voir les détails
               </Text>
+              <ChevronRight size={18} color={colors.primary} />
             </View>
           </TouchableOpacity>
         ))}
@@ -211,19 +213,17 @@ const styles = StyleSheet.create({
   errorText: {
     textAlign: "center",
     fontSize: 14,
+    fontFamily: "Ubuntu-Regular",
   },
   emptyContainer: {
     alignItems: "center",
     paddingVertical: 64,
     paddingHorizontal: 24,
   },
-  emptyEmoji: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
   emptyTitle: {
     fontSize: 22,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 8,
     textAlign: "center",
   },
@@ -231,6 +231,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginBottom: 32,
     textAlign: "center",
+    fontFamily: "Ubuntu-Regular",
   },
   emptyButton: {
     paddingHorizontal: 32,
@@ -249,6 +250,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
   scrollView: {
     flex: 1,
@@ -267,6 +269,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     letterSpacing: -0.3,
   },
   newTripButton: {
@@ -286,6 +289,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 14,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
   tripsContainer: {
     gap: 16,
@@ -320,9 +324,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 2,
   },
-  iconEmoji: {
-    fontSize: 24,
-  },
   durationBadge: {
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -332,10 +333,12 @@ const styles = StyleSheet.create({
   durationText: {
     fontSize: 12,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
   tripTitle: {
     fontSize: 20,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 8,
     lineHeight: 26,
   },
@@ -343,6 +346,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 16,
     lineHeight: 20,
+    fontFamily: "Ubuntu-Regular",
   },
   tripInfo: {
     gap: 10,
@@ -352,21 +356,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  infoIcon: {
-    fontSize: 16,
-    marginRight: 10,
-  },
   infoText: {
     fontSize: 14,
     flex: 1,
+    fontFamily: "Ubuntu-Regular",
   },
   cardFooter: {
     borderTopWidth: 1,
     paddingTop: 16,
     marginTop: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   footerText: {
     fontSize: 13,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
 });

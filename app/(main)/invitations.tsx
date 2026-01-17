@@ -8,6 +8,7 @@ import {
   StatusBar,
   ActivityIndicator,
 } from "react-native";
+import { ArrowLeft, Mail } from "lucide-react-native";
 import { router } from "expo-router";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { useAuth } from "@/src/contexts/AuthContext";
@@ -100,11 +101,11 @@ export default function InvitationsScreen() {
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <TouchableOpacity
-          style={styles.backButton}
+          style={[styles.backButton, { backgroundColor: colors.card }]}
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
-          <Text style={[styles.backIcon, { color: colors.text }]}>←</Text>
+          <ArrowLeft size={20} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>Mes invitations</Text>
@@ -145,7 +146,7 @@ export default function InvitationsScreen() {
             ]}
           >
             <View style={[styles.emptyIconContainer, { backgroundColor: colors.input }]}>
-              <Text style={styles.emptyIcon}>📬</Text>
+              <Mail size={48} color={colors.primary} />
             </View>
             <Text style={[styles.emptyTitle, { color: colors.text }]}>
               Aucune invitation en attente
@@ -294,6 +295,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     fontSize: 14,
+    fontFamily: "Ubuntu-Regular",
   },
   header: {
     paddingTop: 50,
@@ -308,11 +310,8 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 20,
     marginRight: 12,
-  },
-  backIcon: {
-    fontSize: 20,
-    fontWeight: "600",
   },
   headerContent: {
     flex: 1,
@@ -320,11 +319,13 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 4,
     letterSpacing: -0.5,
   },
   headerSubtitle: {
     fontSize: 14,
+    fontFamily: "Ubuntu-Regular",
   },
   scrollView: {
     flex: 1,
@@ -343,6 +344,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 14,
     textAlign: "center",
+    fontFamily: "Ubuntu-Regular",
   },
   emptyContainer: {
     borderRadius: 20,
@@ -365,18 +367,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 24,
   },
-  emptyIcon: {
-    fontSize: 48,
-  },
   emptyTitle: {
     fontSize: 20,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 8,
     textAlign: "center",
   },
   emptySubtitle: {
     fontSize: 15,
     textAlign: "center",
+    fontFamily: "Ubuntu-Regular",
   },
   invitationsList: {
     gap: 16,
@@ -417,6 +418,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 20,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
   },
   invitationInfo: {
     flex: 1,
@@ -424,15 +426,18 @@ const styles = StyleSheet.create({
   tripName: {
     fontSize: 20,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 4,
   },
   inviterName: {
     fontSize: 14,
+    fontFamily: "Ubuntu-Regular",
   },
   tripDescription: {
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 16,
+    fontFamily: "Ubuntu-Regular",
   },
   tripDetails: {
     flexDirection: "row",
@@ -447,16 +452,19 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: 12,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     marginBottom: 4,
     textTransform: "uppercase",
   },
   detailValue: {
     fontSize: 14,
     fontWeight: "500",
+    fontFamily: "Ubuntu-Medium",
   },
   invitationDate: {
     fontSize: 12,
     marginBottom: 16,
+    fontFamily: "Ubuntu-Regular",
   },
   actionsContainer: {
     flexDirection: "row",
@@ -475,6 +483,7 @@ const styles = StyleSheet.create({
   declineButtonText: {
     fontSize: 15,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
   },
   acceptButton: {
     flex: 1,
@@ -494,6 +503,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 15,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
   },
   buttonDisabled: {
     opacity: 0.6,

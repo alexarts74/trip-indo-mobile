@@ -9,7 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { ArrowLeft, ChevronRight, Plane, Wallet, MapPin, Sun, Moon, Mail, LogOut } from "lucide-react-native";
 import { router } from "expo-router";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { useAuth } from "@/src/contexts/AuthContext";
@@ -186,7 +186,7 @@ export default function ProfileScreen() {
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
-          <Ionicons name="arrow-back" size={20} color={colors.text} />
+          <ArrowLeft size={20} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>Mon profil</Text>
@@ -197,7 +197,7 @@ export default function ProfileScreen() {
             onPress={toggleTheme}
             activeOpacity={0.7}
           >
-            <Text style={styles.themeIcon}>{theme === "dark" ? "☀️" : "🌙"}</Text>
+            {theme === "dark" ? <Sun size={20} color={colors.text} /> : <Moon size={20} color={colors.text} />}
           </TouchableOpacity>
         </View>
       </View>
@@ -258,7 +258,7 @@ export default function ProfileScreen() {
               ]}
             >
               <View style={[styles.statIconContainer, { backgroundColor: colors.primary + "20" }]}>
-                <Text style={styles.statIcon}>✈️</Text>
+                <Plane size={24} color={colors.primary} />
               </View>
               <Text style={[styles.statValue, { color: colors.text }]}>{stats.totalTrips}</Text>
               <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Voyages</Text>
@@ -275,7 +275,7 @@ export default function ProfileScreen() {
               ]}
             >
               <View style={[styles.statIconContainer, { backgroundColor: colors.primary + "20" }]}>
-                <Text style={styles.statIcon}>💰</Text>
+                <Wallet size={24} color={colors.primary} />
               </View>
               <Text style={[styles.statValue, { color: colors.text }]}>
                 {stats.totalExpenses}
@@ -294,7 +294,7 @@ export default function ProfileScreen() {
               ]}
             >
               <View style={[styles.statIconContainer, { backgroundColor: colors.primary + "20" }]}>
-                <Text style={styles.statIcon}>📍</Text>
+                <MapPin size={24} color={colors.primary} />
               </View>
               <Text style={[styles.statValue, { color: colors.text }]}>
                 {stats.totalDestinations}
@@ -327,7 +327,7 @@ export default function ProfileScreen() {
             >
               <View style={styles.settingLeft}>
                 <View style={[styles.settingIconContainer, { backgroundColor: colors.primary + "20" }]}>
-                  <Text style={styles.settingIcon}>{theme === "dark" ? "☀️" : "🌙"}</Text>
+                  {theme === "dark" ? <Sun size={18} color={colors.primary} /> : <Moon size={18} color={colors.primary} />}
                 </View>
                 <View style={styles.settingTextContainer}>
                   <Text style={[styles.settingTitle, { color: colors.text }]}>Thème</Text>
@@ -336,7 +336,7 @@ export default function ProfileScreen() {
                   </Text>
                 </View>
               </View>
-              <Text style={[styles.settingArrow, { color: colors.textSecondary }]}>→</Text>
+              <ChevronRight size={20} color={colors.textSecondary} />
             </TouchableOpacity>
 
             <View style={[styles.settingDivider, { backgroundColor: colors.border }]} />
@@ -348,7 +348,7 @@ export default function ProfileScreen() {
             >
               <View style={styles.settingLeft}>
                 <View style={[styles.settingIconContainer, { backgroundColor: colors.primary + "20" }]}>
-                  <Text style={styles.settingIcon}>📬</Text>
+                  <Mail size={18} color={colors.primary} />
                 </View>
                 <View style={styles.settingTextContainer}>
                   <Text style={[styles.settingTitle, { color: colors.text }]}>Mes invitations</Text>
@@ -357,7 +357,7 @@ export default function ProfileScreen() {
                   </Text>
                 </View>
               </View>
-              <Text style={[styles.settingArrow, { color: colors.textSecondary }]}>→</Text>
+              <ChevronRight size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
         </View>
@@ -409,7 +409,7 @@ export default function ProfileScreen() {
           onPress={handleSignOut}
           activeOpacity={0.7}
         >
-          <Text style={styles.signOutIcon}>🚪</Text>
+          <LogOut size={20} color={colors.error} />
           <Text style={[styles.signOutText, { color: colors.error }]}>Déconnexion</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -429,6 +429,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     fontSize: 14,
+    fontFamily: "Ubuntu-Regular",
   },
   header: {
     paddingTop: 50,
@@ -460,6 +461,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     letterSpacing: -0.5,
   },
   headerActions: {
@@ -473,9 +475,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 20,
-  },
-  themeIcon: {
-    fontSize: 20,
   },
   scrollView: {
     flex: 1,
@@ -521,6 +520,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 32,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     letterSpacing: 0.5,
   },
   profileInfo: {
@@ -529,11 +529,13 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 24,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 4,
     letterSpacing: -0.3,
   },
   profileEmail: {
     fontSize: 14,
+    fontFamily: "Ubuntu-Regular",
   },
   statsSection: {
     marginBottom: 24,
@@ -541,6 +543,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 16,
     letterSpacing: -0.3,
   },
@@ -570,17 +573,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-  statIcon: {
-    fontSize: 24,
-  },
   statValue: {
     fontSize: 24,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
@@ -618,23 +620,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 12,
   },
-  settingIcon: {
-    fontSize: 18,
-  },
   settingTextContainer: {
     flex: 1,
   },
   settingTitle: {
     fontSize: 16,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     marginBottom: 2,
   },
   settingDescription: {
     fontSize: 13,
-  },
-  settingArrow: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontFamily: "Ubuntu-Regular",
   },
   settingDivider: {
     height: 1,
@@ -661,6 +658,7 @@ const styles = StyleSheet.create({
   infoLabel: {
     fontSize: 12,
     fontWeight: "600",
+    fontFamily: "Ubuntu-Medium",
     marginBottom: 4,
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -668,6 +666,7 @@ const styles = StyleSheet.create({
   infoValue: {
     fontSize: 16,
     fontWeight: "500",
+    fontFamily: "Ubuntu-Medium",
   },
   signOutButton: {
     flexDirection: "row",
@@ -678,11 +677,9 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     gap: 10,
   },
-  signOutIcon: {
-    fontSize: 20,
-  },
   signOutText: {
     fontSize: 16,
     fontWeight: "700",
+    fontFamily: "Ubuntu-Bold",
   },
 });

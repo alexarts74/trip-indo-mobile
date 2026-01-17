@@ -1,34 +1,55 @@
 import React from "react";
 import { TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { type ComponentProps } from "react";
+import { BarChart3, Map, Wallet, Users } from "lucide-react-native";
 
-interface TabBarIconProps extends ComponentProps<typeof Ionicons> {
+interface TabBarIconProps {
+  name: string;
+  color: string;
   focused?: boolean;
   onPress?: () => void;
+  style?: any;
 }
 
+const iconMap: Record<string, React.ComponentType<any>> = {
+  "stats-chart": BarChart3,
+  "stats-chart-outline": BarChart3,
+  "map": Map,
+  "map-outline": Map,
+  "wallet": Wallet,
+  "wallet-outline": Wallet,
+  "people": Users,
+  "people-outline": Users,
+};
+
 export function TabBarIcon({
-  style,
+  name,
+  color,
   focused,
   onPress,
-  ...rest
+  style,
 }: TabBarIconProps) {
-  const IconComponent = (
-    <Ionicons
+  const IconComponent = iconMap[name];
+  
+  if (!IconComponent) {
+    return null;
+  }
+
+  const iconElement = (
+    <IconComponent
       size={20}
+      color={color}
+      strokeWidth={focused ? 2.5 : 2}
       style={[{ marginBottom: 1 }, style]}
-      {...rest}
     />
   );
 
   if (onPress) {
     return (
       <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-        {IconComponent}
+        {iconElement}
       </TouchableOpacity>
     );
   }
 
-  return IconComponent;
+  return iconElement;
 }

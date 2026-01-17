@@ -6,6 +6,7 @@ import TripOverview from "./TripOverview";
 import TripDestinations from "./TripDestinations";
 import TripExpenses from "./TripExpenses";
 import TripParticipants from "./TripParticipants";
+import { BarChart3, Map, Wallet, Users } from "lucide-react-native";
 
 interface TripDetailsProps {
   trip: Trip;
@@ -38,22 +39,22 @@ export default function TripDetails({ trip, onBack }: TripDetailsProps) {
     {
       id: "overview" as TabType,
       name: "Vue d'ensemble",
-      icon: "📊",
+      icon: BarChart3,
     },
     {
       id: "destinations" as TabType,
       name: "Destinations",
-      icon: "🗺️",
+      icon: Map,
     },
     {
       id: "expenses" as TabType,
       name: "Dépenses",
-      icon: "💰",
+      icon: Wallet,
     },
     {
       id: "participants" as TabType,
       name: "Participants",
-      icon: "👥",
+      icon: Users,
     },
   ];
 
@@ -123,7 +124,11 @@ export default function TripDetails({ trip, onBack }: TripDetailsProps) {
               }`}
               onPress={() => setActiveTab(tab.id)}
             >
-              <Text className="text-lg mb-1">{tab.icon}</Text>
+              <tab.icon 
+                size={20} 
+                color={activeTab === tab.id ? "#ea580c" : "#6b7280"} 
+                style={{ marginBottom: 4 }}
+              />
               <Text
                 className={`text-xs font-medium text-center ${
                   activeTab === tab.id ? "text-orange-600" : "text-gray-500"
