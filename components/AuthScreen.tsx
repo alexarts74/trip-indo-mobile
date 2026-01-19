@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,26 +6,124 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   Alert,
   StatusBar,
   ActivityIndicator,
+  Animated,
+  Dimensions,
 } from "react-native";
 import { useAuth } from "../src/contexts/AuthContext";
 import { useTheme } from "../src/contexts/ThemeContext";
-import { Globe } from "lucide-react-native";
+import {
+  Globe,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  Sparkles,
+  MapPin,
+  Plane,
+  Users
+} from "lucide-react-native";
+import { LinearGradient } from "expo-linear-gradient";
+
+const { width, height } = Dimensions.get("window");
 
 export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
   const { signIn, signUp } = useAuth();
   const { theme, colors } = useTheme();
+
+  // Animations
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const floatAnim1 = useRef(new Animated.Value(0)).current;
+  const floatAnim2 = useRef(new Animated.Value(0)).current;
+  const floatAnim3 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Animation d'entrée
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Animations flottantes pour les icônes décoratives
+    const createFloatAnimation = (anim: Animated.Value, duration: number) => {
+      return Animated.loop(
+        Animated.sequence([
+          Animated.timing(anim, {
+            toValue: 1,
+            duration: duration,
+            useNativeDriver: true,
+          }),
+          Animated.timing(anim, {
+            toValue: 0,
+            duration: duration,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+    };
+
+    createFloatAnimation(floatAnim1, 2000).start();
+    createFloatAnimation(floatAnim2, 2500).start();
+    createFloatAnimation(floatAnim3, 3000).start();
+  }, []);
+
+  // Animation de transition entre login et signup
+  const switchMode = () => {
+    Animated.sequence([
+      Animated.timing(fadeAnim, {
+        toValue: 0.5,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    setIsLogin(!isLogin);
+    setConfirmPassword("");
+  };
 
   const handleAuth = async () => {
     if (!email || !password) {
       Alert.alert("Erreur", "Veuillez remplir tous les champs");
+      return;
+    }
+
+    if (!isLogin && password !== confirmPassword) {
+      Alert.alert("Erreur", "Les mots de passe ne correspondent pas");
+      return;
+    }
+
+    if (!isLogin && password.length < 6) {
+      Alert.alert("Erreur", "Le mot de passe doit contenir au moins 6 caractères");
       return;
     }
 
@@ -47,181 +145,396 @@ export default function AuthScreen() {
     }
   };
 
+  const float1 = floatAnim1.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -15],
+  });
+
+  const float2 = floatAnim2.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -20],
+  });
+
+  const float3 = floatAnim3.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -12],
+  });
+
+  const gradientColors = theme === "dark"
+    ? ["#1a1a2e", "#16213e", "#0f0f1a"]
+    : ["#fff7ed", "#ffedd5", "#fed7aa"];
+
   return (
-    <KeyboardAvoidingView
-      className="flex-1"
-      style={{ backgroundColor: colors.background }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <StatusBar 
-        barStyle={theme === "dark" ? "light-content" : "dark-content"} 
-        backgroundColor={colors.surface} 
+    <View className="flex-1">
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="transparent"
+        translucent
       />
-      
-      {/* Header moderne */}
-      <View
-        className="pt-[60px] pb-8 px-6 border-b"
+
+      {/* Fond avec dégradé */}
+      <LinearGradient
+        colors={theme === "dark" ? ["#0f172a", "#1e293b", "#0f172a"] : ["#f97316", "#fb923c", "#fdba74"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+      />
+
+      {/* Éléments décoratifs flottants */}
+      <Animated.View
         style={{
-          backgroundColor: colors.surface,
-          borderBottomColor: colors.border,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.04,
-          shadowRadius: 8,
-          elevation: 2,
+          position: "absolute",
+          top: height * 0.12,
+          left: width * 0.1,
+          transform: [{ translateY: float1 }],
+          opacity: 0.6,
         }}
       >
-        <View className="items-center">
-          <View className="mb-5">
-            <View
-              className="w-[100px] h-[100px] rounded-full justify-center items-center border-[3px]"
-              style={{
-                backgroundColor: colors.primaryLight,
-                borderColor: colors.primary,
-                shadowColor: '#f97316',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.15,
-                shadowRadius: 12,
-                elevation: 4,
-              }}
-            >
-              <Globe size={56} color={colors.primary} />
-            </View>
-          </View>
-          <Text
-            className="text-4xl font-bold mb-2 text-center"
-            style={{
-              color: colors.text,
-              fontFamily: "Ubuntu-Bold",
-              letterSpacing: -0.8,
-            }}
-          >
-            TripMate
-          </Text>
-          <Text
-            className="text-[15px] text-center leading-[22px]"
-            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
-          >
-            {isLogin ? "Connectez-vous à votre compte" : "Créez votre compte"}
-          </Text>
+        <View className="w-12 h-12 rounded-full bg-white/20 items-center justify-center">
+          <Plane size={24} color="white" style={{ transform: [{ rotate: "-45deg" }] }} />
         </View>
-      </View>
+      </Animated.View>
 
-      <ScrollView 
-        className="flex-1 px-6 pt-8 pb-10"
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+      <Animated.View
+        style={{
+          position: "absolute",
+          top: height * 0.18,
+          right: width * 0.12,
+          transform: [{ translateY: float2 }],
+          opacity: 0.5,
+        }}
       >
-        <View className="w-full">
-          <View className="mb-5">
-            <Text
-              className="text-sm font-semibold mb-2.5 tracking-wide"
-              style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
-            >
-              Email
-            </Text>
-            <TextInput
-              className="border-[1.5px] rounded-[14px] px-[18px] py-4 text-base"
-              style={{
-                backgroundColor: colors.input,
-                borderColor: colors.inputBorder,
-                color: colors.text,
-                fontFamily: "Ubuntu-Regular",
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.04,
-                shadowRadius: 3,
-                elevation: 1,
-              }}
-              placeholder="votre@email.com"
-              placeholderTextColor={colors.textSecondary}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="email"
-            />
-          </View>
-
-          <View className="mb-5">
-            <Text
-              className="text-sm font-semibold mb-2.5 tracking-wide"
-              style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
-            >
-              Mot de passe
-            </Text>
-            <TextInput
-              className="border-[1.5px] rounded-[14px] px-[18px] py-4 text-base"
-              style={{
-                backgroundColor: colors.input,
-                borderColor: colors.inputBorder,
-                color: colors.text,
-                fontFamily: "Ubuntu-Regular",
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.04,
-                shadowRadius: 3,
-                elevation: 1,
-              }}
-              placeholder="••••••••"
-              placeholderTextColor={colors.textSecondary}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-              autoComplete="password"
-            />
-          </View>
-
-          <TouchableOpacity
-            className={`rounded-[14px] py-[18px] items-center justify-center mt-3 ${
-              loading ? "opacity-60" : ""
-            }`}
-            style={{
-              backgroundColor: colors.primary,
-              shadowColor: '#f97316',
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: 0.35,
-              shadowRadius: 12,
-              elevation: 5,
-            }}
-            onPress={handleAuth}
-            disabled={loading}
-            activeOpacity={0.8}
-          >
-            {loading ? (
-              <ActivityIndicator size="small" color="#ffffff" />
-            ) : (
-              <Text
-                className="text-white text-lg font-bold tracking-wide"
-                style={{ fontFamily: "Ubuntu-Bold" }}
-              >
-                {isLogin ? "Se connecter" : "S'inscrire"}
-              </Text>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="mt-7 items-center py-2"
-            onPress={() => setIsLogin(!isLogin)}
-            activeOpacity={0.7}
-          >
-            <Text
-              className="text-[15px] text-center leading-[22px]"
-              style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
-            >
-              {isLogin ? "Pas encore de compte ? " : "Déjà un compte ? "}
-              <Text
-                className="font-bold underline"
-                style={{ color: colors.primary, fontFamily: "Ubuntu-Bold" }}
-              >
-                {isLogin ? "S'inscrire" : "Se connecter"}
-              </Text>
-            </Text>
-          </TouchableOpacity>
+        <View className="w-10 h-10 rounded-full bg-white/15 items-center justify-center">
+          <MapPin size={20} color="white" />
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </Animated.View>
+
+      <Animated.View
+        style={{
+          position: "absolute",
+          top: height * 0.25,
+          left: width * 0.75,
+          transform: [{ translateY: float3 }],
+          opacity: 0.4,
+        }}
+      >
+        <View className="w-8 h-8 rounded-full bg-white/10 items-center justify-center">
+          <Users size={16} color="white" />
+        </View>
+      </Animated.View>
+
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <View className="flex-1 justify-between">
+          {/* Header avec logo */}
+          <Animated.View
+            className="items-center pt-16 px-6"
+            style={{
+              opacity: fadeAnim,
+              transform: [
+                { translateY: slideAnim },
+                { scale: scaleAnim }
+              ],
+            }}
+          >
+            {/* Logo animé */}
+            <View className="mb-4">
+              <View
+                className="w-20 h-20 rounded-2xl justify-center items-center"
+                style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  borderWidth: 2,
+                  borderColor: "rgba(255, 255, 255, 0.3)",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 16,
+                  elevation: 10,
+                }}
+              >
+                <Globe size={44} color="white" />
+              </View>
+              <View
+                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full items-center justify-center"
+                style={{ backgroundColor: "#fbbf24" }}
+              >
+                <Sparkles size={14} color="#78350f" />
+              </View>
+            </View>
+
+            <Text
+              className="text-3xl font-bold mb-1 text-white text-center"
+              style={{
+                fontFamily: "Ubuntu-Bold",
+                letterSpacing: -1,
+                textShadowColor: "rgba(0, 0, 0, 0.3)",
+                textShadowOffset: { width: 0, height: 2 },
+                textShadowRadius: 4,
+              }}
+            >
+              TripMate
+            </Text>
+            <Text
+              className="text-sm text-center text-white/80"
+              style={{ fontFamily: "Ubuntu-Regular" }}
+            >
+              {isLogin
+                ? "Bon retour parmi nous !"
+                : "Commencez l'aventure"}
+            </Text>
+          </Animated.View>
+
+          {/* Carte du formulaire */}
+          <Animated.View
+            className="flex-1 px-5 pt-4 pb-6 justify-center"
+            style={{
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }],
+            }}
+          >
+            <View
+              className="rounded-[28px] p-5"
+              style={{
+                backgroundColor: colors.card,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 10 },
+                shadowOpacity: 0.25,
+                shadowRadius: 20,
+                elevation: 15,
+                borderWidth: 1,
+                borderColor: colors.cardBorder,
+              }}
+            >
+              {/* Titre du formulaire */}
+              <Text
+                className="text-xl font-bold mb-4 text-center"
+                style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+              >
+                {isLogin ? "Connexion" : "Créer un compte"}
+              </Text>
+
+              {/* Champ Email */}
+              <View className="mb-3">
+                <Text
+                  className="text-xs font-medium mb-1.5 ml-1"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                >
+                  Adresse email
+                </Text>
+                <View
+                  className="flex-row items-center rounded-xl border-2 overflow-hidden"
+                  style={{
+                    backgroundColor: colors.input,
+                    borderColor: focusedField === "email" ? colors.primary : colors.inputBorder,
+                  }}
+                >
+                  <View className="pl-3 pr-2">
+                    <Mail
+                      size={18}
+                      color={focusedField === "email" ? colors.primary : colors.textSecondary}
+                    />
+                  </View>
+                  <TextInput
+                    className="flex-1 py-3 pr-3 text-sm"
+                    style={{
+                      color: colors.text,
+                      fontFamily: "Ubuntu-Regular",
+                    }}
+                    placeholder="votre@email.com"
+                    placeholderTextColor={colors.textSecondary + "80"}
+                    value={email}
+                    onChangeText={setEmail}
+                    onFocus={() => setFocusedField("email")}
+                    onBlur={() => setFocusedField(null)}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    autoComplete="email"
+                  />
+                </View>
+              </View>
+
+              {/* Champ Mot de passe */}
+              <View className="mb-3">
+                <Text
+                  className="text-xs font-medium mb-1.5 ml-1"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                >
+                  Mot de passe
+                </Text>
+                <View
+                  className="flex-row items-center rounded-xl border-2 overflow-hidden"
+                  style={{
+                    backgroundColor: colors.input,
+                    borderColor: focusedField === "password" ? colors.primary : colors.inputBorder,
+                  }}
+                >
+                  <View className="pl-3 pr-2">
+                    <Lock
+                      size={18}
+                      color={focusedField === "password" ? colors.primary : colors.textSecondary}
+                    />
+                  </View>
+                  <TextInput
+                    className="flex-1 py-3 text-sm"
+                    style={{
+                      color: colors.text,
+                      fontFamily: "Ubuntu-Regular",
+                    }}
+                    placeholder="••••••••"
+                    placeholderTextColor={colors.textSecondary + "80"}
+                    value={password}
+                    onChangeText={setPassword}
+                    onFocus={() => setFocusedField("password")}
+                    onBlur={() => setFocusedField(null)}
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+                    autoComplete="password"
+                  />
+                  <TouchableOpacity
+                    className="px-3"
+                    onPress={() => setShowPassword(!showPassword)}
+                    activeOpacity={0.7}
+                  >
+                    {showPassword ? (
+                      <EyeOff size={18} color={colors.textSecondary} />
+                    ) : (
+                      <Eye size={18} color={colors.textSecondary} />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Champ Confirmation mot de passe (signup only) */}
+              {!isLogin && (
+                <View className="mb-3">
+                  <Text
+                    className="text-xs font-medium mb-1.5 ml-1"
+                    style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                  >
+                    Confirmer le mot de passe
+                  </Text>
+                  <View
+                    className="flex-row items-center rounded-xl border-2 overflow-hidden"
+                    style={{
+                      backgroundColor: colors.input,
+                      borderColor: focusedField === "confirmPassword" ? colors.primary : colors.inputBorder,
+                    }}
+                  >
+                    <View className="pl-3 pr-2">
+                      <Lock
+                        size={18}
+                        color={focusedField === "confirmPassword" ? colors.primary : colors.textSecondary}
+                      />
+                    </View>
+                    <TextInput
+                      className="flex-1 py-3 pr-3 text-sm"
+                      style={{
+                        color: colors.text,
+                        fontFamily: "Ubuntu-Regular",
+                      }}
+                      placeholder="••••••••"
+                      placeholderTextColor={colors.textSecondary + "80"}
+                      value={confirmPassword}
+                      onChangeText={setConfirmPassword}
+                      onFocus={() => setFocusedField("confirmPassword")}
+                      onBlur={() => setFocusedField(null)}
+                      secureTextEntry={!showPassword}
+                      autoCapitalize="none"
+                    />
+                  </View>
+                </View>
+              )}
+
+              {/* Mot de passe oublié (login only) */}
+              {isLogin && (
+                <TouchableOpacity
+                  className="self-end mb-4"
+                  activeOpacity={0.7}
+                >
+                  <Text
+                    className="text-xs"
+                    style={{ color: colors.primary, fontFamily: "Ubuntu-Medium" }}
+                  >
+                    Mot de passe oublié ?
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {/* Bouton principal */}
+              <TouchableOpacity
+                className={`rounded-xl py-3.5 flex-row items-center justify-center ${
+                  loading ? "opacity-70" : ""
+                } ${!isLogin ? "mt-1" : ""}`}
+                style={{
+                  backgroundColor: colors.primary,
+                  shadowColor: colors.primary,
+                  shadowOffset: { width: 0, height: 6 },
+                  shadowOpacity: 0.4,
+                  shadowRadius: 12,
+                  elevation: 8,
+                }}
+                onPress={handleAuth}
+                disabled={loading}
+                activeOpacity={0.85}
+              >
+                {loading ? (
+                  <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                  <>
+                    <Text
+                      className="text-white text-base font-bold mr-2"
+                      style={{ fontFamily: "Ubuntu-Bold" }}
+                    >
+                      {isLogin ? "Se connecter" : "Créer mon compte"}
+                    </Text>
+                    <ArrowRight size={18} color="white" />
+                  </>
+                )}
+              </TouchableOpacity>
+
+              {/* Séparateur */}
+              <View className="flex-row items-center my-4">
+                <View className="flex-1 h-px" style={{ backgroundColor: colors.border }} />
+                <Text
+                  className="mx-3 text-xs"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                >
+                  ou
+                </Text>
+                <View className="flex-1 h-px" style={{ backgroundColor: colors.border }} />
+              </View>
+
+              {/* Lien vers l'autre mode */}
+              <TouchableOpacity
+                className="py-2.5 rounded-xl border-2"
+                style={{ borderColor: colors.border }}
+                onPress={switchMode}
+                activeOpacity={0.7}
+              >
+                <Text
+                  className="text-center text-sm"
+                  style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                >
+                  {isLogin ? "Créer un nouveau compte" : "J'ai déjà un compte"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+
+          {/* Footer */}
+          <View className="pb-8 px-8">
+            <Text
+              className="text-center text-xs"
+              style={{ color: "rgba(255, 255, 255, 0.6)", fontFamily: "Ubuntu-Regular" }}
+            >
+              En continuant, vous acceptez nos conditions d'utilisation et notre politique de confidentialité
+            </Text>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </View>
   );
 }

@@ -166,15 +166,10 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
   };
 
   return (
-    <View 
-      className="gap-6 pt-2"
-      style={{
-        backgroundColor: colors.background + "00", // Transparent mais permet d'ajouter un fond si besoin
-      }}
-    >
+    <View className="gap-5">
       {/* Titre de section */}
       <Text
-        className="text-[28px] text-center font-bold mb-1" 
+        className="text-[28px] text-center font-bold" 
         style={{ 
           color: colors.text, 
           fontFamily: "Ubuntu-Bold",
@@ -185,9 +180,9 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
       </Text>
 
       {/* Cartes de statistiques principales */}
-      <View className="gap-3">
+      <View className="gap-4">
         {/* Première rangée */}
-        <View className="flex-row gap-3">
+        <View className="flex-row gap-4">
           <View
             className="rounded-2xl p-4 flex-1 border"
             style={{
@@ -248,7 +243,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
         </View>
 
         {/* Deuxième rangée */}
-        <View className="flex-row gap-3">
+        <View className="flex-row gap-4">
           <View
             className="rounded-2xl p-4 flex-1 border"
             style={{
@@ -315,7 +310,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
 
       {/* Barre de progression du budget */}
       <View
-        className="rounded-[20px] p-6 border mt-6"
+        className="rounded-[20px] p-6 border"
         style={{
           backgroundColor: colors.card,
           borderColor: colors.cardBorder,
@@ -326,7 +321,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
           elevation: 4,
         }}
       >
-        <View className="flex-row justify-between items-center mb-5">
+        <View className="flex-row justify-between items-center mb-4">
           <Text
             className="text-lg font-bold"
             style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
@@ -341,7 +336,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
           </Text>
         </View>
         <View
-          className="h-3.5 rounded-md overflow-hidden mb-4"
+          className="h-3.5 rounded-md overflow-hidden mb-3"
           style={{ backgroundColor: colors.border }}
         >
           <View
@@ -374,7 +369,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
       </View>
 
       {/* Répartition et Top dépenses */}
-      <View className="gap-4">
+      <View className="gap-5">
         <View
           className="rounded-[20px] p-5 border"
           style={{

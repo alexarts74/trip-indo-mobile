@@ -191,7 +191,7 @@ export default function InvitationsScreen() {
             </Text>
           </View>
         ) : (
-          <View className="gap-4">
+          <View className="gap-5">
             {invitations.map((invitation) => (
               <View
                 key={invitation.id}
@@ -222,7 +222,7 @@ export default function InvitationsScreen() {
                       className="text-white text-xl font-bold"
                       style={{ fontFamily: "Ubuntu-Bold" }}
                     >
-                      {invitation.profiles.first_name.charAt(0).toUpperCase()}
+                      {invitation.profiles?.first_name?.charAt(0).toUpperCase() || "?"}
                     </Text>
                   </View>
                   <View className="flex-1">
@@ -230,14 +230,14 @@ export default function InvitationsScreen() {
                       className="text-xl font-bold mb-1"
                       style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
                     >
-                      {invitation.trips.name}
+                      {invitation.trips.title}
                     </Text>
                     <Text
                       className="text-sm"
                       style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
                     >
-                      Invitation de {invitation.profiles.first_name}{" "}
-                      {invitation.profiles.last_name}
+                      Invitation de {invitation.profiles?.first_name || "Quelqu'un"}{" "}
+                      {invitation.profiles?.last_name || ""}
                     </Text>
                   </View>
                 </View>

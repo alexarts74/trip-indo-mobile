@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text } from "react-native";
 import { useTheme } from "../../src/contexts/ThemeContext";
 import { useAuth } from "../../src/contexts/AuthContext";
 import { Users, Check } from "lucide-react-native";
@@ -25,11 +25,7 @@ export default function TripParticipants({
   }
 
   return (
-    <ScrollView 
-      className="flex-1 px-4"
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingTop: 20, paddingBottom: 16 }}
-    >
+    <View className="gap-5">
       {/* Invitation Manager */}
       <InvitationManager
         tripId={tripId}
@@ -42,7 +38,7 @@ export default function TripParticipants({
 
       {/* Carte placeholder moderne */}
       <View
-        className="rounded-[20px] p-8 items-center border"
+        className="rounded-[20px] p-6 items-center border"
         style={{
           backgroundColor: colors.card,
           borderColor: colors.cardBorder,
@@ -54,10 +50,10 @@ export default function TripParticipants({
         }}
       >
         <View
-          className="w-[100px] h-[100px] rounded-full justify-center items-center mb-6 border-[3px]"
+          className="w-20 h-20 rounded-full justify-center items-center mb-5 border-2"
           style={{ backgroundColor: "#eff6ff", borderColor: "#bfdbfe" }}
         >
-          <Users size={56} color={colors.primary} />
+          <Users size={40} color={colors.primary} />
         </View>
         <Text
           className="text-2xl font-bold mb-3 text-center"
@@ -133,7 +129,7 @@ export default function TripParticipants({
           </View>
         </View>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 

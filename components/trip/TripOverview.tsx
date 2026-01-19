@@ -50,7 +50,7 @@ export default function TripOverview({
   };
 
   return (
-    <View className="gap-6">
+    <View className="gap-5">
       {/* Carte principale du voyage */}
       <View
         className="rounded-[20px] p-6 border"
@@ -181,7 +181,7 @@ export default function TripOverview({
       </View>
 
       {/* Séparateur visuel élégant avec design sophistiqué */}
-      <View className="my-8">
+      <View>
         <View className="flex-row items-center">
           <View 
             className="flex-1 h-[1.5px]" 

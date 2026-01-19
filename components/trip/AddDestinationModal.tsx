@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useTheme } from "../../src/contexts/ThemeContext";
 import { supabase } from "../../src/lib/supabaseClient";
+import { destinationsService } from "../../src/services/destinationsService";
 import { MapPin, Tag, FileText, Globe, Wallet, AlertTriangle, X, Check } from "lucide-react-native";
 
 interface AddDestinationModalProps {
@@ -79,6 +80,37 @@ export default function AddDestinationModal({
       ]);
 
       if (placeError) throw placeError;
+
+      // Envoyer une notification aux autres participants
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        // Récupérer le profil de l'utilisateur pour le nom
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("first_name, last_name, email")
+          .eq("id", user.id)
+          .single();
+
+        let userName = "Un participant";
+        if (profile) {
+          if (profile.first_name && profile.last_name) {
+            userName = `${profile.first_name} ${profile.last_name}`;
+          } else if (profile.first_name) {
+            userName = profile.first_name;
+          } else if (profile.email) {
+            userName = profile.email.split("@")[0];
+          }
+        }
+
+        await destinationsService.notifyDestinationAdded(
+          tripId,
+          user.id,
+          userName,
+          formData.name
+        );
+      }
 
       // Réinitialiser le formulaire
       setFormData({

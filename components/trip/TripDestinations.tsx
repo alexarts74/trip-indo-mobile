@@ -163,7 +163,7 @@ export default function TripDestinations({
       </View>
 
       {/* Liste des destinations */}
-      <View className="gap-4">
+      <View className="gap-5">
         {destinations.map((destination) => (
           <View
             key={destination.id}

@@ -2,7 +2,9 @@ import { useState } from "react";
 import {
   createInvitation,
   sendInvitationEmail,
+  invitationService,
 } from "@/src/services/invitationService";
+import { supabase } from "@/src/lib/supabaseClient";
 import { User } from "@supabase/supabase-js";
 
 interface UseInvitationSenderParams {
@@ -79,6 +81,35 @@ export function useInvitationSender({
         trip_id: invitationData?.trip_id,
         invitee_email: invitationData?.invitee_email,
       });
+
+      // Envoyer une notification push à l'invité s'il a un compte
+      if (invitationData?.id) {
+        // Récupérer le nom de l'inviteur
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("first_name, last_name, email")
+          .eq("id", user.id)
+          .single();
+
+        let inviterName = "Un utilisateur";
+        if (profile) {
+          if (profile.first_name && profile.last_name) {
+            inviterName = `${profile.first_name} ${profile.last_name}`;
+          } else if (profile.first_name) {
+            inviterName = profile.first_name;
+          } else if (profile.email) {
+            inviterName = profile.email.split("@")[0];
+          }
+        }
+
+        await invitationService.notifyInvitationCreated(
+          email.trim(),
+          inviterName,
+          tripName,
+          tripId,
+          invitationData.id
+        );
+      }
 
       // 2. Envoyer l'email d'invitation (optionnel, ne bloque pas si ça échoue)
       console.log("📧 [InvitationManager] Étape 2/2: Tentative d'envoi d'email...");

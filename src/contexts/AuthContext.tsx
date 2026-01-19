@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabaseClient";
+import * as Linking from "expo-linking";
+import { makeRedirectUri } from "expo-auth-session";
 
 interface AuthContextType {
   user: User | null;
@@ -35,7 +37,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // Gérer les deep links pour la confirmation d'email
+    const handleDeepLink = async (event: { url: string }) => {
+      const url = event.url;
+      console.log("Deep link received:", url);
+
+      // Vérifier si c'est un callback d'authentification
+      if (url.includes("auth/callback")) {
+        // Extraire les tokens de l'URL
+        const params = new URL(url).searchParams;
+        const accessToken = params.get("access_token");
+        const refreshToken = params.get("refresh_token");
+
+        if (accessToken && refreshToken) {
+          // Définir la session avec les tokens
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+
+          if (error) {
+            console.error("Erreur lors de la définition de la session:", error);
+          } else {
+            console.log("Session définie avec succès via deep link");
+          }
+        }
+      }
+    };
+
+    // Écouter les deep links
+    const linkingSubscription = Linking.addEventListener("url", handleDeepLink);
+
+    // Vérifier si l'app a été ouverte via un deep link
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        handleDeepLink({ url });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      linkingSubscription.remove();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
@@ -47,9 +90,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string) => {
+    // Créer l'URL de redirection pour l'app mobile
+    const redirectUrl = makeRedirectUri({
+      scheme: "tripmate",
+      path: "auth/callback",
+    });
+
+    console.log("Redirect URL for email confirmation:", redirectUrl);
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: redirectUrl,
+      },
     });
     if (error) throw error;
   };

@@ -1,3 +1,4 @@
+import "../global.css";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
@@ -5,6 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { AuthProvider } from "../src/contexts/AuthContext";
 import { TripProvider } from "../src/contexts/TripContext";
 import { ThemeProvider } from "../src/contexts/ThemeContext";
+import { NotificationProvider } from "../src/contexts/NotificationContext";
 
 // Empêcher le splash screen de se fermer automatiquement
 SplashScreen.preventAutoHideAsync();
@@ -33,15 +35,17 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-    <AuthProvider>
-      <TripProvider>
-        <Stack>
-          <Stack.Screen name="(main)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal", headerShown: false }} />
-        </Stack>
-      </TripProvider>
-    </AuthProvider>
+      <AuthProvider>
+        <NotificationProvider>
+          <TripProvider>
+            <Stack>
+              <Stack.Screen name="(main)" options={{ headerShown: false }} />
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: "modal", headerShown: false }} />
+            </Stack>
+          </TripProvider>
+        </NotificationProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

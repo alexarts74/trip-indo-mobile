@@ -1,4 +1,8 @@
 import { supabase } from "../lib/supabaseClient";
+import {
+  getTripParticipantTokens,
+  sendPushNotification,
+} from "./notificationService";
 
 export interface Expense {
   id: string;
@@ -36,6 +40,30 @@ export interface ExpenseShare {
     first_name?: string;
     last_name?: string;
   };
+}
+
+/**
+ * Envoie une notification push aux autres participants après ajout d'une dépense
+ */
+async function notifyExpenseAdded(
+  tripId: string,
+  currentUserId: string,
+  userName: string,
+  amount: number
+): Promise<void> {
+  try {
+    const tokens = await getTripParticipantTokens(tripId, currentUserId);
+    if (tokens.length > 0) {
+      await sendPushNotification(
+        tokens,
+        "Nouvelle dépense",
+        `${userName} a ajouté une dépense de ${amount.toFixed(2)}€`,
+        { type: "expense", tripId }
+      );
+    }
+  } catch (error) {
+    console.error("Erreur envoi notification dépense:", error);
+  }
 }
 
 export const expenseService = {
@@ -181,4 +209,7 @@ export const expenseService = {
       throw error;
     }
   },
+
+  // Notifier les participants après ajout d'une dépense
+  notifyExpenseAdded,
 };

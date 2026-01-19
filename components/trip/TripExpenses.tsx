@@ -217,12 +217,12 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ gap: 16, paddingBottom: 20 }}
+          contentContainerStyle={{ gap: 20, paddingBottom: 20 }}
         >
           {expenses.map((expense) => (
             <View
               key={expense.id}
-              className="rounded-[20px] p-5 border"
+              className="rounded-[20px] p-6 border"
               style={{
                 backgroundColor: colors.card,
                 borderColor: colors.cardBorder,
@@ -355,7 +355,7 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
 
           {/* Résumé des dépenses */}
           <View
-            className="rounded-[20px] p-5 border mt-2"
+            className="rounded-[20px] p-6 border mt-2"
             style={{
               backgroundColor: colors.primaryLight + "40",
               borderColor: colors.primary,

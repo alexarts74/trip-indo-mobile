@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useTheme } from "../../src/contexts/ThemeContext";
 import { supabase } from "../../src/lib/supabaseClient";
+import { expenseService } from "../../src/services/expenseService";
 import { Wallet, FileText, Euro, Calendar, User, Target, Users, AlertTriangle, X, Car, UtensilsCrossed, ShoppingBag, Crosshair, Hotel, Tag, Check, ChevronDown } from "lucide-react-native";
 
 interface AddExpenseModalProps {
@@ -192,6 +193,18 @@ export default function AddExpenseModal({
       });
 
       if (expenseError) throw expenseError;
+
+      // Envoyer une notification aux autres participants
+      const paidByParticipant = tripParticipants.find(
+        (p) => p.user_id === formData.paidBy
+      );
+      const userName = paidByParticipant?.display_name || "Un participant";
+      await expenseService.notifyExpenseAdded(
+        tripId,
+        formData.paidBy,
+        userName,
+        parseFloat(formData.amount)
+      );
 
       resetForm();
       onExpenseAdded();

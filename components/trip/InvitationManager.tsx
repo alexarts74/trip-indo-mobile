@@ -45,7 +45,7 @@ export default function InvitationManager({
 
   return (
     <View
-      className="rounded-[20px] p-5 mb-5 border"
+      className="rounded-[20px] p-6 mb-5 border"
       style={{
         backgroundColor: colors.card,
         borderColor: colors.cardBorder,
@@ -83,7 +83,7 @@ export default function InvitationManager({
       </View>
 
       {/* Form */}
-      <View className="gap-4">
+      <View className="gap-5">
         {/* Email Input */}
         <View className="mb-1">
           <Text

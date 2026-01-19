@@ -1,4 +1,8 @@
 import { supabase } from "../lib/supabaseClient";
+import {
+  getUserTokenByEmail,
+  sendPushNotification,
+} from "./notificationService";
 
 export interface TripInvitation {
   id: string;
@@ -9,7 +13,7 @@ export interface TripInvitation {
   created_at: string;
   updated_at: string;
   trips?: {
-    name: string;
+    title: string;
     description?: string;
     start_date: string;
     end_date: string;
@@ -26,7 +30,7 @@ export interface Invitation {
   created_at: string;
   updated_at: string;
   trips: {
-    name: string;
+    title: string;
     description?: string;
     start_date: string;
     end_date: string;
@@ -35,7 +39,32 @@ export interface Invitation {
   profiles: {
     first_name: string;
     last_name: string;
-  };
+  } | null;
+}
+
+/**
+ * Envoie une notification push à l'invité après création d'une invitation
+ */
+async function notifyInvitationCreated(
+  inviteeEmail: string,
+  inviterName: string,
+  tripName: string,
+  tripId: string,
+  invitationId: string
+): Promise<void> {
+  try {
+    const token = await getUserTokenByEmail(inviteeEmail);
+    if (token) {
+      await sendPushNotification(
+        [token],
+        "Nouvelle invitation",
+        `${inviterName} vous invite à rejoindre "${tripName}"`,
+        { type: "invitation", tripId, invitationId }
+      );
+    }
+  } catch (error) {
+    console.error("Erreur envoi notification invitation:", error);
+  }
 }
 
 /**
@@ -77,7 +106,7 @@ export async function fetchReceivedInvitations(
       `
       *,
       trips (
-        name,
+        title,
         description,
         start_date,
         end_date,
@@ -108,7 +137,7 @@ export async function fetchSentInvitations(
       `
       *,
       trips (
-        name,
+        title,
         description,
         start_date,
         end_date,
@@ -155,13 +184,13 @@ export async function getPendingInvitations(userEmail: string): Promise<Invitati
       `
       *,
       trips (
-        name,
+        title,
         description,
         start_date,
         end_date,
         budget
       ),
-      profiles:inviter_id (
+      profiles (
         first_name,
         last_name
       )
@@ -341,4 +370,5 @@ export const invitationService = {
   declineInvitation,
   sendInvitationEmail,
   getPendingInvitations,
+  notifyInvitationCreated,
 };
