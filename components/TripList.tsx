@@ -6,7 +6,6 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
-  StyleSheet,
 } from "react-native";
 import { router } from "expo-router";
 import { tripService } from "../src/services/tripService";
@@ -76,7 +75,10 @@ export default function TripList({ onTripSelect }: TripListProps) {
 
   if (isLoading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+      <View 
+        className="flex-1 justify-center items-center py-12"
+        style={{ backgroundColor: colors.background }}
+      >
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -84,26 +86,61 @@ export default function TripList({ onTripSelect }: TripListProps) {
 
   if (error) {
     return (
-      <View style={[styles.errorContainer, { backgroundColor: colors.error + "20", borderColor: colors.error }]}>
-        <Text style={[styles.errorText, { color: colors.error }]}>Erreur: {error}</Text>
+      <View
+        className="border rounded-xl p-4 m-4"
+        style={{
+          backgroundColor: colors.error + "20",
+          borderColor: colors.error,
+        }}
+      >
+        <Text
+          className="text-center text-sm"
+          style={{ color: colors.error, fontFamily: "Ubuntu-Regular" }}
+        >
+          Erreur: {error}
+        </Text>
       </View>
     );
   }
 
   if (trips.length === 0) {
     return (
-      <View style={[styles.emptyContainer, { backgroundColor: colors.background }]}>
+      <View
+        className="items-center py-16 px-6"
+        style={{ backgroundColor: colors.background }}
+      >
         <Globe size={64} color={colors.primary} />
-        <Text style={[styles.emptyTitle, { color: colors.text }]}>Aucun voyage créé</Text>
-        <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+        <Text
+          className="text-2xl font-bold mb-2 text-center"
+          style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+        >
+          Aucun voyage créé
+        </Text>
+        <Text
+          className="text-[15px] mb-8 text-center"
+          style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+        >
           Commencez par créer votre premier voyage !
         </Text>
         <TouchableOpacity
-          style={[styles.emptyButton, { backgroundColor: colors.primary }]}
+          className="px-8 py-3.5 rounded-xl"
+          style={{
+            backgroundColor: colors.primary,
+            shadowColor: "#f97316",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+            elevation: 4,
+          }}
           onPress={openCreateTripPage}
           activeOpacity={0.8}
         >
-          <Text style={styles.emptyButtonText}>Créer mon premier voyage</Text>
+          <Text
+            className="text-white text-base font-semibold"
+            style={{ fontFamily: "Ubuntu-Medium" }}
+          >
+            Créer mon premier voyage
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -111,34 +148,56 @@ export default function TripList({ onTripSelect }: TripListProps) {
 
   return (
     <ScrollView
-      style={[styles.scrollView, { backgroundColor: colors.background }]}
-      contentContainerStyle={styles.scrollContent}
+      className="flex-1 px-4 pt-5 pb-4"
+      style={{ backgroundColor: colors.background }}
+      contentContainerStyle={{ paddingBottom: 16 }}
       showsVerticalScrollIndicator={false}
     >
-      <View style={styles.headerSection}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>Mes voyages</Text>
+      <View className="flex-row justify-between items-center mb-5">
+        <Text
+          className="text-2xl font-bold"
+          style={{ color: colors.text, fontFamily: "Ubuntu-Bold", letterSpacing: -0.3 }}
+        >
+          Mes voyages
+        </Text>
         <TouchableOpacity
-          style={[styles.newTripButton, { backgroundColor: colors.primary }]}
+          className="px-4 py-2.5 rounded-xl"
+          style={{
+            backgroundColor: colors.primary,
+            shadowColor: "#f97316",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 3,
+          }}
           onPress={openCreateTripPage}
           activeOpacity={0.8}
         >
-          <Text style={styles.newTripButtonText}>+ Nouveau</Text>
+          <Text
+            className="text-white text-sm font-semibold"
+            style={{ fontFamily: "Ubuntu-Medium" }}
+          >
+            + Nouveau
+          </Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.tripsContainer}>
+      <View className="gap-4">
         {trips.map((trip, index) => (
           <TouchableOpacity
             key={trip.id}
-            style={[
-              styles.tripCard,
-              { 
-                backgroundColor: colors.card, 
-                borderColor: colors.cardBorder,
-                shadowColor: colors.shadow,
-              },
-              index === trips.length - 1 && styles.lastCard,
-            ]}
+            className={`rounded-2xl p-5 border mb-4 ${
+              index === trips.length - 1 ? "mb-0" : ""
+            }`}
+            style={{
+              backgroundColor: colors.card,
+              borderColor: colors.cardBorder,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.08,
+              shadowRadius: 8,
+              elevation: 3,
+            }}
             onPress={() => {
               console.log(
                 "🔄 TripList - Clic sur voyage:",
@@ -150,42 +209,79 @@ export default function TripList({ onTripSelect }: TripListProps) {
             }}
             activeOpacity={0.7}
           >
-            <View style={styles.cardHeader}>
-              <View style={[styles.iconContainer, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
+            <View className="flex-row justify-between items-start mb-4">
+              <View
+                className="w-12 h-12 rounded-full justify-center items-center border-2"
+                style={{
+                  backgroundColor: colors.primaryLight,
+                  borderColor: colors.primary,
+                }}
+              >
                 <Plane size={24} color={colors.primary} />
               </View>
-              <View style={[styles.durationBadge, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                <Text style={[styles.durationText, { color: colors.textSecondary }]}>
+              <View
+                className="px-3 py-1.5 rounded-[20px] border"
+                style={{
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                }}
+              >
+                <Text
+                  className="text-xs font-semibold"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                >
                   {calculateDuration(trip.start_date, trip.end_date)}
                 </Text>
               </View>
             </View>
 
-            <Text style={[styles.tripTitle, { color: colors.text }]} numberOfLines={2}>
+            <Text
+              className="text-xl font-bold mb-2 leading-[26px]"
+              style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+              numberOfLines={2}
+            >
               {trip.title}
             </Text>
 
             {trip.description && (
-              <Text style={[styles.tripDescription, { color: colors.textSecondary }]} numberOfLines={2}>
+              <Text
+                className="text-sm mb-4 leading-5"
+                style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                numberOfLines={2}
+              >
                 {trip.description}
               </Text>
             )}
 
-            <View style={styles.tripInfo}>
-              <View style={styles.infoRow}>
+            <View className="gap-2.5 mb-4">
+              <View className="flex-row items-center">
                 <Calendar size={16} color={colors.textSecondary} style={{ marginRight: 10 }} />
-                <Text style={[styles.infoText, { color: colors.textSecondary }]}>
+                <Text
+                  className="text-sm flex-1"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                >
                   {formatDate(trip.start_date)} - {formatDate(trip.end_date)}
                 </Text>
               </View>
-              <View style={styles.infoRow}>
+              <View className="flex-row items-center">
                 <Wallet size={16} color={colors.textSecondary} style={{ marginRight: 10 }} />
-                <Text style={[styles.infoText, { color: colors.textSecondary }]}>Budget: {trip.budget}€</Text>
+                <Text
+                  className="text-sm flex-1"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                >
+                  Budget: {trip.budget}€
+                </Text>
               </View>
             </View>
 
-            <View style={[styles.cardFooter, { borderTopColor: colors.border }]}>
-              <Text style={[styles.footerText, { color: colors.primary }]}>
+            <View
+              className="border-t pt-4 mt-1 flex-row items-center gap-1"
+              style={{ borderTopColor: colors.border }}
+            >
+              <Text
+                className="text-[13px] font-semibold"
+                style={{ color: colors.primary, fontFamily: "Ubuntu-Medium" }}
+              >
                 Voir les détails
               </Text>
               <ChevronRight size={18} color={colors.primary} />
@@ -196,182 +292,3 @@ export default function TripList({ onTripSelect }: TripListProps) {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 48,
-  },
-  errorContainer: {
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
-    margin: 16,
-  },
-  errorText: {
-    textAlign: "center",
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  emptyContainer: {
-    alignItems: "center",
-    paddingVertical: 64,
-    paddingHorizontal: 24,
-  },
-  emptyTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  emptySubtitle: {
-    fontSize: 15,
-    marginBottom: 32,
-    textAlign: "center",
-    fontFamily: "Ubuntu-Regular",
-  },
-  emptyButton: {
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    borderRadius: 12,
-    shadowColor: "#f97316",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  emptyButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 32,
-  },
-  headerSection: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    letterSpacing: -0.3,
-  },
-  newTripButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-    shadowColor: "#f97316",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  newTripButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-  },
-  tripsContainer: {
-    gap: 16,
-  },
-  tripCard: {
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-  },
-  lastCard: {
-    marginBottom: 0,
-  },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 16,
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 2,
-  },
-  durationBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  durationText: {
-    fontSize: 12,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-  },
-  tripTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 8,
-    lineHeight: 26,
-  },
-  tripDescription: {
-    fontSize: 14,
-    marginBottom: 16,
-    lineHeight: 20,
-    fontFamily: "Ubuntu-Regular",
-  },
-  tripInfo: {
-    gap: 10,
-    marginBottom: 16,
-  },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  infoText: {
-    fontSize: 14,
-    flex: 1,
-    fontFamily: "Ubuntu-Regular",
-  },
-  cardFooter: {
-    borderTopWidth: 1,
-    paddingTop: 16,
-    marginTop: 4,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  footerText: {
-    fontSize: 13,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-  },
-});

@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   StatusBar,
   ActivityIndicator,
 } from "react-native";
@@ -76,14 +75,17 @@ export default function InvitationsScreen() {
 
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View className="flex-1" style={{ backgroundColor: colors.background }}>
         <StatusBar
           barStyle={theme === "dark" ? "light-content" : "dark-content"}
           backgroundColor={colors.surface}
         />
-        <View style={styles.loadingContainer}>
+        <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          <Text
+            className="mt-3 text-sm"
+            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+          >
             Chargement des invitations...
           </Text>
         </View>
@@ -92,102 +94,148 @@ export default function InvitationsScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <StatusBar
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
         backgroundColor={colors.surface}
       />
 
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      <View
+        className="pt-[50px] pb-4 px-5 flex-row items-center border-b"
+        style={{
+          backgroundColor: colors.surface,
+          borderBottomColor: colors.border,
+        }}
+      >
         <TouchableOpacity
-          style={[styles.backButton, { backgroundColor: colors.card }]}
+          className="w-10 h-10 justify-center items-center rounded-full mr-3"
+          style={{ backgroundColor: colors.card }}
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
           <ArrowLeft size={20} color={colors.text} />
         </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Mes invitations</Text>
-          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+        <View className="flex-1">
+          <Text
+            className="text-[28px] font-bold mb-1"
+            style={{
+              color: colors.text,
+              fontFamily: "Ubuntu-Bold",
+              letterSpacing: -0.5,
+            }}
+          >
+            Mes invitations
+          </Text>
+          <Text
+            className="text-sm"
+            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+          >
             Gérez vos invitations aux voyages
           </Text>
         </View>
       </View>
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1 px-4 pt-5 pb-4"
+        contentContainerStyle={{ paddingBottom: 16 }}
         showsVerticalScrollIndicator={false}
       >
         {error && (
           <View
-            style={[
-              styles.errorContainer,
-              {
-                backgroundColor: colors.error + "20",
-                borderColor: colors.error,
-              },
-            ]}
+            className="border rounded-xl p-4 mb-5"
+            style={{
+              backgroundColor: colors.error + "20",
+              borderColor: colors.error,
+            }}
           >
-            <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+            <Text
+              className="text-sm text-center"
+              style={{ color: colors.error, fontFamily: "Ubuntu-Regular" }}
+            >
+              {error}
+            </Text>
           </View>
         )}
 
         {invitations.length === 0 ? (
           <View
-            style={[
-              styles.emptyContainer,
-              {
-                backgroundColor: colors.card,
-                borderColor: colors.cardBorder,
-                shadowColor: colors.shadow,
-              },
-            ]}
+            className="rounded-[20px] p-8 items-center border"
+            style={{
+              backgroundColor: colors.card,
+              borderColor: colors.cardBorder,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.08,
+              shadowRadius: 12,
+              elevation: 4,
+            }}
           >
-            <View style={[styles.emptyIconContainer, { backgroundColor: colors.input }]}>
+            <View
+              className="w-20 h-20 rounded-full justify-center items-center mb-6"
+              style={{ backgroundColor: colors.input }}
+            >
               <Mail size={48} color={colors.primary} />
             </View>
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+            <Text
+              className="text-xl font-bold mb-2 text-center"
+              style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+            >
               Aucune invitation en attente
             </Text>
-            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+            <Text
+              className="text-[15px] text-center"
+              style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+            >
               Vous n'avez pas d'invitations en attente pour le moment.
             </Text>
           </View>
         ) : (
-          <View style={styles.invitationsList}>
+          <View className="gap-4">
             {invitations.map((invitation) => (
               <View
                 key={invitation.id}
-                style={[
-                  styles.invitationCard,
-                  {
-                    backgroundColor: colors.card,
-                    borderColor: colors.cardBorder,
-                    shadowColor: colors.shadow,
-                  },
-                ]}
+                className="rounded-[20px] p-6 border"
+                style={{
+                  backgroundColor: colors.card,
+                  borderColor: colors.cardBorder,
+                  shadowColor: colors.shadow,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.08,
+                  shadowRadius: 12,
+                  elevation: 4,
+                }}
               >
-                <View style={styles.invitationHeader}>
+                <View className="flex-row items-center mb-4">
                   <View
-                    style={[
-                      styles.avatarContainer,
-                      {
-                        backgroundColor: colors.primary,
-                        shadowColor: colors.primary,
-                      },
-                    ]}
+                    className="w-[50px] h-[50px] rounded-full justify-center items-center mr-3"
+                    style={{
+                      backgroundColor: colors.primary,
+                      shadowColor: colors.primary,
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 4,
+                      elevation: 3,
+                    }}
                   >
-                    <Text style={styles.avatarText}>
+                    <Text
+                      className="text-white text-xl font-bold"
+                      style={{ fontFamily: "Ubuntu-Bold" }}
+                    >
                       {invitation.profiles.first_name.charAt(0).toUpperCase()}
                     </Text>
                   </View>
-                  <View style={styles.invitationInfo}>
-                    <Text style={[styles.tripName, { color: colors.text }]}>
+                  <View className="flex-1">
+                    <Text
+                      className="text-xl font-bold mb-1"
+                      style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+                    >
                       {invitation.trips.name}
                     </Text>
-                    <Text style={[styles.inviterName, { color: colors.textSecondary }]}>
+                    <Text
+                      className="text-sm"
+                      style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                    >
                       Invitation de {invitation.profiles.first_name}{" "}
                       {invitation.profiles.last_name}
                     </Text>
@@ -195,72 +243,107 @@ export default function InvitationsScreen() {
                 </View>
 
                 {invitation.trips.description && (
-                  <Text style={[styles.tripDescription, { color: colors.textSecondary }]}>
+                  <Text
+                    className="text-sm leading-5 mb-4"
+                    style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                  >
                     {invitation.trips.description}
                   </Text>
                 )}
 
-                <View style={[styles.tripDetails, { borderTopColor: colors.border }]}>
-                  <View style={styles.detailItem}>
-                    <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                <View
+                  className="flex-row justify-between pt-4 border-t mb-3"
+                  style={{ borderTopColor: colors.border }}
+                >
+                  <View className="flex-1">
+                    <Text
+                      className="text-xs font-semibold mb-1 uppercase"
+                      style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                    >
                       Date de début
                     </Text>
-                    <Text style={[styles.detailValue, { color: colors.text }]}>
+                    <Text
+                      className="text-sm font-medium"
+                      style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                    >
                       {formatDate(invitation.trips.start_date)}
                     </Text>
                   </View>
-                  <View style={styles.detailItem}>
-                    <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                  <View className="flex-1">
+                    <Text
+                      className="text-xs font-semibold mb-1 uppercase"
+                      style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                    >
                       Date de fin
                     </Text>
-                    <Text style={[styles.detailValue, { color: colors.text }]}>
+                    <Text
+                      className="text-sm font-medium"
+                      style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                    >
                       {formatDate(invitation.trips.end_date)}
                     </Text>
                   </View>
-                  <View style={styles.detailItem}>
-                    <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>
+                  <View className="flex-1">
+                    <Text
+                      className="text-xs font-semibold mb-1 uppercase"
+                      style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                    >
                       Budget
                     </Text>
-                    <Text style={[styles.detailValue, { color: colors.text }]}>
+                    <Text
+                      className="text-sm font-medium"
+                      style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                    >
                       {invitation.trips.budget}€
                     </Text>
                   </View>
                 </View>
 
-                <Text style={[styles.invitationDate, { color: colors.textSecondary }]}>
+                <Text
+                  className="text-xs mb-4"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                >
                   Invitation reçue le {formatDate(invitation.created_at)}
                 </Text>
 
-                <View style={[styles.actionsContainer, { borderTopColor: colors.border }]}>
+                <View
+                  className="flex-row gap-3 pt-4 border-t"
+                  style={{ borderTopColor: colors.border }}
+                >
                   <TouchableOpacity
-                    style={[
-                      styles.declineButton,
-                      {
-                        backgroundColor: colors.input,
-                        borderColor: colors.border,
-                      },
-                      processingId === invitation.id && styles.buttonDisabled,
-                    ]}
+                    className={`flex-1 py-3.5 rounded-xl items-center justify-center border ${
+                      processingId === invitation.id ? "opacity-60" : ""
+                    }`}
+                    style={{
+                      backgroundColor: colors.input,
+                      borderColor: colors.border,
+                    }}
                     onPress={() =>
                       handleInvitationResponse(invitation.id, invitation.trip_id, "declined")
                     }
                     disabled={processingId === invitation.id}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.declineButtonText, { color: colors.text }]}>
+                    <Text
+                      className="text-[15px] font-semibold"
+                      style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                    >
                       Décliner
                     </Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    style={[
-                      styles.acceptButton,
-                      {
-                        backgroundColor: colors.primary,
-                        shadowColor: colors.primary,
-                      },
-                      processingId === invitation.id && styles.buttonDisabled,
-                    ]}
+                    className={`flex-1 py-3.5 rounded-xl items-center justify-center ${
+                      processingId === invitation.id ? "opacity-60" : ""
+                    }`}
+                    style={{
+                      backgroundColor: colors.primary,
+                      shadowColor: colors.primary,
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 4,
+                      elevation: 3,
+                    }}
                     onPress={() =>
                       handleInvitationResponse(invitation.id, invitation.trip_id, "accepted")
                     }
@@ -270,7 +353,12 @@ export default function InvitationsScreen() {
                     {processingId === invitation.id ? (
                       <ActivityIndicator size="small" color="#ffffff" />
                     ) : (
-                      <Text style={styles.acceptButtonText}>Accepter</Text>
+                      <Text
+                        className="text-white text-[15px] font-bold"
+                        style={{ fontFamily: "Ubuntu-Bold" }}
+                      >
+                        Accepter
+                      </Text>
                     )}
                   </TouchableOpacity>
                 </View>
@@ -282,230 +370,3 @@ export default function InvitationsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  header: {
-    paddingTop: 50,
-    paddingBottom: 16,
-    paddingHorizontal: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 4,
-    letterSpacing: -0.5,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 32,
-  },
-  errorContainer: {
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-  },
-  errorText: {
-    fontSize: 14,
-    textAlign: "center",
-    fontFamily: "Ubuntu-Regular",
-  },
-  emptyContainer: {
-    borderRadius: 20,
-    padding: 32,
-    alignItems: "center",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-  },
-  emptyIconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  emptySubtitle: {
-    fontSize: 15,
-    textAlign: "center",
-    fontFamily: "Ubuntu-Regular",
-  },
-  invitationsList: {
-    gap: 16,
-  },
-  invitationCard: {
-    borderRadius: 20,
-    padding: 24,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-  },
-  invitationHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  avatarContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  avatarText: {
-    color: "#ffffff",
-    fontSize: 20,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-  },
-  invitationInfo: {
-    flex: 1,
-  },
-  tripName: {
-    fontSize: 20,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 4,
-  },
-  inviterName: {
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  tripDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 16,
-    fontFamily: "Ubuntu-Regular",
-  },
-  tripDetails: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingTop: 16,
-    borderTopWidth: 1,
-    marginBottom: 12,
-  },
-  detailItem: {
-    flex: 1,
-  },
-  detailLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-    marginBottom: 4,
-    textTransform: "uppercase",
-  },
-  detailValue: {
-    fontSize: 14,
-    fontWeight: "500",
-    fontFamily: "Ubuntu-Medium",
-  },
-  invitationDate: {
-    fontSize: 12,
-    marginBottom: 16,
-    fontFamily: "Ubuntu-Regular",
-  },
-  actionsContainer: {
-    flexDirection: "row",
-    gap: 12,
-    paddingTop: 16,
-    borderTopWidth: 1,
-  },
-  declineButton: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-  },
-  declineButtonText: {
-    fontSize: 15,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-  },
-  acceptButton: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  acceptButtonText: {
-    color: "#ffffff",
-    fontSize: 15,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-});

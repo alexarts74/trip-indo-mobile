@@ -4,7 +4,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   StatusBar,
   Alert,
   ActivityIndicator,
@@ -154,17 +153,19 @@ export default function ProfileScreen() {
     return "Utilisateur";
   };
 
-
   if (isLoading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View className="flex-1" style={{ backgroundColor: colors.background }}>
         <StatusBar
           barStyle={theme === "dark" ? "light-content" : "dark-content"}
           backgroundColor={colors.surface}
         />
-        <View style={styles.loadingContainer}>
+        <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          <Text
+            className="mt-3 text-sm"
+            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+          >
             Chargement du profil...
           </Text>
         </View>
@@ -173,69 +174,114 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <StatusBar
         barStyle={theme === "dark" ? "light-content" : "dark-content"}
         backgroundColor={colors.surface}
       />
 
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      <View
+        className="pt-[50px] pb-5 px-5 flex-row items-center border-b"
+        style={{
+          backgroundColor: colors.surface,
+          borderBottomColor: colors.border,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.03,
+          shadowRadius: 4,
+          elevation: 2,
+        }}
+      >
         <TouchableOpacity
-          style={[styles.backButton, { backgroundColor: colors.card }]}
+          className="w-10 h-10 justify-center items-center rounded-full mr-3"
+          style={{ backgroundColor: colors.card }}
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
           <ArrowLeft size={20} color={colors.text} />
         </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Mon profil</Text>
+        <View className="flex-1">
+          <Text
+            className="text-[28px] font-bold"
+            style={{
+              color: colors.text,
+              fontFamily: "Ubuntu-Bold",
+              letterSpacing: -0.5,
+            }}
+          >
+            Mon profil
+          </Text>
         </View>
-        <View style={styles.headerActions}>
+        <View className="flex-row items-center gap-2.5">
           <TouchableOpacity
-            style={[styles.themeButton, { backgroundColor: colors.card }]}
+            className="w-10 h-10 justify-center items-center rounded-full"
+            style={{ backgroundColor: colors.card }}
             onPress={toggleTheme}
             activeOpacity={0.7}
           >
-            {theme === "dark" ? <Sun size={20} color={colors.text} /> : <Moon size={20} color={colors.text} />}
+            {theme === "dark" ? (
+              <Sun size={20} color={colors.text} />
+            ) : (
+              <Moon size={20} color={colors.text} />
+            )}
           </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1 px-4 pt-5 pb-4"
+        contentContainerStyle={{ paddingBottom: 16 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Section Profil */}
         <View
-          style={[
-            styles.profileCard,
-            {
-              backgroundColor: colors.card,
-              borderColor: colors.cardBorder,
-              shadowColor: colors.shadow,
-            },
-          ]}
+          className="rounded-[20px] p-6 mb-6 border"
+          style={{
+            backgroundColor: colors.card,
+            borderColor: colors.cardBorder,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 4,
+          }}
         >
-          <View style={styles.profileHeader}>
+          <View className="flex-row items-center">
             <View
-              style={[
-                styles.avatarContainer,
-                {
-                  backgroundColor: colors.primary,
-                  shadowColor: colors.primary,
-                },
-              ]}
+              className="w-20 h-20 rounded-full justify-center items-center mr-4"
+              style={{
+                backgroundColor: colors.primary,
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 5,
+              }}
             >
-              <Text style={styles.avatarText}>{getInitials()}</Text>
+              <Text
+                className="text-white text-[32px] font-bold"
+                style={{ fontFamily: "Ubuntu-Bold", letterSpacing: 0.5 }}
+              >
+                {getInitials()}
+              </Text>
             </View>
-            <View style={styles.profileInfo}>
-              <Text style={[styles.profileName, { color: colors.text }]}>
+            <View className="flex-1">
+              <Text
+                className="text-2xl font-bold mb-1"
+                style={{
+                  color: colors.text,
+                  fontFamily: "Ubuntu-Bold",
+                  letterSpacing: -0.3,
+                }}
+              >
                 {getDisplayName()}
               </Text>
               {user?.email && (
-                <Text style={[styles.profileEmail, { color: colors.textSecondary }]}>
+                <Text
+                  className="text-sm"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                >
                   {user.email}
                 </Text>
               )}
@@ -244,62 +290,110 @@ export default function ProfileScreen() {
         </View>
 
         {/* Statistiques */}
-        <View style={styles.statsSection}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Statistiques</Text>
-          <View style={styles.statsGrid}>
+        <View className="mb-6">
+          <Text
+            className="text-xl font-bold mb-4"
+            style={{
+              color: colors.text,
+              fontFamily: "Ubuntu-Bold",
+              letterSpacing: -0.3,
+            }}
+          >
+            Statistiques
+          </Text>
+          <View className="flex-row gap-3">
             <View
-              style={[
-                styles.statCard,
-                {
-                  backgroundColor: colors.card,
-                  borderColor: colors.cardBorder,
-                  shadowColor: colors.shadow,
-                },
-              ]}
+              className="flex-1 rounded-2xl p-4 items-center border"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: colors.cardBorder,
+                shadowColor: colors.shadow,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.08,
+                shadowRadius: 8,
+                elevation: 3,
+              }}
             >
-              <View style={[styles.statIconContainer, { backgroundColor: colors.primary + "20" }]}>
+              <View
+                className="w-12 h-12 rounded-full justify-center items-center mb-3"
+                style={{ backgroundColor: colors.primary + "20" }}
+              >
                 <Plane size={24} color={colors.primary} />
               </View>
-              <Text style={[styles.statValue, { color: colors.text }]}>{stats.totalTrips}</Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Voyages</Text>
+              <Text
+                className="text-2xl font-bold mb-1"
+                style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+              >
+                {stats.totalTrips}
+              </Text>
+              <Text
+                className="text-xs font-semibold uppercase tracking-wide"
+                style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+              >
+                Voyages
+              </Text>
             </View>
 
             <View
-              style={[
-                styles.statCard,
-                {
-                  backgroundColor: colors.card,
-                  borderColor: colors.cardBorder,
-                  shadowColor: colors.shadow,
-                },
-              ]}
+              className="flex-1 rounded-2xl p-4 items-center border"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: colors.cardBorder,
+                shadowColor: colors.shadow,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.08,
+                shadowRadius: 8,
+                elevation: 3,
+              }}
             >
-              <View style={[styles.statIconContainer, { backgroundColor: colors.primary + "20" }]}>
+              <View
+                className="w-12 h-12 rounded-full justify-center items-center mb-3"
+                style={{ backgroundColor: colors.primary + "20" }}
+              >
                 <Wallet size={24} color={colors.primary} />
               </View>
-              <Text style={[styles.statValue, { color: colors.text }]}>
+              <Text
+                className="text-2xl font-bold mb-1"
+                style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+              >
                 {stats.totalExpenses}
               </Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Dépenses</Text>
+              <Text
+                className="text-xs font-semibold uppercase tracking-wide"
+                style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+              >
+                Dépenses
+              </Text>
             </View>
 
             <View
-              style={[
-                styles.statCard,
-                {
-                  backgroundColor: colors.card,
-                  borderColor: colors.cardBorder,
-                  shadowColor: colors.shadow,
-                },
-              ]}
+              className="flex-1 rounded-2xl p-4 items-center border"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: colors.cardBorder,
+                shadowColor: colors.shadow,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.08,
+                shadowRadius: 8,
+                elevation: 3,
+              }}
             >
-              <View style={[styles.statIconContainer, { backgroundColor: colors.primary + "20" }]}>
+              <View
+                className="w-12 h-12 rounded-full justify-center items-center mb-3"
+                style={{ backgroundColor: colors.primary + "20" }}
+              >
                 <MapPin size={24} color={colors.primary} />
               </View>
-              <Text style={[styles.statValue, { color: colors.text }]}>
+              <Text
+                className="text-2xl font-bold mb-1"
+                style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+              >
                 {stats.totalDestinations}
               </Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+              <Text
+                className="text-xs font-semibold uppercase tracking-wide"
+                style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+              >
                 Destinations
               </Text>
             </View>
@@ -307,31 +401,57 @@ export default function ProfileScreen() {
         </View>
 
         {/* Paramètres */}
-        <View style={styles.settingsSection}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Paramètres</Text>
+        <View className="mb-6">
+          <Text
+            className="text-xl font-bold mb-4"
+            style={{
+              color: colors.text,
+              fontFamily: "Ubuntu-Bold",
+              letterSpacing: -0.3,
+            }}
+          >
+            Paramètres
+          </Text>
 
           <View
-            style={[
-              styles.settingsCard,
-              {
-                backgroundColor: colors.card,
-                borderColor: colors.cardBorder,
-                shadowColor: colors.shadow,
-              },
-            ]}
+            className="rounded-2xl border overflow-hidden"
+            style={{
+              backgroundColor: colors.card,
+              borderColor: colors.cardBorder,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.08,
+              shadowRadius: 8,
+              elevation: 3,
+            }}
           >
             <TouchableOpacity
-              style={styles.settingItem}
+              className="flex-row items-center justify-between p-4"
               onPress={toggleTheme}
               activeOpacity={0.7}
             >
-              <View style={styles.settingLeft}>
-                <View style={[styles.settingIconContainer, { backgroundColor: colors.primary + "20" }]}>
-                  {theme === "dark" ? <Sun size={18} color={colors.primary} /> : <Moon size={18} color={colors.primary} />}
+              <View className="flex-row items-center flex-1">
+                <View
+                  className="w-10 h-10 rounded-full justify-center items-center mr-3"
+                  style={{ backgroundColor: colors.primary + "20" }}
+                >
+                  {theme === "dark" ? (
+                    <Sun size={18} color={colors.primary} />
+                  ) : (
+                    <Moon size={18} color={colors.primary} />
+                  )}
                 </View>
-                <View style={styles.settingTextContainer}>
-                  <Text style={[styles.settingTitle, { color: colors.text }]}>Thème</Text>
-                  <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
+                <View className="flex-1">
+                  <Text
+                    className="text-base font-semibold mb-0.5"
+                    style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                  >
+                    Thème
+                  </Text>
+                  <Text
+                    className="text-[13px]"
+                    style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                  >
                     {theme === "dark" ? "Mode sombre" : "Mode clair"}
                   </Text>
                 </View>
@@ -339,20 +459,31 @@ export default function ProfileScreen() {
               <ChevronRight size={20} color={colors.textSecondary} />
             </TouchableOpacity>
 
-            <View style={[styles.settingDivider, { backgroundColor: colors.border }]} />
+            <View className="h-[1px] mx-4" style={{ backgroundColor: colors.border }} />
 
             <TouchableOpacity
-              style={styles.settingItem}
+              className="flex-row items-center justify-between p-4"
               onPress={() => router.push("/(main)/invitations")}
               activeOpacity={0.7}
             >
-              <View style={styles.settingLeft}>
-                <View style={[styles.settingIconContainer, { backgroundColor: colors.primary + "20" }]}>
+              <View className="flex-row items-center flex-1">
+                <View
+                  className="w-10 h-10 rounded-full justify-center items-center mr-3"
+                  style={{ backgroundColor: colors.primary + "20" }}
+                >
                   <Mail size={18} color={colors.primary} />
                 </View>
-                <View style={styles.settingTextContainer}>
-                  <Text style={[styles.settingTitle, { color: colors.text }]}>Mes invitations</Text>
-                  <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
+                <View className="flex-1">
+                  <Text
+                    className="text-base font-semibold mb-0.5"
+                    style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                  >
+                    Mes invitations
+                  </Text>
+                  <Text
+                    className="text-[13px]"
+                    style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                  >
                     Gérer mes invitations aux voyages
                   </Text>
                 </View>
@@ -363,33 +494,61 @@ export default function ProfileScreen() {
         </View>
 
         {/* Informations */}
-        <View style={styles.infoSection}>
+        <View className="mb-6">
           <View
-            style={[
-              styles.infoCard,
-              {
-                backgroundColor: colors.card,
-                borderColor: colors.cardBorder,
-                shadowColor: colors.shadow,
-              },
-            ]}
+            className="rounded-2xl p-5 border"
+            style={{
+              backgroundColor: colors.card,
+              borderColor: colors.cardBorder,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.08,
+              shadowRadius: 8,
+              elevation: 3,
+            }}
           >
-            <View style={styles.infoItem}>
-              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Email</Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>{user?.email || "N/A"}</Text>
+            <View className="mb-4">
+              <Text
+                className="text-xs font-semibold mb-1 uppercase tracking-wide"
+                style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+              >
+                Email
+              </Text>
+              <Text
+                className="text-base font-medium"
+                style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+              >
+                {user?.email || "N/A"}
+              </Text>
             </View>
             {userProfile?.first_name && (
-              <View style={styles.infoItem}>
-                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Prénom</Text>
-                <Text style={[styles.infoValue, { color: colors.text }]}>
+              <View className="mb-4">
+                <Text
+                  className="text-xs font-semibold mb-1 uppercase tracking-wide"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                >
+                  Prénom
+                </Text>
+                <Text
+                  className="text-base font-medium"
+                  style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                >
                   {userProfile.first_name}
                 </Text>
               </View>
             )}
             {userProfile?.last_name && (
-              <View style={styles.infoItem}>
-                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Nom</Text>
-                <Text style={[styles.infoValue, { color: colors.text }]}>
+              <View>
+                <Text
+                  className="text-xs font-semibold mb-1 uppercase tracking-wide"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                >
+                  Nom
+                </Text>
+                <Text
+                  className="text-base font-medium"
+                  style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                >
                   {userProfile.last_name}
                 </Text>
               </View>
@@ -399,287 +558,23 @@ export default function ProfileScreen() {
 
         {/* Bouton de déconnexion */}
         <TouchableOpacity
-          style={[
-            styles.signOutButton,
-            {
-              backgroundColor: colors.error + "15",
-              borderColor: colors.error,
-            },
-          ]}
+          className="flex-row items-center justify-center py-4 rounded-2xl border-[1.5px] gap-2.5"
+          style={{
+            backgroundColor: colors.error + "15",
+            borderColor: colors.error,
+          }}
           onPress={handleSignOut}
           activeOpacity={0.7}
         >
           <LogOut size={20} color={colors.error} />
-          <Text style={[styles.signOutText, { color: colors.error }]}>Déconnexion</Text>
+          <Text
+            className="text-base font-bold"
+            style={{ color: colors.error, fontFamily: "Ubuntu-Bold" }}
+          >
+            Déconnexion
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  header: {
-    paddingTop: 50,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    letterSpacing: -0.5,
-  },
-  headerActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  themeButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 32,
-  },
-  profileCard: {
-    borderRadius: 20,
-    padding: 24,
-    marginBottom: 24,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-  },
-  profileHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  avatarContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 16,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  avatarText: {
-    color: "#ffffff",
-    fontSize: 32,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    letterSpacing: 0.5,
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  profileName: {
-    fontSize: 24,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 4,
-    letterSpacing: -0.3,
-  },
-  profileEmail: {
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  statsSection: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 16,
-    letterSpacing: -0.3,
-  },
-  statsGrid: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  statCard: {
-    flex: 1,
-    borderRadius: 16,
-    padding: 16,
-    alignItems: "center",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-  },
-  statIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  settingsSection: {
-    marginBottom: 24,
-  },
-  settingsCard: {
-    borderRadius: 16,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  settingItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 16,
-  },
-  settingLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  settingIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  settingTextContainer: {
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-    marginBottom: 2,
-  },
-  settingDescription: {
-    fontSize: 13,
-    fontFamily: "Ubuntu-Regular",
-  },
-  settingDivider: {
-    height: 1,
-    marginHorizontal: 16,
-  },
-  infoSection: {
-    marginBottom: 24,
-  },
-  infoCard: {
-    borderRadius: 16,
-    padding: 20,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-  },
-  infoItem: {
-    marginBottom: 16,
-  },
-  infoLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-    marginBottom: 4,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  infoValue: {
-    fontSize: 16,
-    fontWeight: "500",
-    fontFamily: "Ubuntu-Medium",
-  },
-  signOutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    gap: 10,
-  },
-  signOutText: {
-    fontSize: 16,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-  },
-});

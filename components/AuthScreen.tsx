@@ -8,8 +8,8 @@ import {
   Platform,
   ScrollView,
   Alert,
-  StyleSheet,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { useAuth } from "../src/contexts/AuthContext";
 import { useTheme } from "../src/contexts/ThemeContext";
@@ -49,7 +49,8 @@ export default function AuthScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      className="flex-1"
+      style={{ backgroundColor: colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <StatusBar 
@@ -58,92 +59,163 @@ export default function AuthScreen() {
       />
       
       {/* Header moderne */}
-      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <View style={styles.headerContent}>
-          <View style={styles.logoWrapper}>
-            <View style={[styles.logoContainer, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]}>
+      <View
+        className="pt-[60px] pb-8 px-6 border-b"
+        style={{
+          backgroundColor: colors.surface,
+          borderBottomColor: colors.border,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 8,
+          elevation: 2,
+        }}
+      >
+        <View className="items-center">
+          <View className="mb-5">
+            <View
+              className="w-[100px] h-[100px] rounded-full justify-center items-center border-[3px]"
+              style={{
+                backgroundColor: colors.primaryLight,
+                borderColor: colors.primary,
+                shadowColor: '#f97316',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.15,
+                shadowRadius: 12,
+                elevation: 4,
+              }}
+            >
               <Globe size={56} color={colors.primary} />
             </View>
           </View>
-          <Text style={[styles.title, { color: colors.text }]}>TripMate</Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+          <Text
+            className="text-4xl font-bold mb-2 text-center"
+            style={{
+              color: colors.text,
+              fontFamily: "Ubuntu-Bold",
+              letterSpacing: -0.8,
+            }}
+          >
+            TripMate
+          </Text>
+          <Text
+            className="text-[15px] text-center leading-[22px]"
+            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+          >
             {isLogin ? "Connectez-vous à votre compte" : "Créez votre compte"}
           </Text>
         </View>
-        </View>
+      </View>
 
       <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1 px-6 pt-8 pb-10"
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.formContainer}>
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Email</Text>
-          <TextInput
-              style={[styles.input, { 
-                backgroundColor: colors.input, 
+        <View className="w-full">
+          <View className="mb-5">
+            <Text
+              className="text-sm font-semibold mb-2.5 tracking-wide"
+              style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+            >
+              Email
+            </Text>
+            <TextInput
+              className="border-[1.5px] rounded-[14px] px-[18px] py-4 text-base"
+              style={{
+                backgroundColor: colors.input,
                 borderColor: colors.inputBorder,
-                color: colors.text 
-              }]}
+                color: colors.text,
+                fontFamily: "Ubuntu-Regular",
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.04,
+                shadowRadius: 3,
+                elevation: 1,
+              }}
               placeholder="votre@email.com"
               placeholderTextColor={colors.textSecondary}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
               autoComplete="email"
-          />
+            />
           </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={[styles.label, { color: colors.text }]}>Mot de passe</Text>
-          <TextInput
-              style={[styles.input, { 
-                backgroundColor: colors.input, 
+          <View className="mb-5">
+            <Text
+              className="text-sm font-semibold mb-2.5 tracking-wide"
+              style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+            >
+              Mot de passe
+            </Text>
+            <TextInput
+              className="border-[1.5px] rounded-[14px] px-[18px] py-4 text-base"
+              style={{
+                backgroundColor: colors.input,
                 borderColor: colors.inputBorder,
-                color: colors.text 
-              }]}
+                color: colors.text,
+                fontFamily: "Ubuntu-Regular",
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.04,
+                shadowRadius: 3,
+                elevation: 1,
+              }}
               placeholder="••••••••"
               placeholderTextColor={colors.textSecondary}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoCapitalize="none"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
               autoComplete="password"
-          />
+            />
           </View>
 
           <TouchableOpacity
-            style={[
-              styles.button,
-              { backgroundColor: colors.primary },
-              loading && styles.buttonDisabled,
-            ]}
+            className={`rounded-[14px] py-[18px] items-center justify-center mt-3 ${
+              loading ? "opacity-60" : ""
+            }`}
+            style={{
+              backgroundColor: colors.primary,
+              shadowColor: '#f97316',
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.35,
+              shadowRadius: 12,
+              elevation: 5,
+            }}
             onPress={handleAuth}
             disabled={loading}
             activeOpacity={0.8}
           >
-            <Text style={styles.buttonText}>
-              {loading
-                ? "Chargement..."
-                : isLogin
-                ? "Se connecter"
-                : "S'inscrire"}
-            </Text>
+            {loading ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <Text
+                className="text-white text-lg font-bold tracking-wide"
+                style={{ fontFamily: "Ubuntu-Bold" }}
+              >
+                {isLogin ? "Se connecter" : "S'inscrire"}
+              </Text>
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.switchAuth}
+            className="mt-7 items-center py-2"
             onPress={() => setIsLogin(!isLogin)}
             activeOpacity={0.7}
           >
-            <Text style={[styles.switchAuthText, { color: colors.textSecondary }]}>
-              {isLogin
-                ? "Pas encore de compte ? " : "Déjà un compte ? "}
-              <Text style={[styles.switchAuthLink, { color: colors.primary }]}>
+            <Text
+              className="text-[15px] text-center leading-[22px]"
+              style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+            >
+              {isLogin ? "Pas encore de compte ? " : "Déjà un compte ? "}
+              <Text
+                className="font-bold underline"
+                style={{ color: colors.primary, fontFamily: "Ubuntu-Bold" }}
+              >
                 {isLogin ? "S'inscrire" : "Se connecter"}
               </Text>
             </Text>
@@ -153,137 +225,3 @@ export default function AuthScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingTop: 60,
-    paddingBottom: 32,
-    paddingHorizontal: 24,
-    borderBottomWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  headerContent: {
-    alignItems: 'center',
-  },
-  logoWrapper: {
-    marginBottom: 20,
-  },
-  logoContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 3,
-    shadowColor: '#f97316',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: '700',
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 8,
-    textAlign: 'center',
-    letterSpacing: -0.8,
-  },
-  subtitle: {
-    fontSize: 15,
-    textAlign: 'center',
-    lineHeight: 22,
-    fontFamily: "Ubuntu-Regular",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 32,
-    paddingBottom: 40,
-  },
-  formContainer: {
-    width: '100%',
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    fontFamily: "Ubuntu-Medium",
-    marginBottom: 10,
-    letterSpacing: 0.2,
-  },
-  input: {
-    borderWidth: 1.5,
-    borderRadius: 14,
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    fontSize: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
-  },
-  button: {
-    borderRadius: 14,
-    paddingVertical: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 12,
-    shadowColor: '#f97316',
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 17,
-    fontWeight: '700',
-    fontFamily: "Ubuntu-Bold",
-    letterSpacing: 0.4,
-  },
-  switchAuth: {
-    marginTop: 28,
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  switchAuthText: {
-    fontSize: 15,
-    textAlign: 'center',
-    lineHeight: 22,
-    fontFamily: "Ubuntu-Regular",
-  },
-  switchAuthLink: {
-    fontWeight: '700',
-    fontFamily: "Ubuntu-Bold",
-    textDecorationLine: 'underline',
-  },
-});

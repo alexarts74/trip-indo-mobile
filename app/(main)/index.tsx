@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, StatusBar, Alert } from "react-native";
+import { View, Text, TouchableOpacity, StatusBar, Alert } from "react-native";
 import { router } from "expo-router";
 import TripList from "@/components/TripList";
 import AuthScreen from "@/components/AuthScreen";
@@ -39,11 +39,11 @@ export default function MainScreen() {
           text: "Déconnexion",
           style: "destructive",
           onPress: async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error("Erreur lors de la déconnexion:", error);
-    }
+            try {
+              await signOut();
+            } catch (error) {
+              console.error("Erreur lors de la déconnexion:", error);
+            }
           },
         },
       ]
@@ -67,8 +67,16 @@ export default function MainScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Chargement...</Text>
+      <View
+        className="flex-1 justify-center items-center"
+        style={{ backgroundColor: colors.background }}
+      >
+        <Text
+          className="text-base"
+          style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+        >
+          Chargement...
+        </Text>
       </View>
     );
   }
@@ -78,22 +86,40 @@ export default function MainScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <StatusBar 
         barStyle={theme === "dark" ? "light-content" : "dark-content"} 
         backgroundColor={colors.surface} 
       />
       
       {/* Header moderne avec profil */}
-      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <View style={styles.headerTop}>
-          <View style={styles.profileInfo}>
-            <Text 
-              style={[styles.greeting, { color: colors.text }]}
+      <View
+        className="pt-[45px] pb-3 px-5 rounded-b-[20px] border-b"
+        style={{
+          backgroundColor: colors.surface,
+          borderBottomColor: colors.border,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 8,
+          elevation: 3,
+          zIndex: 1000,
+        }}
+      >
+        <View className="flex-row items-center gap-3">
+          <View className="flex-1 mr-2">
+            <Text
+              className="text-2xl font-bold leading-7"
+              style={{
+                color: colors.text,
+                fontFamily: "Ubuntu-Bold",
+                letterSpacing: -0.3,
+              }}
             >
               Bonjour,{" "}
-              <Text 
-                style={[styles.userName, { color: colors.textSecondary }]}
+              <Text
+                className="text-base font-normal"
+                style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
@@ -101,23 +127,23 @@ export default function MainScreen() {
               </Text>
             </Text>
           </View>
-          <View style={styles.headerActions}>
+          <View className="flex-row items-center gap-3">
             <TouchableOpacity
-              style={styles.actionIcon}
+              className="p-0.5 justify-center items-center"
               onPress={() => router.push("/modal")}
               activeOpacity={0.6}
             >
               <FilePlus size={20} color={colors.text} strokeWidth={2} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.actionIcon}
+              className="p-0.5 justify-center items-center"
               onPress={() => router.push("/(main)/invitations")}
               activeOpacity={0.6}
             >
               <Inbox size={20} color={colors.text} strokeWidth={2} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.actionIcon}
+              className="p-0.5 justify-center items-center"
               onPress={toggleTheme}
               activeOpacity={0.6}
             >
@@ -128,12 +154,27 @@ export default function MainScreen() {
               )}
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.actionIcon}
+              className="p-0.5 justify-center items-center"
               onPress={() => router.push("/(main)/profile")}
               activeOpacity={0.6}
             >
-              <View style={[styles.avatarContainer, { backgroundColor: colors.primary }]}>
-                <Text style={styles.avatarText}>{getInitials()}</Text>
+              <View
+                className="w-9 h-9 rounded-full justify-center items-center"
+                style={{
+                  backgroundColor: colors.primary,
+                  shadowColor: "#f97316",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 4,
+                  elevation: 3,
+                }}
+              >
+                <Text
+                  className="text-base font-bold text-white"
+                  style={{ fontFamily: "Ubuntu-Bold", letterSpacing: 0.5 }}
+                >
+                  {getInitials()}
+                </Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -144,88 +185,3 @@ export default function MainScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    fontSize: 16,
-    fontFamily: "Ubuntu-Regular",
-  },
-  header: {
-    paddingTop: 45,
-    paddingBottom: 12,
-    paddingHorizontal: 20,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
-    zIndex: 1000,
-    overflow: "visible",
-  },
-  headerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  profileInfo: {
-    flex: 1,
-    marginRight: 8,
-  },
-  avatarContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#f97316",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  avatarText: {
-    fontSize: 16,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    color: "#ffffff",
-    letterSpacing: 0.5,
-  },
-  greeting: {
-    fontSize: 22,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    letterSpacing: -0.3,
-    lineHeight: 28,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: "400",
-    fontFamily: "Ubuntu-Regular",
-  },
-  headerActions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  actionIcon: {
-    padding: 2,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

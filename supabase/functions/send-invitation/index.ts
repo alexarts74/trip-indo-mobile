@@ -3,6 +3,9 @@ import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const APP_URL = Deno.env.get("EXPO_PUBLIC_APP_URL") || "https://your-app-url.com";
+// Adresse email "from" - En production, utilisez une adresse avec votre domaine vérifié
+// Exemple: "TripMate <noreply@votre-domaine.com>"
+const RESEND_FROM_EMAIL = Deno.env.get("RESEND_FROM_EMAIL") || "TripMate <onboarding@resend.dev>";
 
 const resend = new Resend(RESEND_API_KEY);
 
@@ -13,22 +16,41 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  console.log("📧 [Edge Function] Requête reçue - Méthode:", req.method);
+  console.log("📧 [Edge Function] Headers:", Object.fromEntries(req.headers.entries()));
+
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
+    console.log("📧 [Edge Function] CORS preflight - Retour OK");
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    const { tripName, inviterEmail, inviteeEmail, tripId } = await req.json();
+    console.log("📧 [Edge Function] Parsing du body...");
+    const body = await req.json();
+    console.log("📧 [Edge Function] Body parsé:", body);
 
-    console.log("📧 Envoi d'invitation:", {
+    const { tripName, inviterEmail, inviteeEmail, tripId } = body;
+
+    console.log("📧 [Edge Function] Données extraites:", {
       tripName,
       inviterEmail,
       inviteeEmail,
       tripId,
+      hasTripName: !!tripName,
+      hasInviterEmail: !!inviterEmail,
+      hasInviteeEmail: !!inviteeEmail,
+      hasTripId: !!tripId,
     });
 
+    // Validation des données
     if (!tripName || !inviterEmail || !inviteeEmail || !tripId) {
+      console.error("❌ [Edge Function] Données manquantes:", {
+        tripName: !!tripName,
+        inviterEmail: !!inviterEmail,
+        inviteeEmail: !!inviteeEmail,
+        tripId: !!tripId,
+      });
       return new Response(
         JSON.stringify({ error: "Données manquantes" }),
         {
@@ -38,8 +60,12 @@ serve(async (req) => {
       );
     }
 
+    console.log("📧 [Edge Function] Vérification de RESEND_API_KEY...");
+    console.log("📧 [Edge Function] RESEND_API_KEY configurée:", !!RESEND_API_KEY);
+    console.log("📧 [Edge Function] RESEND_API_KEY length:", RESEND_API_KEY?.length || 0);
+
     if (!RESEND_API_KEY) {
-      console.warn("⚠️ RESEND_API_KEY non configurée");
+      console.warn("⚠️ [Edge Function] RESEND_API_KEY non configurée");
       return new Response(
         JSON.stringify({
           error: "Configuration email requise",
@@ -52,6 +78,8 @@ serve(async (req) => {
         }
       );
     }
+
+    console.log("✅ [Edge Function] RESEND_API_KEY trouvée, initialisation de Resend...");
 
     // Template d'email HTML professionnel
     const htmlContent = `
@@ -153,7 +181,7 @@ serve(async (req) => {
           <div class="content">
             <p>Bonjour !</p>
 
-            <p><strong>${inviterEmail}</strong> vous invite à rejoindre son voyage <strong>"${tripName}"</strong> sur Trip Indo !</p>
+            <p><strong>${inviterEmail}</strong> vous invite à rejoindre son voyage <strong>"${tripName}"</strong> sur TripMate !</p>
 
             <p>Cette invitation vous permettra de :</p>
             <ul>
@@ -165,7 +193,7 @@ serve(async (req) => {
 
             <div class="button-container">
               <a href="${APP_URL}" class="button">
-                ✅ Ouvrir Trip Indo
+                ✅ Ouvrir TripMate
               </a>
             </div>
 
@@ -174,7 +202,7 @@ serve(async (req) => {
             </div>
 
             <div class="footer">
-              <p>Envoyé depuis Trip Indo</p>
+              <p>Envoyé depuis TripMate</p>
               <p>Si vous avez des questions, contactez ${inviterEmail}</p>
             </div>
           </div>
@@ -183,18 +211,67 @@ serve(async (req) => {
       </html>
     `;
 
+    console.log("📧 [Edge Function] Préparation de l'email Resend...");
+    console.log("📧 [Edge Function] Destinataire:", inviteeEmail);
+    console.log("📧 [Edge Function] Expéditeur: TripMate <onboarding@resend.dev>");
+    console.log("📧 [Edge Function] Sujet:", `✈️ Invitation au voyage : ${tripName}`);
+
     // Envoyer l'email
+    console.log("📧 [Edge Function] Appel à resend.emails.send()...");
+    
+    console.log("📧 [Edge Function] Configuration email:", {
+      from: RESEND_FROM_EMAIL,
+      to: inviteeEmail,
+      subject: `✈️ Invitation au voyage : ${tripName}`,
+    });
+    
     const { data, error } = await resend.emails.send({
-      from: "Trip Indo <onboarding@resend.dev>",
+      from: RESEND_FROM_EMAIL,
       to: [inviteeEmail],
       subject: `✈️ Invitation au voyage : ${tripName}`,
       html: htmlContent,
     });
 
+    console.log("📧 [Edge Function] Réponse de Resend:", {
+      hasData: !!data,
+      hasError: !!error,
+      dataKeys: data ? Object.keys(data) : null,
+      errorType: error?.constructor?.name,
+      errorMessage: error?.message,
+    });
+
     if (error) {
-      console.error("❌ Erreur Resend:", error);
+      console.error("❌ [Edge Function] Erreur Resend:", {
+        message: error.message,
+        name: error.name,
+        code: (error as any)?.code,
+        statusCode: (error as any)?.statusCode,
+        fullError: error,
+      });
+      
+      // Gestion spécifique de l'erreur de validation Resend (domaine non vérifié)
+      if ((error as any)?.statusCode === 403 && error.message?.includes("testing emails")) {
+        console.error("❌ [Edge Function] Resend en mode test - Domaine non vérifié");
+        return new Response(
+          JSON.stringify({ 
+            error: "Configuration Resend requise", 
+            details: "Resend est en mode test. Pour envoyer à d'autres destinataires, vous devez vérifier un domaine dans Resend et utiliser une adresse 'from' avec ce domaine.",
+            errorType: "resend_domain_required",
+            resendMessage: error.message,
+          }),
+          {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+      
       return new Response(
-        JSON.stringify({ error: "Erreur lors de l'envoi de l'email", details: error.message }),
+        JSON.stringify({ 
+          error: "Erreur lors de l'envoi de l'email", 
+          details: error.message,
+          errorType: error?.constructor?.name,
+        }),
         {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -202,7 +279,8 @@ serve(async (req) => {
       );
     }
 
-    console.log("✅ Email envoyé avec succès:", data);
+    console.log("✅ [Edge Function] Email envoyé avec succès!");
+    console.log("✅ [Edge Function] Données de réponse:", data);
 
     return new Response(
       JSON.stringify({
@@ -216,9 +294,19 @@ serve(async (req) => {
       }
     );
   } catch (error: any) {
-    console.error("💥 Erreur API:", error);
+    console.error("💥 [Edge Function] Erreur catch globale:", {
+      message: error?.message,
+      name: error?.name,
+      stack: error?.stack,
+      type: typeof error,
+      fullError: error,
+    });
     return new Response(
-      JSON.stringify({ error: "Erreur interne du serveur", details: error.message }),
+      JSON.stringify({ 
+        error: "Erreur interne du serveur", 
+        details: error?.message || "Erreur inconnue",
+        errorType: error?.constructor?.name,
+      }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

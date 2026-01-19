@@ -1,20 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { Mail, Send } from "lucide-react-native";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { useAuth } from "@/src/contexts/AuthContext";
-import {
-  createInvitation,
-  sendInvitationEmail,
-} from "@/src/services/invitationService";
+import { useInvitationSender } from "@/src/hooks/useInvitationSender";
 
 interface InvitationManagerProps {
   tripId: string;
@@ -27,137 +22,93 @@ export default function InvitationManager({
   tripName,
   onInvitationSent,
 }: InvitationManagerProps) {
-  const { theme, colors } = useTheme();
+  const { colors } = useTheme();
   const { user } = useAuth();
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
 
-  const sendInvitation = async () => {
-    if (!email.trim()) {
-      setError("Veuillez saisir un email");
-      return;
-    }
+  const {
+    email,
+    setEmail,
+    isLoading,
+    success,
+    error,
+    sendInvitation,
+  } = useInvitationSender({
+    tripId,
+    tripName,
+    user,
+    onSuccess: onInvitationSent,
+  });
 
-    if (!user) {
-      setError("Vous devez être connecté pour envoyer une invitation");
-      return;
-    }
-
-    // Validation basique de l'email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
-      setError("Veuillez saisir un email valide");
-      return;
-    }
-
-    setIsLoading(true);
-    setError("");
-    setSuccess("");
-
-    try {
-      console.log("📧 Envoi d'invitation...");
-
-      // 1. Créer l'invitation dans Supabase
-      const invitationData = await createInvitation(
-        tripId,
-        user.id,
-        email.trim()
-      );
-
-      console.log("✅ Invitation créée avec succès !");
-
-      // 2. Envoyer l'email d'invitation (optionnel, ne bloque pas si ça échoue)
-      try {
-        const inviterEmail = user.email || "";
-        await sendInvitationEmail(tripName, inviterEmail, email.trim(), tripId);
-        console.log("✅ Email envoyé avec succès !");
-        setSuccess(`Invitation envoyée à ${email.trim()} ! Email d'invitation envoyé.`);
-      } catch (emailError: any) {
-        console.warn("⚠️ Erreur envoi email (non bloquant):", emailError);
-        setSuccess(
-          `Invitation créée pour ${email.trim()} ! (Note: L'envoi d'email nécessite la configuration de Resend)`
-        );
-      }
-
-      setEmail("");
-      if (onInvitationSent) {
-        onInvitationSent();
-      }
-    } catch (error: any) {
-      console.error("💥 Erreur envoi invitation:", error);
-      
-      // Gestion des erreurs spécifiques
-      if (error.code === "23505") {
-        setError("Cette personne a déjà été invitée à ce voyage");
-      } else if (error.message?.includes("duplicate")) {
-        setError("Cette personne a déjà été invitée à ce voyage");
-      } else {
-        setError(error.message || "Une erreur est survenue lors de l'envoi de l'invitation");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+  const handleEmailChange = (value: string) => {
+    setEmail(value);
   };
 
   return (
     <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: colors.card,
-          borderColor: colors.cardBorder,
-          shadowColor: colors.shadow,
-        },
-      ]}
+      className="rounded-[20px] p-5 mb-5 border"
+      style={{
+        backgroundColor: colors.card,
+        borderColor: colors.cardBorder,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 4,
+      }}
     >
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
+      {/* Header */}
+      <View className="mb-5">
+        <View className="flex-row items-center">
           <View
-            style={[
-              styles.iconContainer,
-              { backgroundColor: colors.primaryLight },
-            ]}
+            className="w-12 h-12 rounded-full justify-center items-center mr-3"
+            style={{ backgroundColor: colors.primaryLight }}
           >
             <Mail size={24} color={colors.primary} />
           </View>
-          <View style={styles.headerText}>
-            <Text style={[styles.title, { color: colors.text }]}>
+          <View className="flex-1">
+            <Text
+              className="text-xl font-bold mb-1"
+              style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+            >
               Inviter quelqu'un
             </Text>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            <Text
+              className="text-sm"
+              style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+            >
               Voyage : {tripName}
             </Text>
           </View>
         </View>
       </View>
 
-      <View style={styles.form}>
-        <View style={styles.inputContainer}>
+      {/* Form */}
+      <View className="gap-4">
+        {/* Email Input */}
+        <View className="mb-1">
           <Text
-            style={[styles.label, { color: colors.textSecondary }]}
+            className="text-[15px] font-semibold mb-2"
+            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
           >
             Email de l'invité
           </Text>
           <TextInput
-            style={[
-              styles.input,
-              {
-                backgroundColor: colors.input,
-                borderColor: colors.inputBorder,
-                color: colors.text,
-                shadowColor: colors.shadow,
-              },
-            ]}
+            className="border-[1.5px] rounded-[14px] px-[18px] py-[15px] text-base"
+            style={{
+              backgroundColor: colors.input,
+              borderColor: colors.inputBorder,
+              color: colors.text,
+              fontFamily: "Ubuntu-Regular",
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.05,
+              shadowRadius: 2,
+              elevation: 1,
+            }}
             placeholder="ami@exemple.com"
             placeholderTextColor={colors.textSecondary}
             value={email}
-            onChangeText={(value) => {
-              setEmail(value);
-              if (error) setError("");
-              if (success) setSuccess("");
-            }}
+            onChangeText={handleEmailChange}
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
@@ -165,15 +116,19 @@ export default function InvitationManager({
           />
         </View>
 
+        {/* Send Button */}
         <TouchableOpacity
-          style={[
-            styles.sendButton,
-            {
-              backgroundColor: colors.primary,
-              shadowColor: colors.primary,
-            },
-            (isLoading || !email.trim()) && styles.sendButtonDisabled,
-          ]}
+          className={`flex-row items-center justify-center py-4 rounded-[14px] gap-2 ${
+            isLoading || !email.trim() ? "opacity-60" : ""
+          }`}
+          style={{
+            backgroundColor: colors.primary,
+            shadowColor: colors.primary,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+            elevation: 4,
+          }}
           onPress={sendInvitation}
           disabled={isLoading || !email.trim()}
           activeOpacity={0.8}
@@ -181,56 +136,67 @@ export default function InvitationManager({
           {isLoading ? (
             <ActivityIndicator size="small" color="#ffffff" />
           ) : (
-            <>
+            <View className="flex-row items-center gap-2">
               <Send size={18} color="#ffffff" />
-              <Text style={styles.sendButtonText}>Envoyer l'invitation</Text>
-            </>
+              <Text
+                className="text-white text-base font-bold"
+                style={{ fontFamily: "Ubuntu-Bold" }}
+              >
+                Envoyer l'invitation
+              </Text>
+            </View>
           )}
         </TouchableOpacity>
 
+        {/* Success Message */}
         {success && (
           <View
-            style={[
-              styles.messageContainer,
-              {
-                backgroundColor: colors.success + "20",
-                borderColor: colors.success,
-              },
-            ]}
+            className="border rounded-xl p-4"
+            style={{
+              backgroundColor: colors.success + "20",
+              borderColor: colors.success,
+            }}
           >
-            <Text style={[styles.successText, { color: colors.success }]}>
+            <Text
+              className="text-sm text-center"
+              style={{ color: colors.success, fontFamily: "Ubuntu-Regular" }}
+            >
               {success}
             </Text>
           </View>
         )}
 
+        {/* Error Message */}
         {error && (
           <View
-            style={[
-              styles.messageContainer,
-              {
-                backgroundColor: colors.error + "20",
-                borderColor: colors.error,
-              },
-            ]}
+            className="border rounded-xl p-4"
+            style={{
+              backgroundColor: colors.error + "20",
+              borderColor: colors.error,
+            }}
           >
-            <Text style={[styles.errorText, { color: colors.error }]}>
+            <Text
+              className="text-sm text-center"
+              style={{ color: colors.error, fontFamily: "Ubuntu-Regular" }}
+            >
               {error}
             </Text>
           </View>
         )}
       </View>
 
+      {/* Info Box */}
       <View
-        style={[
-          styles.infoBox,
-          {
-            backgroundColor: colors.primaryLight + "40",
-            borderColor: colors.primary + "40",
-          },
-        ]}
+        className="mt-4 p-3 rounded-xl border"
+        style={{
+          backgroundColor: colors.primaryLight + "40",
+          borderColor: colors.primary + "40",
+        }}
       >
-        <Text style={[styles.infoText, { color: colors.textSecondary }]}>
+        <Text
+          className="text-xs leading-[18px]"
+          style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+        >
           <Text style={{ fontWeight: "700" }}>💡 Note importante :</Text>{" "}
           Pour envoyer des invitations par email, vous devez configurer Resend
           dans Supabase Edge Functions. L'invitation sera créée dans la base de
@@ -240,118 +206,3 @@ export default function InvitationManager({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 20,
-    padding: 24,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-    marginBottom: 20,
-  },
-  header: {
-    marginBottom: 20,
-  },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  headerText: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  form: {
-    gap: 16,
-  },
-  inputContainer: {
-    marginBottom: 4,
-  },
-  label: {
-    fontSize: 15,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1.5,
-    borderRadius: 14,
-    paddingHorizontal: 18,
-    paddingVertical: 15,
-    fontSize: 16,
-    fontFamily: "Ubuntu-Regular",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  sendButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    borderRadius: 14,
-    gap: 8,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  sendButtonDisabled: {
-    opacity: 0.6,
-  },
-  sendButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-  },
-  messageContainer: {
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
-  },
-  successText: {
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-    textAlign: "center",
-  },
-  errorText: {
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-    textAlign: "center",
-  },
-  infoBox: {
-    marginTop: 16,
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  infoText: {
-    fontSize: 12,
-    fontFamily: "Ubuntu-Regular",
-    lineHeight: 18,
-  },
-});

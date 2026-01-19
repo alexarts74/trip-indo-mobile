@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, StatusBar } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, StatusBar } from "react-native";
 import { ArrowLeft, Sun, Moon, FilePlus, Inbox } from "lucide-react-native";
 import { router } from "expo-router";
 import TripParticipants from "@/components/trip/TripParticipants";
@@ -48,36 +48,61 @@ export default function ParticipantsScreen() {
 
   if (!trip) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Voyage non trouvé</Text>
+      <View
+        className="flex-1 justify-center items-center"
+        style={{ backgroundColor: colors.background }}
+      >
+        <Text
+          className="text-base"
+          style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+        >
+          Voyage non trouvé
+        </Text>
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <StatusBar 
         barStyle={theme === "dark" ? "light-content" : "dark-content"} 
         backgroundColor={colors.surface} 
       />
       
       {/* Header principal avec greeting et actions */}
-      <View style={[styles.mainHeader, { backgroundColor: colors.surface }]}>
-        <View style={styles.mainHeaderContent}>
+      <View
+        className="pt-[45px] pb-3 px-5 rounded-b-[20px]"
+        style={{
+          backgroundColor: colors.surface,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 8,
+          elevation: 3,
+          zIndex: 1000,
+        }}
+      >
+        <View className="flex-row items-center gap-3">
           <TouchableOpacity
-            style={styles.backButton}
+            className="p-1 -ml-1 justify-center items-center"
             onPress={handleBackToTrips}
             activeOpacity={0.6}
           >
             <ArrowLeft size={20} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
-          <View style={styles.greetingSection}>
-            <Text 
-              style={[styles.mainGreeting, { color: colors.text }]}
+          <View className="flex-1 mr-2">
+            <Text
+              className="text-2xl font-bold leading-7"
+              style={{
+                color: colors.text,
+                fontFamily: "Ubuntu-Bold",
+                letterSpacing: -0.3,
+              }}
             >
               Bonjour,{" "}
-              <Text 
-                style={[styles.userNameGreeting, { color: colors.textSecondary }]}
+              <Text
+                className="text-base font-normal"
+                style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
@@ -85,23 +110,23 @@ export default function ParticipantsScreen() {
               </Text>
             </Text>
           </View>
-          <View style={styles.headerActionsRow}>
+          <View className="flex-row items-center gap-3">
             <TouchableOpacity
-              style={styles.actionIcon}
+              className="p-0.5 justify-center items-center"
               onPress={() => router.push("/modal")}
               activeOpacity={0.6}
             >
               <FilePlus size={20} color={colors.text} strokeWidth={2} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.actionIcon}
+              className="p-0.5 justify-center items-center"
               onPress={() => router.push("/(main)/invitations")}
               activeOpacity={0.6}
             >
               <Inbox size={20} color={colors.text} strokeWidth={2} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.actionIcon}
+              className="p-0.5 justify-center items-center"
               onPress={toggleTheme}
               activeOpacity={0.6}
             >
@@ -112,12 +137,27 @@ export default function ParticipantsScreen() {
               )}
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.actionIcon}
+              className="p-0.5 justify-center items-center"
               onPress={() => router.push("/(main)/profile")}
               activeOpacity={0.6}
             >
-              <View style={[styles.avatarContainer, { backgroundColor: colors.primary }]}>
-                <Text style={styles.avatarText}>{getInitials()}</Text>
+              <View
+                className="w-9 h-9 rounded-full justify-center items-center"
+                style={{
+                  backgroundColor: colors.primary,
+                  shadowColor: "#f97316",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 4,
+                  elevation: 3,
+                }}
+              >
+                <Text
+                  className="text-base font-bold text-white"
+                  style={{ fontFamily: "Ubuntu-Bold", letterSpacing: 0.5 }}
+                >
+                  {getInitials()}
+                </Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -125,8 +165,8 @@ export default function ParticipantsScreen() {
       </View>
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1 px-4 pt-5 pb-4"
+        contentContainerStyle={{ paddingBottom: 16 }}
         showsVerticalScrollIndicator={false}
       >
         <TripParticipants
@@ -138,102 +178,3 @@ export default function ParticipantsScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    fontSize: 16,
-    fontFamily: "Ubuntu-Regular",
-  },
-  mainHeader: {
-    paddingTop: 45,
-    paddingBottom: 12,
-    paddingHorizontal: 20,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
-    zIndex: 1000,
-    overflow: "visible",
-  },
-  mainHeaderContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  backButton: {
-    padding: 4,
-    marginLeft: -4,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  greetingSection: {
-    flex: 1,
-    marginRight: 8,
-  },
-  mainGreeting: {
-    fontSize: 22,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    letterSpacing: -0.3,
-    lineHeight: 28,
-  },
-  userNameGreeting: {
-    fontSize: 16,
-    fontWeight: "400",
-    fontFamily: "Ubuntu-Regular",
-  },
-  headerActionsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  actionIcon: {
-    padding: 2,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  avatarContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#f97316",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  avatarText: {
-    fontSize: 16,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    color: "#ffffff",
-    letterSpacing: 0.5,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 100,
-  },
-});

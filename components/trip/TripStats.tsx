@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { supabase } from "../../src/lib/supabaseClient";
 import { useTheme } from "../../src/contexts/ThemeContext";
 import { AlertTriangle } from "lucide-react-native";
@@ -96,17 +96,33 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="p-10 items-center">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Chargement des statistiques...</Text>
+        <Text
+          className="mt-3 text-sm"
+          style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+        >
+          Chargement des statistiques...
+        </Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={[styles.errorContainer, { backgroundColor: colors.error + "20", borderColor: colors.error }]}>
-        <Text style={[styles.errorText, { color: colors.error }]}>Erreur: {error}</Text>
+      <View
+        className="border rounded-xl p-4"
+        style={{
+          backgroundColor: colors.error + "20",
+          borderColor: colors.error,
+        }}
+      >
+        <Text
+          className="text-sm"
+          style={{ color: colors.error, fontFamily: "Ubuntu-Regular" }}
+        >
+          Erreur: {error}
+        </Text>
       </View>
     );
   }
@@ -150,139 +166,366 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="gap-6" style={{ width: "100%" }}>
       {/* Titre de section */}
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>Statistiques du voyage</Text>
+      <Text
+        className="text-base font-bold"
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.75}
+        style={{ 
+          color: colors.text, 
+          fontFamily: "Ubuntu-Bold",
+          flexShrink: 1,
+        }}
+      >
+        Statistiques du voyage
+      </Text>
 
       {/* Cartes de statistiques principales */}
-      <View style={styles.statsGrid}>
-        <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
-          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Budget total</Text>
-          <Text style={[styles.statValue, { color: colors.text }]}>{tripBudget}€</Text>
-        </View>
-
-        <View style={[
-          styles.statCard, 
-          { backgroundColor: colors.card, borderColor: colors.primary, borderWidth: 2, shadowColor: colors.shadow }
-        ]}>
-          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Dépensé</Text>
-          <Text style={[styles.statValue, { color: colors.primary }]}>
-            {totalCost}€
-          </Text>
-          <Text style={[styles.statPercentage, { color: colors.textSecondary }]}>
-            {budgetUsagePercentage.toFixed(1)}% utilisé
-          </Text>
-        </View>
-
-        <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
-          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Restant</Text>
-          <Text
-            style={[
-              styles.statValue,
-              { color: remainingBudget >= 0 ? colors.success : colors.error },
-            ]}
+      <View className="gap-3">
+        {/* Première rangée */}
+        <View className="flex-row gap-3">
+          <View
+            className="rounded-2xl p-4 flex-1 border"
+            style={{
+              backgroundColor: colors.card,
+              borderColor: colors.cardBorder,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.05,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
           >
-            {remainingBudget}€
-          </Text>
+            <Text
+              className="text-xs font-semibold mb-2 uppercase tracking-wide"
+              style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+            >
+              Budget total
+            </Text>
+            <Text
+              className="text-2xl font-bold"
+              style={{ color: colors.text, fontFamily: "Ubuntu-Bold", letterSpacing: -0.5 }}
+            >
+              {tripBudget}€
+            </Text>
+          </View>
+
+          <View
+            className="rounded-2xl p-4 flex-1 border-2"
+            style={{
+              backgroundColor: colors.card,
+              borderColor: colors.primary,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.05,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
+          >
+            <Text
+              className="text-xs font-semibold mb-2 uppercase tracking-wide"
+              style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+            >
+              Dépensé
+            </Text>
+            <Text
+              className="text-2xl font-bold"
+              style={{ color: colors.primary, fontFamily: "Ubuntu-Bold", letterSpacing: -0.5 }}
+            >
+              {totalCost}€
+            </Text>
+            <Text
+              className="text-xs mt-1"
+              style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+            >
+              {budgetUsagePercentage.toFixed(1)}% utilisé
+            </Text>
+          </View>
         </View>
 
-        <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
-          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Éléments</Text>
-          <Text style={[styles.statValue, { color: colors.text }]}>
-            {places.length + activities.length + expenses.length}
-          </Text>
-          <Text style={[styles.statSubtext, { color: colors.textSecondary }]}>planifiés</Text>
+        {/* Deuxième rangée */}
+        <View className="flex-row gap-3">
+          <View
+            className="rounded-2xl p-4 flex-1 border"
+            style={{
+              backgroundColor: colors.card,
+              borderColor: colors.cardBorder,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.05,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
+          >
+            <Text
+              className="text-xs font-semibold mb-2 uppercase tracking-wide"
+              style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+            >
+              Restant
+            </Text>
+            <Text
+              className="text-2xl font-bold"
+              style={{
+                color: remainingBudget >= 0 ? colors.success : colors.error,
+                fontFamily: "Ubuntu-Bold",
+                letterSpacing: -0.5,
+              }}
+            >
+              {remainingBudget}€
+            </Text>
+          </View>
+
+          <View
+            className="rounded-2xl p-4 flex-1 border"
+            style={{
+              backgroundColor: colors.card,
+              borderColor: colors.cardBorder,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.05,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
+          >
+            <Text
+              className="text-xs font-semibold mb-2 uppercase tracking-wide"
+              style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+            >
+              Éléments
+            </Text>
+            <Text
+              className="text-2xl font-bold"
+              style={{ color: colors.text, fontFamily: "Ubuntu-Bold", letterSpacing: -0.5 }}
+            >
+              {places.length + activities.length + expenses.length}
+            </Text>
+            <Text
+              className="text-xs mt-1"
+              style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+            >
+              planifiés
+            </Text>
+          </View>
         </View>
       </View>
 
       {/* Barre de progression du budget */}
-      <View style={[styles.progressCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
-        <View style={styles.progressHeader}>
-          <Text style={[styles.progressTitle, { color: colors.text }]}>Utilisation du budget</Text>
-          <Text style={[styles.progressPercentage, { color: colors.primary }]}>
-              {budgetUsagePercentage.toFixed(1)}%
-            </Text>
-          </View>
-        <View style={[styles.progressBarContainer, { backgroundColor: colors.border }]}>
-            <View
-            style={[
-              styles.progressBarFill,
-              {
-                width: `${Math.min(budgetUsagePercentage, 100)}%`,
-                backgroundColor:
+      <View
+        className="rounded-[20px] p-6 border"
+        style={{
+          backgroundColor: colors.card,
+          borderColor: colors.cardBorder,
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 12,
+          elevation: 4,
+        }}
+      >
+        <View className="flex-row justify-between items-center mb-4">
+          <Text
+            className="text-lg font-bold"
+            style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+          >
+            Utilisation du budget
+          </Text>
+          <Text
+            className="text-lg font-bold"
+            style={{ color: colors.primary, fontFamily: "Ubuntu-Bold" }}
+          >
+            {budgetUsagePercentage.toFixed(1)}%
+          </Text>
+        </View>
+        <View
+          className="h-3 rounded-md overflow-hidden mb-3"
+          style={{ backgroundColor: colors.border }}
+        >
+          <View
+            className="h-full rounded-md"
+            style={{
+              width: `${Math.min(budgetUsagePercentage, 100)}%`,
+              backgroundColor:
                 budgetUsagePercentage > 100
-                    ? colors.error
+                  ? colors.error
                   : budgetUsagePercentage > 80
                     ? colors.primaryDark
                     : colors.primary,
-              },
-            ]}
-            />
-          </View>
-        <View style={styles.progressLabels}>
-          <Text style={[styles.progressLabel, { color: colors.textSecondary }]}>0€</Text>
-          <Text style={[styles.progressLabel, { color: colors.textSecondary }]}>{tripBudget}€</Text>
+            }}
+          />
+        </View>
+        <View className="flex-row justify-between">
+          <Text
+            className="text-xs"
+            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+          >
+            0€
+          </Text>
+          <Text
+            className="text-xs"
+            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+          >
+            {tripBudget}€
+          </Text>
         </View>
       </View>
 
       {/* Répartition et Top dépenses */}
-      <View style={styles.detailsRow}>
-        <View style={[styles.detailCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
-          <Text style={[styles.detailCardTitle, { color: colors.text }]}>Répartition</Text>
-          <View style={styles.distributionList}>
-            <View style={styles.distributionItem}>
-              <View style={[styles.distributionDot, { backgroundColor: colors.primary }]} />
-              <View style={styles.distributionContent}>
-                <Text style={[styles.distributionLabel, { color: colors.textSecondary }]}>Destinations</Text>
-                <Text style={[styles.distributionValue, { color: colors.text }]}>{totalPlacesCost}€</Text>
+      <View className="gap-4">
+        <View
+          className="rounded-[20px] p-5 border"
+          style={{
+            backgroundColor: colors.card,
+            borderColor: colors.cardBorder,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 4,
+          }}
+        >
+          <Text
+            className="text-lg font-bold mb-4"
+            style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+          >
+            Répartition
+          </Text>
+          <View className="gap-4">
+            <View className="flex-row items-center">
+              <View
+                className="w-3 h-3 rounded-full mr-3"
+                style={{ backgroundColor: colors.primary }}
+              />
+              <View className="flex-1 flex-row justify-between items-center">
+                <Text
+                  className="text-sm"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                >
+                  Destinations
+                </Text>
+                <Text
+                  className="text-[15px] font-semibold"
+                  style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                >
+                  {totalPlacesCost}€
+                </Text>
               </View>
             </View>
-            <View style={styles.distributionItem}>
-              <View style={[styles.distributionDot, { backgroundColor: "#fb923c" }]} />
-              <View style={styles.distributionContent}>
-                <Text style={[styles.distributionLabel, { color: colors.textSecondary }]}>Activités</Text>
-                <Text style={[styles.distributionValue, { color: colors.text }]}>{totalActivitiesCost}€</Text>
+            <View className="flex-row items-center">
+              <View
+                className="w-3 h-3 rounded-full mr-3"
+                style={{ backgroundColor: "#fb923c" }}
+              />
+              <View className="flex-1 flex-row justify-between items-center">
+                <Text
+                  className="text-sm"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                >
+                  Activités
+                </Text>
+                <Text
+                  className="text-[15px] font-semibold"
+                  style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                >
+                  {totalActivitiesCost}€
+                </Text>
               </View>
             </View>
-            <View style={styles.distributionItem}>
-              <View style={[styles.distributionDot, { backgroundColor: "#fdba74" }]} />
-              <View style={styles.distributionContent}>
-                <Text style={[styles.distributionLabel, { color: colors.textSecondary }]}>Dépenses</Text>
-                <Text style={[styles.distributionValue, { color: colors.text }]}>{totalExpensesCost}€</Text>
+            <View className="flex-row items-center">
+              <View
+                className="w-3 h-3 rounded-full mr-3"
+                style={{ backgroundColor: "#fdba74" }}
+              />
+              <View className="flex-1 flex-row justify-between items-center">
+                <Text
+                  className="text-sm"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                >
+                  Dépenses
+                </Text>
+                <Text
+                  className="text-[15px] font-semibold"
+                  style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                >
+                  {totalExpensesCost}€
+                </Text>
               </View>
             </View>
           </View>
         </View>
 
-        <View style={[styles.detailCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
-          <Text style={[styles.detailCardTitle, { color: colors.text }]}>Top 5 dépenses</Text>
-          <View style={styles.topExpensesList}>
+        <View
+          className="rounded-[20px] p-5 border"
+          style={{
+            backgroundColor: colors.card,
+            borderColor: colors.cardBorder,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 4,
+          }}
+        >
+          <Text
+            className="text-lg font-bold mb-4"
+            style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+          >
+            Top 5 dépenses
+          </Text>
+          <View className="gap-3">
             {topExpenses.length > 0 ? (
               topExpenses.map((expense, index) => {
-              const name = "name" in expense ? expense.name : expense.title;
-              const price = "price" in expense ? expense.price : expense.amount;
+                const name = "name" in expense ? expense.name : expense.title;
+                const price = "price" in expense ? expense.price : expense.amount;
 
-              return (
-                  <View key={expense.id} style={styles.topExpenseItem}>
-                    <View style={[styles.topExpenseRank, { backgroundColor: colors.card }]}>
-                      <Text style={[styles.topExpenseRankText, { color: colors.textSecondary }]}>{index + 1}</Text>
+                return (
+                  <View key={expense.id} className="flex-row items-center py-2">
+                    <View
+                      className="w-7 h-7 rounded-full justify-center items-center mr-3"
+                      style={{ backgroundColor: colors.card }}
+                    >
+                      <Text
+                        className="text-xs font-bold"
+                        style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Bold" }}
+                      >
+                        {index + 1}
+                      </Text>
                     </View>
-                    <View style={styles.topExpenseContent}>
-                      <Text style={[styles.topExpenseName, { color: colors.text }]} numberOfLines={1}>
+                    <View className="flex-1 mr-2">
+                      <Text
+                        className="text-sm font-semibold mb-0.5"
+                        style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                        numberOfLines={1}
+                      >
                         {name}
-                    </Text>
-                  {"paid_by_user_id" in expense && (
-                        <Text style={[styles.topExpenseDescription, { color: colors.textSecondary }]} numberOfLines={1}>
-                      {getExpenseDescription(expense)}
-                    </Text>
-                  )}
+                      </Text>
+                      {"paid_by_user_id" in expense && (
+                        <Text
+                          className="text-[11px]"
+                          style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                          numberOfLines={1}
+                        >
+                          {getExpenseDescription(expense)}
+                        </Text>
+                      )}
                     </View>
-                    <Text style={[styles.topExpensePrice, { color: colors.primary }]}>{price}€</Text>
-                </View>
-              );
+                    <Text
+                      className="text-[15px] font-bold"
+                      style={{ color: colors.primary, fontFamily: "Ubuntu-Bold" }}
+                    >
+                      {price}€
+                    </Text>
+                  </View>
+                );
               })
             ) : (
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Aucune dépense</Text>
+              <Text
+                className="text-sm italic text-center py-5"
+                style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+              >
+                Aucune dépense
+              </Text>
             )}
           </View>
         </View>
@@ -290,274 +533,58 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
 
       {/* Alertes */}
       {budgetUsagePercentage > 100 && (
-        <View style={[styles.alertCardError, { backgroundColor: colors.error + "20", borderColor: colors.error }]}>
-          <AlertTriangle size={20} color={colors.error} />
-          <View style={styles.alertContent}>
-            <Text style={[styles.alertTitle, { color: colors.error }]}>Budget dépassé !</Text>
-            <Text style={[styles.alertText, { color: colors.error }]}>
-                Vous avez dépassé votre budget de {Math.abs(remainingBudget)}€.
-                Considérez ajuster vos plans ou augmenter votre budget.
-              </Text>
+        <View
+          className="rounded-2xl p-5 flex-row border"
+          style={{
+            backgroundColor: colors.error + "20",
+            borderColor: colors.error,
+          }}
+        >
+          <AlertTriangle size={20} color={colors.error} style={{ marginRight: 12, marginTop: 2 }} />
+          <View className="flex-1">
+            <Text
+              className="text-base font-bold mb-1.5"
+              style={{ color: colors.error, fontFamily: "Ubuntu-Bold" }}
+            >
+              Budget dépassé !
+            </Text>
+            <Text
+              className="text-sm leading-5"
+              style={{ color: colors.error, fontFamily: "Ubuntu-Regular" }}
+            >
+              Vous avez dépassé votre budget de {Math.abs(remainingBudget)}€.
+              Considérez ajuster vos plans ou augmenter votre budget.
+            </Text>
           </View>
         </View>
       )}
 
       {budgetUsagePercentage > 80 && budgetUsagePercentage <= 100 && (
-        <View style={[styles.alertCardWarning, { backgroundColor: colors.primaryLight + "40", borderColor: colors.primary }]}>
-          <AlertTriangle size={20} color={colors.primaryDark} />
-          <View style={styles.alertContent}>
-            <Text style={[styles.alertTitle, { color: colors.primaryDark }]}>Budget presque épuisé</Text>
-            <Text style={[styles.alertText, { color: colors.primaryDark }]}>
+        <View
+          className="rounded-2xl p-5 flex-row border"
+          style={{
+            backgroundColor: colors.primaryLight + "40",
+            borderColor: colors.primary,
+          }}
+        >
+          <AlertTriangle size={20} color={colors.primaryDark} style={{ marginRight: 12, marginTop: 2 }} />
+          <View className="flex-1">
+            <Text
+              className="text-base font-bold mb-1.5"
+              style={{ color: colors.primaryDark, fontFamily: "Ubuntu-Bold" }}
+            >
+              Budget presque épuisé
+            </Text>
+            <Text
+              className="text-sm leading-5"
+              style={{ color: colors.primaryDark, fontFamily: "Ubuntu-Regular" }}
+            >
               Vous avez utilisé {budgetUsagePercentage.toFixed(1)}% de votre budget.
               Il ne vous reste que {remainingBudget}€.
-              </Text>
+            </Text>
           </View>
         </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    gap: 20,
-  },
-  loadingContainer: {
-    padding: 40,
-    alignItems: "center",
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  errorContainer: {
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
-  },
-  errorText: {
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 4,
-    letterSpacing: -0.3,
-  },
-  statsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  statCard: {
-    borderRadius: 16,
-    padding: 16,
-    flex: 1,
-    minWidth: "47%",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-    borderWidth: 1,
-  },
-  statLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-    marginBottom: 8,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    letterSpacing: -0.5,
-  },
-  statPercentage: {
-    fontSize: 12,
-    marginTop: 4,
-    fontFamily: "Ubuntu-Regular",
-  },
-  statSubtext: {
-    fontSize: 12,
-    marginTop: 4,
-    fontFamily: "Ubuntu-Regular",
-  },
-  progressCard: {
-    borderRadius: 20,
-    padding: 24,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-  },
-  progressHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  progressTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-  },
-  progressPercentage: {
-    fontSize: 18,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-  },
-  progressBarContainer: {
-    height: 12,
-    borderRadius: 6,
-    overflow: "hidden",
-    marginBottom: 12,
-  },
-  progressBarFill: {
-    height: "100%",
-    borderRadius: 6,
-  },
-  progressLabels: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  progressLabel: {
-    fontSize: 12,
-    fontFamily: "Ubuntu-Regular",
-  },
-  detailsRow: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  detailCard: {
-    borderRadius: 20,
-    padding: 20,
-    flex: 1,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-  },
-  detailCardTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 16,
-  },
-  distributionList: {
-    gap: 16,
-  },
-  distributionItem: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  distributionDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 12,
-  },
-  distributionContent: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  distributionLabel: {
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  distributionValue: {
-    fontSize: 15,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-  },
-  topExpensesList: {
-    gap: 12,
-  },
-  topExpenseItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-  },
-  topExpenseRank: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  topExpenseRankText: {
-    fontSize: 12,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-  },
-  topExpenseContent: {
-    flex: 1,
-    marginRight: 8,
-  },
-  topExpenseName: {
-    fontSize: 14,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-    marginBottom: 2,
-  },
-  topExpenseDescription: {
-    fontSize: 11,
-    fontFamily: "Ubuntu-Regular",
-  },
-  topExpensePrice: {
-    fontSize: 15,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-  },
-  emptyText: {
-    fontSize: 14,
-    fontStyle: "italic",
-    textAlign: "center",
-    paddingVertical: 20,
-    fontFamily: "Ubuntu-Regular",
-  },
-  alertCardError: {
-    borderRadius: 16,
-    padding: 20,
-    flexDirection: "row",
-    borderWidth: 1,
-  },
-  alertCardWarning: {
-    borderRadius: 16,
-    padding: 20,
-    flexDirection: "row",
-    borderWidth: 1,
-  },
-  alertContent: {
-    flex: 1,
-  },
-  alertTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 6,
-  },
-  alertText: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontFamily: "Ubuntu-Regular",
-  },
-});

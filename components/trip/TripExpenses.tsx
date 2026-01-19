@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
   Alert,
@@ -93,10 +92,13 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.loadingContainer}>
+      <View className="gap-5">
+        <View className="p-10 items-center">
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          <Text
+            className="mt-3 text-sm"
+            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+          >
             Chargement des dépenses...
           </Text>
         </View>
@@ -106,17 +108,20 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
 
   if (error) {
     return (
-      <View style={styles.container}>
+      <View className="gap-5">
         <View
-          style={[
-            styles.errorContainer,
-            {
-              backgroundColor: colors.error + "20",
-              borderColor: colors.error,
-            },
-          ]}
+          className="border rounded-xl p-4"
+          style={{
+            backgroundColor: colors.error + "20",
+            borderColor: colors.error,
+          }}
         >
-          <Text style={[styles.errorText, { color: colors.error }]}>Erreur: {error}</Text>
+          <Text
+            className="text-sm text-center"
+            style={{ color: colors.error, fontFamily: "Ubuntu-Regular" }}
+          >
+            Erreur: {error}
+          </Text>
         </View>
       </View>
     );
@@ -125,124 +130,178 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
   const totalExpenses = expenses.reduce((total, expense) => total + expense.amount, 0);
 
   return (
-    <View style={styles.container}>
+    <View className="gap-5">
       {/* Carte d'en-tête */}
       <View
-        style={[
-          styles.headerCard,
-          {
-            backgroundColor: colors.card,
-            borderColor: colors.cardBorder,
-            shadowColor: colors.shadow,
-          },
-        ]}
+        className="rounded-[20px] p-6 flex-row justify-between items-start border"
+        style={{
+          backgroundColor: colors.card,
+          borderColor: colors.cardBorder,
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 12,
+          elevation: 4,
+        }}
       >
-        <View style={styles.headerContent}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Gestion des dépenses</Text>
-          <Text style={[styles.headerDescription, { color: colors.textSecondary }]}>
+        <View className="flex-1 mr-4">
+          <Text
+            className="text-2xl font-bold mb-2"
+            style={{ color: colors.text, fontFamily: "Ubuntu-Bold", letterSpacing: -0.3 }}
+          >
+            Gestion des dépenses
+          </Text>
+          <Text
+            className="text-sm leading-5"
+            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+          >
             Suivez et gérez toutes les dépenses de votre voyage
-        </Text>
+          </Text>
         </View>
         <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: colors.primary }]}
+          className="flex-row items-center px-4 py-3 rounded-xl"
+          style={{
+            backgroundColor: colors.primary,
+            shadowColor: "#f97316",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 3,
+          }}
           onPress={handleAddExpense}
           activeOpacity={0.8}
         >
-          <Text style={styles.addButtonIcon}>+</Text>
-          <Text style={styles.addButtonText}>Ajouter</Text>
+          <Text
+            className="text-white text-lg font-bold mr-1.5"
+            style={{ fontFamily: "Ubuntu-Bold" }}
+          >
+            +
+          </Text>
+          <Text
+            className="text-white text-sm font-semibold"
+            style={{ fontFamily: "Ubuntu-Medium" }}
+          >
+            Ajouter
+          </Text>
         </TouchableOpacity>
       </View>
 
       {expenses.length === 0 ? (
         <View
-          style={[
-            styles.emptyContainer,
-            {
-              backgroundColor: colors.card,
-              borderColor: colors.cardBorder,
-              shadowColor: colors.shadow,
-            },
-          ]}
+          className="rounded-[20px] p-8 items-center border"
+          style={{
+            backgroundColor: colors.card,
+            borderColor: colors.cardBorder,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 4,
+          }}
         >
           <Wallet size={64} color={colors.primary} />
-          <Text style={[styles.emptyTitle, { color: colors.text }]}>
+          <Text
+            className="text-xl font-bold mb-2 text-center"
+            style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+          >
             Aucune dépense enregistrée
           </Text>
-          <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+          <Text
+            className="text-[15px] text-center"
+            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+          >
             Commencez par ajouter vos premières dépenses pour ce voyage !
           </Text>
         </View>
       ) : (
         <ScrollView
-          style={styles.expensesList}
+          className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.expensesListContent}
+          contentContainerStyle={{ gap: 16, paddingBottom: 20 }}
         >
           {expenses.map((expense) => (
             <View
               key={expense.id}
-              style={[
-                styles.expenseCard,
-                {
-                  backgroundColor: colors.card,
-                  borderColor: colors.cardBorder,
-                  shadowColor: colors.shadow,
-                },
-              ]}
+              className="rounded-[20px] p-5 border"
+              style={{
+                backgroundColor: colors.card,
+                borderColor: colors.cardBorder,
+                shadowColor: colors.shadow,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.08,
+                shadowRadius: 12,
+                elevation: 4,
+              }}
             >
-              <View style={styles.expenseHeader}>
+              <View className="flex-row items-start">
                 <View
-                  style={[
-                    styles.categoryIconContainer,
-                    {
-                      backgroundColor: expense.category?.color || colors.primary,
-                    },
-                  ]}
+                  className="w-12 h-12 rounded-full justify-center items-center mr-3"
+                  style={{
+                    backgroundColor: expense.category?.color || colors.primary,
+                  }}
                 >
                   <Wallet size={20} color="#ffffff" />
                 </View>
-                <View style={styles.expenseInfo}>
-                  <Text style={[styles.expenseTitle, { color: colors.text }]}>
+                <View className="flex-1 mr-3">
+                  <Text
+                    className="text-lg font-bold mb-1"
+                    style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+                  >
                     {expense.title}
                   </Text>
                   {expense.description && (
-                    <Text style={[styles.expenseDescription, { color: colors.textSecondary }]}>
+                    <Text
+                      className="text-sm leading-5 mb-2"
+                      style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                    >
                       {expense.description}
                     </Text>
                   )}
-                  <View style={styles.expenseMeta}>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <View className="flex-row flex-wrap gap-3">
+                    <View className="flex-row items-center gap-1">
                       <Calendar size={12} color={colors.textSecondary} />
-                      <Text style={[styles.expenseMetaText, { color: colors.textSecondary }]}>
+                      <Text
+                        className="text-xs"
+                        style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                      >
                         {formatDate(expense.date)}
                       </Text>
                     </View>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                    <View className="flex-row items-center gap-1">
                       <User size={12} color={colors.textSecondary} />
-                      <Text style={[styles.expenseMetaText, { color: colors.textSecondary }]}>
+                      <Text
+                        className="text-xs"
+                        style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                      >
                         {expense.paid_by_user?.first_name ||
                           expense.paid_by_user?.email ||
                           "Inconnu"}
                       </Text>
                     </View>
                     {expense.category && (
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                      <View className="flex-row items-center gap-1">
                         <Tag size={12} color={colors.textSecondary} />
-                        <Text style={[styles.expenseMetaText, { color: colors.textSecondary }]}>
+                        <Text
+                          className="text-xs"
+                          style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                        >
                           {expense.category.name}
                         </Text>
                       </View>
                     )}
                   </View>
                 </View>
-                <View style={styles.expenseActions}>
-                  <Text style={[styles.expenseAmount, { color: colors.text }]}>
+                <View className="items-end gap-2">
+                  <Text
+                    className="text-xl font-bold"
+                    style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+                  >
                     {formatAmount(expense.amount)}
                   </Text>
                   <TouchableOpacity
                     onPress={() => handleDeleteExpense(expense.id)}
                     disabled={deletingExpenseId === expense.id}
-                    style={styles.deleteButton}
+                    className="p-2"
                     activeOpacity={0.7}
                   >
                     {deletingExpenseId === expense.id ? (
@@ -257,30 +316,32 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
               {/* Participants et parts */}
               {expense.shares && expense.shares.length > 0 && (
                 <View
-                  style={[
-                    styles.sharesContainer,
-                    {
-                      backgroundColor: colors.input,
-                      borderTopColor: colors.border,
-                    },
-                  ]}
+                  className="mt-4 pt-4 border-t"
+                  style={{
+                    backgroundColor: colors.input,
+                    borderTopColor: colors.border,
+                  }}
                 >
-                  <Text style={[styles.sharesTitle, { color: colors.textSecondary }]}>
+                  <Text
+                    className="text-xs font-semibold mb-2"
+                    style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                  >
                     Répartition entre {expense.shares.length} participant(s) :
                   </Text>
-                  <View style={styles.sharesList}>
+                  <View className="flex-row flex-wrap gap-2">
                     {expense.shares.map((share) => (
                       <View
                         key={share.id}
-                        style={[
-                          styles.shareBadge,
-                          {
-                            backgroundColor: colors.card,
-                            borderColor: colors.border,
-                          },
-                        ]}
+                        className="px-3 py-1.5 rounded-xl border"
+                        style={{
+                          backgroundColor: colors.card,
+                          borderColor: colors.border,
+                        }}
                       >
-                        <Text style={[styles.shareText, { color: colors.textSecondary }]}>
+                        <Text
+                          className="text-xs"
+                          style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                        >
                           {share.user?.first_name || share.user?.email} :{" "}
                           {formatAmount(share.share_amount)}
                         </Text>
@@ -294,25 +355,32 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
 
           {/* Résumé des dépenses */}
           <View
-            style={[
-              styles.summaryCard,
-              {
-                backgroundColor: colors.primaryLight + "40",
-                borderColor: colors.primary,
-              },
-            ]}
+            className="rounded-[20px] p-5 border mt-2"
+            style={{
+              backgroundColor: colors.primaryLight + "40",
+              borderColor: colors.primary,
+            }}
           >
-            <View style={styles.summaryContent}>
+            <View className="flex-row justify-between items-center">
               <View>
-                <Text style={[styles.summaryTitle, { color: colors.primaryDark }]}>
+                <Text
+                  className="text-lg font-bold mb-1"
+                  style={{ color: colors.primaryDark, fontFamily: "Ubuntu-Bold" }}
+                >
                   Total des dépenses
                 </Text>
-                <Text style={[styles.summarySubtitle, { color: colors.primaryDark }]}>
+                <Text
+                  className="text-sm"
+                  style={{ color: colors.primaryDark, fontFamily: "Ubuntu-Regular" }}
+                >
                   {expenses.length} dépense{expenses.length > 1 ? "s" : ""} enregistrée
                   {expenses.length > 1 ? "s" : ""}
                 </Text>
               </View>
-              <Text style={[styles.summaryAmount, { color: colors.primaryDark }]}>
+              <Text
+                className="text-2xl font-bold"
+                style={{ color: colors.primaryDark, fontFamily: "Ubuntu-Bold" }}
+              >
                 {formatAmount(totalExpenses)}
               </Text>
             </View>
@@ -330,232 +398,3 @@ export default function TripExpenses({ tripId, tripName }: TripExpensesProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    gap: 20,
-  },
-  loadingContainer: {
-    padding: 40,
-    alignItems: "center",
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  errorContainer: {
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
-  },
-  errorText: {
-    fontSize: 14,
-    textAlign: "center",
-    fontFamily: "Ubuntu-Regular",
-  },
-  headerCard: {
-    borderRadius: 20,
-    padding: 24,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-  },
-  headerContent: {
-    flex: 1,
-    marginRight: 16,
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 8,
-    letterSpacing: -0.3,
-  },
-  headerDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontFamily: "Ubuntu-Regular",
-  },
-  addButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    shadowColor: "#f97316",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  addButtonIcon: {
-    color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginRight: 6,
-  },
-  addButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-  },
-  emptyContainer: {
-    borderRadius: 20,
-    padding: 32,
-    alignItems: "center",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  emptySubtitle: {
-    fontSize: 15,
-    textAlign: "center",
-    fontFamily: "Ubuntu-Regular",
-  },
-  expensesList: {
-    flex: 1,
-  },
-  expensesListContent: {
-    gap: 16,
-    paddingBottom: 20,
-  },
-  expenseCard: {
-    borderRadius: 20,
-    padding: 20,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-  },
-  expenseHeader: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  categoryIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  expenseInfo: {
-    flex: 1,
-    marginRight: 12,
-  },
-  expenseTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 4,
-  },
-  expenseDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 8,
-    fontFamily: "Ubuntu-Regular",
-  },
-  expenseMeta: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  expenseMetaText: {
-    fontSize: 12,
-    fontFamily: "Ubuntu-Regular",
-  },
-  expenseActions: {
-    alignItems: "flex-end",
-    gap: 8,
-  },
-  expenseAmount: {
-    fontSize: 20,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-  },
-  deleteButton: {
-    padding: 8,
-  },
-  sharesContainer: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-  },
-  sharesTitle: {
-    fontSize: 12,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-    marginBottom: 8,
-  },
-  sharesList: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  shareBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  shareText: {
-    fontSize: 12,
-    fontFamily: "Ubuntu-Regular",
-  },
-  summaryCard: {
-    borderRadius: 20,
-    padding: 20,
-    borderWidth: 1,
-    marginTop: 8,
-  },
-  summaryContent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  summaryTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 4,
-  },
-  summarySubtitle: {
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  summaryAmount: {
-    fontSize: 24,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-  },
-});

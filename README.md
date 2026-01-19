@@ -5,7 +5,7 @@ Application mobile React Native avec Expo pour la gestion de voyages en Indonés
 ## 🏗️ Structure du Projet
 
 ```
-trip-indo-mobile/
+trip-mate-mobile/
 ├── app/                    # Navigation et écrans (Expo Router)
 │   ├── (tabs)/            # Navigation par onglets
 │   │   ├── _layout.tsx    # Layout des onglets

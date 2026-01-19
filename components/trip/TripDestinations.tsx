@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Trip } from "../../src/types/trip";
 import { Destination } from "../../src/types/destination";
 import { useTheme } from "../../src/contexts/ThemeContext";
@@ -34,9 +34,12 @@ export default function TripDestinations({
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="p-10 items-center">
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+        <Text
+          className="mt-3 text-sm"
+          style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+        >
           Chargement des destinations...
         </Text>
       </View>
@@ -45,26 +48,56 @@ export default function TripDestinations({
 
   if (error) {
     return (
-      <View style={[styles.errorContainer, { backgroundColor: colors.error + "20", borderColor: colors.error }]}>
-        <Text style={[styles.errorText, { color: colors.error }]}>Erreur: {error}</Text>
+      <View
+        className="border rounded-2xl p-4"
+        style={{
+          backgroundColor: colors.error + "20",
+          borderColor: colors.error,
+        }}
+      >
+        <Text
+          className="text-sm text-center"
+          style={{ color: colors.error, fontFamily: "Ubuntu-Regular" }}
+        >
+          Erreur: {error}
+        </Text>
       </View>
     );
   }
 
   if (destinations.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
+      <View className="items-center py-16 px-6">
         <Map size={64} color={colors.primary} />
-        <Text style={[styles.emptyTitle, { color: colors.text }]}>Aucune destination ajoutée</Text>
-        <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+        <Text
+          className="text-2xl font-bold mb-2 text-center"
+          style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+        >
+          Aucune destination ajoutée
+        </Text>
+        <Text
+          className="text-[15px] mb-8 text-center"
+          style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+        >
           Commencez par ajouter vos premières destinations !
         </Text>
         <TouchableOpacity
-          style={[styles.emptyButton, { backgroundColor: colors.primary }]}
+          className="px-8 py-3.5 rounded-xl"
+          style={{
+            backgroundColor: colors.primary,
+            shadowColor: "#f97316",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+            elevation: 4,
+          }}
           onPress={handleAddDestination}
           activeOpacity={0.8}
         >
-          <Text style={styles.emptyButtonText}>
+          <Text
+            className="text-white text-base font-semibold"
+            style={{ fontFamily: "Ubuntu-Medium" }}
+          >
             Ajouter ma première destination
           </Text>
         </TouchableOpacity>
@@ -73,80 +106,164 @@ export default function TripDestinations({
   }
 
   return (
-    <View style={styles.container}>
+    <View className="gap-5">
       {/* En-tête des destinations */}
-      <View style={[styles.headerCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
-        <View style={styles.headerContent}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Destinations du voyage</Text>
-          <Text style={[styles.headerDescription, { color: colors.textSecondary }]}>
+      <View
+        className="rounded-[20px] p-6 flex-row justify-between items-start border"
+        style={{
+          backgroundColor: colors.card,
+          borderColor: colors.cardBorder,
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.08,
+          shadowRadius: 12,
+          elevation: 4,
+        }}
+      >
+        <View className="flex-1 mr-4">
+          <Text
+            className="text-2xl font-bold mb-2"
+            style={{ color: colors.text, fontFamily: "Ubuntu-Bold", letterSpacing: -0.3 }}
+          >
+            Destinations du voyage
+          </Text>
+          <Text
+            className="text-sm leading-5"
+            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+          >
             Gérez vos lieux de visite et leurs activités
           </Text>
         </View>
         <TouchableOpacity
-          style={[styles.addButton, { backgroundColor: colors.primary }]}
+          className="flex-row items-center px-4 py-3 rounded-xl"
+          style={{
+            backgroundColor: colors.primary,
+            shadowColor: "#f97316",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.2,
+            shadowRadius: 4,
+            elevation: 3,
+          }}
           onPress={handleAddDestination}
           activeOpacity={0.8}
         >
-          <Text style={styles.addButtonIcon}>+</Text>
-          <Text style={styles.addButtonText}>Ajouter</Text>
+          <Text
+            className="text-white text-lg font-bold mr-1.5"
+            style={{ fontFamily: "Ubuntu-Bold" }}
+          >
+            +
+          </Text>
+          <Text
+            className="text-white text-sm font-semibold"
+            style={{ fontFamily: "Ubuntu-Medium" }}
+          >
+            Ajouter
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* Liste des destinations */}
-      <View style={styles.destinationsList}>
+      <View className="gap-4">
         {destinations.map((destination) => (
-          <View key={destination.id} style={[styles.destinationCard, { backgroundColor: colors.card, borderColor: colors.cardBorder, shadowColor: colors.shadow }]}>
-            <View style={styles.destinationContent}>
-              <View style={styles.destinationHeader}>
-                <View style={styles.destinationTitleSection}>
-                  <Text style={[styles.destinationTitle, { color: colors.text }]}>
-                  {destination.name}
-                </Text>
-                {destination.description && (
-                    <Text style={[styles.destinationDescription, { color: colors.textSecondary }]} numberOfLines={2}>
-                    {destination.description}
+          <View
+            key={destination.id}
+            className="rounded-[20px] p-6 border"
+            style={{
+              backgroundColor: colors.card,
+              borderColor: colors.cardBorder,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.08,
+              shadowRadius: 12,
+              elevation: 4,
+            }}
+          >
+            <View className="gap-4">
+              <View className="flex-row justify-between items-start">
+                <View className="flex-1 mr-4">
+                  <Text
+                    className="text-2xl font-bold mb-2"
+                    style={{ color: colors.text, fontFamily: "Ubuntu-Bold", letterSpacing: -0.3 }}
+                  >
+                    {destination.name}
                   </Text>
-                )}
+                  {destination.description && (
+                    <Text
+                      className="text-sm leading-5"
+                      style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                      numberOfLines={2}
+                    >
+                      {destination.description}
+                    </Text>
+                  )}
                 </View>
-                <View style={styles.destinationPriceSection}>
-                  <Text style={[styles.destinationPrice, { color: colors.text }]}>
+                <View className="items-end">
+                  <Text
+                    className="text-2xl font-bold mb-1"
+                    style={{ color: colors.text, fontFamily: "Ubuntu-Bold", letterSpacing: -0.5 }}
+                  >
                     {destination.price || 0}€
                   </Text>
                   {destination.price && (
-                    <Text style={[styles.destinationPercentage, { color: colors.textSecondary }]}>
+                    <Text
+                      className="text-xs font-medium"
+                      style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                    >
                       {((destination.price / trip.budget) * 100).toFixed(1)}% du budget
                     </Text>
                   )}
                 </View>
               </View>
 
-              <View style={[styles.destinationMeta, { borderTopColor: colors.border }]}>
-                <View style={styles.metaItem}>
-                  <View style={[styles.metaIconContainer, { backgroundColor: colors.card }]}>
+              <View
+                className="gap-3 pt-4 border-t"
+                style={{ borderTopColor: colors.border }}
+              >
+                <View className="flex-row items-center">
+                  <View
+                    className="w-9 h-9 rounded-full justify-center items-center mr-3"
+                    style={{ backgroundColor: colors.card }}
+                  >
                     <MapPin size={16} color={colors.textSecondary} />
                   </View>
-                  <Text style={[styles.metaText, { color: colors.textSecondary }]} numberOfLines={1}>
+                  <Text
+                    className="flex-1 text-sm font-medium"
+                    style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                    numberOfLines={1}
+                  >
                     {destination.address || "Adresse non renseignée"}
                   </Text>
                 </View>
                 {destination.country && (
-                  <View style={styles.metaItem}>
-                    <View style={[styles.metaIconContainer, { backgroundColor: colors.card }]}>
+                  <View className="flex-row items-center">
+                    <View
+                      className="w-9 h-9 rounded-full justify-center items-center mr-3"
+                      style={{ backgroundColor: colors.card }}
+                    >
                       <Globe size={16} color={colors.textSecondary} />
                     </View>
-                    <Text style={[styles.metaText, { color: colors.textSecondary }]}>
+                    <Text
+                      className="flex-1 text-sm font-medium"
+                      style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                    >
                       {destination.country}
                     </Text>
                   </View>
                 )}
                 {destination.price && (
-                  <View style={styles.metaItem}>
-                    <View style={[styles.metaIconContainer, { backgroundColor: colors.card }]}>
+                  <View className="flex-row items-center">
+                    <View
+                      className="w-9 h-9 rounded-full justify-center items-center mr-3"
+                      style={{ backgroundColor: colors.card }}
+                    >
                       <Wallet size={16} color={colors.textSecondary} />
-              </View>
-                    <Text style={[styles.metaText, { color: colors.textSecondary }]}>
-                  {destination.price}€
-                </Text>
+                    </View>
+                    <Text
+                      className="flex-1 text-sm font-medium"
+                      style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                    >
+                      {destination.price}€
+                    </Text>
                   </View>
                 )}
               </View>
@@ -165,201 +282,3 @@ export default function TripDestinations({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    gap: 20,
-  },
-  loadingContainer: {
-    padding: 40,
-    alignItems: "center",
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 14,
-    fontFamily: "Ubuntu-Regular",
-  },
-  errorContainer: {
-    borderWidth: 1,
-    borderRadius: 16,
-    padding: 16,
-  },
-  errorText: {
-    fontSize: 14,
-    textAlign: "center",
-    fontFamily: "Ubuntu-Regular",
-  },
-  emptyContainer: {
-    alignItems: "center",
-    paddingVertical: 64,
-    paddingHorizontal: 24,
-  },
-  emptyTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 8,
-    textAlign: "center",
-  },
-  emptySubtitle: {
-    fontSize: 15,
-    marginBottom: 32,
-    textAlign: "center",
-    fontFamily: "Ubuntu-Regular",
-  },
-  emptyButton: {
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    borderRadius: 12,
-    shadowColor: "#f97316",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  emptyButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-  },
-  headerCard: {
-    borderRadius: 20,
-    padding: 24,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-  },
-  headerContent: {
-    flex: 1,
-    marginRight: 16,
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 8,
-    letterSpacing: -0.3,
-  },
-  headerDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontFamily: "Ubuntu-Regular",
-  },
-  addButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    shadowColor: "#f97316",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  addButtonIcon: {
-    color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginRight: 6,
-  },
-  addButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "600",
-    fontFamily: "Ubuntu-Medium",
-  },
-  destinationsList: {
-    gap: 16,
-  },
-  destinationCard: {
-    borderRadius: 20,
-    padding: 24,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-  },
-  destinationContent: {
-    gap: 16,
-  },
-  destinationHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  destinationTitleSection: {
-    flex: 1,
-    marginRight: 16,
-  },
-  destinationTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 8,
-    letterSpacing: -0.3,
-  },
-  destinationDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontFamily: "Ubuntu-Regular",
-  },
-  destinationPriceSection: {
-    alignItems: "flex-end",
-  },
-  destinationPrice: {
-    fontSize: 24,
-    fontWeight: "700",
-    fontFamily: "Ubuntu-Bold",
-    marginBottom: 4,
-    letterSpacing: -0.5,
-  },
-  destinationPercentage: {
-    fontSize: 12,
-    fontWeight: "500",
-    fontFamily: "Ubuntu-Medium",
-  },
-  destinationMeta: {
-    gap: 12,
-    paddingTop: 16,
-    borderTopWidth: 1,
-  },
-  metaItem: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  metaIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  metaText: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: "500",
-    fontFamily: "Ubuntu-Medium",
-  },
-});
