@@ -166,17 +166,19 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
   };
 
   return (
-    <View className="gap-6" style={{ width: "100%" }}>
+    <View 
+      className="gap-6 pt-2"
+      style={{
+        backgroundColor: colors.background + "00", // Transparent mais permet d'ajouter un fond si besoin
+      }}
+    >
       {/* Titre de section */}
       <Text
-        className="text-base font-bold"
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.75}
+        className="text-[28px] text-center font-bold mb-1" 
         style={{ 
           color: colors.text, 
           fontFamily: "Ubuntu-Bold",
-          flexShrink: 1,
+          letterSpacing: -0.5,
         }}
       >
         Statistiques du voyage
@@ -313,7 +315,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
 
       {/* Barre de progression du budget */}
       <View
-        className="rounded-[20px] p-6 border"
+        className="rounded-[20px] p-6 border mt-6"
         style={{
           backgroundColor: colors.card,
           borderColor: colors.cardBorder,
@@ -324,7 +326,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
           elevation: 4,
         }}
       >
-        <View className="flex-row justify-between items-center mb-4">
+        <View className="flex-row justify-between items-center mb-5">
           <Text
             className="text-lg font-bold"
             style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
@@ -339,7 +341,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
           </Text>
         </View>
         <View
-          className="h-3 rounded-md overflow-hidden mb-3"
+          className="h-3.5 rounded-md overflow-hidden mb-4"
           style={{ backgroundColor: colors.border }}
         >
           <View
@@ -355,7 +357,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
             }}
           />
         </View>
-        <View className="flex-row justify-between">
+        <View className="flex-row justify-between items-center">
           <Text
             className="text-xs"
             style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}

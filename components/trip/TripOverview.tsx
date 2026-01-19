@@ -180,6 +180,52 @@ export default function TripOverview({
         </View>
       </View>
 
+      {/* Séparateur visuel élégant avec design sophistiqué */}
+      <View className="my-8">
+        <View className="flex-row items-center">
+          <View 
+            className="flex-1 h-[1.5px]" 
+            style={{ 
+              backgroundColor: colors.border + "40",
+            }}
+          />
+          <View className="mx-6 items-center justify-center">
+            {/* Cercle extérieur avec bordure et effet de profondeur */}
+            <View 
+              className="w-6 h-6 rounded-full border-2 items-center justify-center" 
+              style={{ 
+                backgroundColor: colors.primary + "20",
+                borderColor: colors.primary + "50",
+                shadowColor: colors.primary,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.2,
+                shadowRadius: 4,
+                elevation: 2,
+              }}
+            >
+              {/* Cercle intérieur avec glow */}
+              <View 
+                className="w-3 h-3 rounded-full" 
+                style={{ 
+                  backgroundColor: colors.primary,
+                  shadowColor: colors.primary,
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.6,
+                  shadowRadius: 6,
+                  elevation: 4,
+                }}
+              />
+            </View>
+          </View>
+          <View 
+            className="flex-1 h-[1.5px]" 
+            style={{ 
+              backgroundColor: colors.border + "40",
+            }}
+          />
+        </View>
+      </View>
+
       {/* Statistiques du voyage */}
       <TripStats tripId={trip.id} tripBudget={trip.budget} />
 
