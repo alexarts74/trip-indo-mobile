@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { router } from "expo-router";
 import { Trip } from "../../src/types/trip";
 import { Destination } from "../../src/types/destination";
 import { useTheme } from "../../src/contexts/ThemeContext";
 import AddDestinationModal from "./AddDestinationModal";
-import { Map, MapPin, Globe, Wallet } from "lucide-react-native";
+import { Map, MapPin, Globe, Wallet, ChevronRight } from "lucide-react-native";
 
 interface TripDestinationsProps {
   trip: Trip;
@@ -165,7 +166,7 @@ export default function TripDestinations({
       {/* Liste des destinations */}
       <View className="gap-5">
         {destinations.map((destination) => (
-          <View
+          <TouchableOpacity
             key={destination.id}
             className="rounded-[20px] p-6 border"
             style={{
@@ -177,6 +178,8 @@ export default function TripDestinations({
               shadowRadius: 12,
               elevation: 4,
             }}
+            onPress={() => router.push(`/(tabs)/destination/${destination.id}`)}
+            activeOpacity={0.7}
           >
             <View className="gap-4">
               <View className="flex-row justify-between items-start">
@@ -267,8 +270,19 @@ export default function TripDestinations({
                   </View>
                 )}
               </View>
+
+              {/* Indicateur de navigation */}
+              <View className="flex-row items-center justify-end pt-2">
+                <Text
+                  className="text-xs font-medium mr-1"
+                  style={{ color: colors.primary, fontFamily: "Ubuntu-Medium" }}
+                >
+                  Voir le journal
+                </Text>
+                <ChevronRight size={14} color={colors.primary} />
+              </View>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
 

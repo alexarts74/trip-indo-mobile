@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,11 +6,14 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { router } from "expo-router";
 import { tripService } from "../src/services/tripService";
 import { Trip } from "../src/types/trip";
 import { useTheme } from "../src/contexts/ThemeContext";
+import { useAuth } from "../src/contexts/AuthContext";
+import { supabase } from "../src/lib/supabaseClient";
 import { ChevronRight, Plane, Globe, Calendar, Wallet } from "lucide-react-native";
 
 interface TripListProps {
@@ -20,12 +23,50 @@ interface TripListProps {
 export default function TripList({ onTripSelect }: TripListProps) {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
   const { colors } = useTheme();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchTrips();
-  }, []);
+
+    // Subscription pour les changements de voyages en temps réel
+    if (user?.id) {
+      const channel = supabase
+        .channel('trips-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'trips',
+          },
+          () => {
+            // Rafraîchir les voyages quand il y a un changement
+            fetchTripsQuietly();
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'trip_participants',
+            filter: `user_id=eq.${user.id}`,
+          },
+          () => {
+            // Rafraîchir quand l'utilisateur est ajouté/retiré d'un voyage
+            fetchTripsQuietly();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [user]);
 
   const fetchTrips = async () => {
     try {
@@ -39,6 +80,30 @@ export default function TripList({ onTripSelect }: TripListProps) {
       setIsLoading(false);
     }
   };
+
+  // Version silencieuse pour les updates en temps réel (sans loader)
+  const fetchTripsQuietly = async () => {
+    try {
+      const data = await tripService.getUserTrips();
+      setTrips(data);
+    } catch (error: any) {
+      console.error("Erreur rafraîchissement voyages:", error);
+    }
+  };
+
+  // Pull-to-refresh
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const data = await tripService.getUserTrips();
+      setTrips(data);
+      setError("");
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
 
   const openCreateTripPage = () => {
     router.push("/modal");
@@ -106,12 +171,12 @@ export default function TripList({ onTripSelect }: TripListProps) {
   if (trips.length === 0) {
     return (
       <View
-        className="items-center py-16 px-6"
-        style={{ backgroundColor: colors.background }}
+        className="flex-1 items-center justify-center px-6"
+        style={{ backgroundColor: colors.background, marginTop: -60 }}
       >
         <Globe size={64} color={colors.primary} />
         <Text
-          className="text-2xl font-bold mb-2 text-center"
+          className="text-2xl font-bold mb-2 text-center mt-4"
           style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
         >
           Aucun voyage créé
@@ -152,6 +217,14 @@ export default function TripList({ onTripSelect }: TripListProps) {
       style={{ backgroundColor: colors.background }}
       contentContainerStyle={{ paddingBottom: 16 }}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={[colors.primary]}
+          tintColor={colors.primary}
+        />
+      }
     >
       <View className="flex-row justify-between items-center mb-5">
         <Text

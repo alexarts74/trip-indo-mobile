@@ -8,6 +8,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ArrowLeft, ChevronRight, Plane, Wallet, MapPin, Sun, Moon, Mail, LogOut } from "lucide-react-native";
 import { router } from "expo-router";
 import { useTheme } from "@/src/contexts/ThemeContext";
@@ -17,6 +18,7 @@ import { supabase } from "@/src/lib/supabaseClient";
 export default function ProfileScreen() {
   const { theme, colors, toggleTheme } = useTheme();
   const { user, signOut } = useAuth();
+  const insets = useSafeAreaInsets();
   const [userProfile, setUserProfile] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -182,8 +184,9 @@ export default function ProfileScreen() {
 
       {/* Header */}
       <View
-        className="pt-[50px] pb-5 px-5 flex-row items-center border-b"
+        className="pb-5 px-5 flex-row items-center border-b"
         style={{
+          paddingTop: insets.top + 10,
           backgroundColor: colors.surface,
           borderBottomColor: colors.border,
           shadowColor: "#000",

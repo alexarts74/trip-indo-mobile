@@ -11,7 +11,7 @@ export interface TripInvitation {
   invitee_email: string;
   status: "pending" | "accepted" | "declined";
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
   trips?: {
     title: string;
     description?: string;
@@ -28,7 +28,7 @@ export interface Invitation {
   invitee_email: string;
   status: "pending" | "accepted" | "declined";
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
   trips: {
     title: string;
     description?: string;
@@ -165,7 +165,7 @@ export async function updateInvitationStatus(
 ): Promise<void> {
   const { error } = await supabase
     .from("trip_invitations")
-    .update({ status, updated_at: new Date().toISOString() })
+    .update({ status })
     .eq("id", invitationId);
 
   if (error) {

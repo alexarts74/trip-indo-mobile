@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StatusBar } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ArrowLeft, Sun, Moon, FilePlus, Inbox } from "lucide-react-native";
 import { router } from "expo-router";
 import TripParticipants from "@/components/trip/TripParticipants";
@@ -12,6 +13,7 @@ export default function ParticipantsScreen() {
   const { selectedTrip } = useTrip();
   const { theme, toggleTheme, colors } = useTheme();
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
   const [trip, setTrip] = useState<Trip | null>(null);
 
   useEffect(() => {
@@ -71,8 +73,9 @@ export default function ParticipantsScreen() {
       
       {/* Header principal avec greeting et actions */}
       <View
-        className="pt-[45px] pb-3 px-5 rounded-b-[20px]"
+        className="pb-3 px-5 rounded-b-[20px]"
         style={{
+          paddingTop: insets.top + 10,
           backgroundColor: colors.surface,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 2 },

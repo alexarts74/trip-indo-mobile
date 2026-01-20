@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, StatusBar } from "react-native";
-import { ArrowLeft, Sun, Moon, FilePlus, Inbox } from "lucide-react-native";
+import { View, Text, TouchableOpacity, ScrollView, StatusBar, Alert, ActivityIndicator } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ArrowLeft, Sun, Moon, FilePlus, Inbox, FileDown } from "lucide-react-native";
 import { router } from "expo-router";
 import TripOverview from "@/components/trip/TripOverview";
 import { useAuth } from "@/src/contexts/AuthContext";
@@ -8,16 +9,19 @@ import { useTrip } from "@/src/contexts/TripContext";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { Trip } from "@/src/types/trip";
 import { Destination } from "@/src/types/destination";
+import { pdfExportService } from "@/src/services/pdfExportService";
 
 export default function OverviewScreen() {
   const { user, loading, signOut } = useAuth();
   const { selectedTrip } = useTrip();
   const { theme, toggleTheme, colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     if (!selectedTrip) {
@@ -54,6 +58,19 @@ export default function OverviewScreen() {
   const handleBackToTrips = () => {
     console.log("handleBackToTrips");
     router.replace("/(main)");
+  };
+
+  const handleExportPDF = async () => {
+    if (!trip) return;
+    setIsExporting(true);
+    try {
+      await pdfExportService.exportTripToPDF(trip);
+    } catch (error: any) {
+      console.error("Error exporting PDF:", error);
+      Alert.alert("Erreur", "Impossible d'exporter le voyage en PDF");
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   // Extraire le nom d'utilisateur de l'email
@@ -129,8 +146,9 @@ export default function OverviewScreen() {
       
       {/* Header principal avec greeting et actions */}
       <View
-        className="pt-[45px] pb-3 px-5 rounded-b-[20px]"
+        className="pb-3 px-5 rounded-b-[20px]"
         style={{
+          paddingTop: insets.top + 10,
           backgroundColor: colors.surface,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: 2 },
@@ -182,6 +200,18 @@ export default function OverviewScreen() {
               activeOpacity={0.6}
             >
               <Inbox size={20} color={colors.text} strokeWidth={2} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="p-0.5 justify-center items-center"
+              onPress={handleExportPDF}
+              activeOpacity={0.6}
+              disabled={isExporting}
+            >
+              {isExporting ? (
+                <ActivityIndicator size="small" color={colors.text} />
+              ) : (
+                <FileDown size={20} color={colors.text} strokeWidth={2} />
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               className="p-0.5 justify-center items-center"

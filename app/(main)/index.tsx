@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StatusBar, Alert } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import TripList from "@/components/TripList";
 import AuthScreen from "@/components/AuthScreen";
@@ -13,6 +14,7 @@ export default function MainScreen() {
   const { user, loading, signOut } = useAuth();
   const { setSelectedTrip } = useTrip();
   const { theme, toggleTheme, colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const handleTripSelect = (trip: Trip) => {
     console.log(
@@ -94,8 +96,9 @@ export default function MainScreen() {
       
       {/* Header moderne avec profil */}
       <View
-        className="pt-[45px] pb-3 px-5 rounded-b-[20px] border-b"
+        className="pb-3 px-5 rounded-b-[20px] border-b"
         style={{
+          paddingTop: insets.top + 10,
           backgroundColor: colors.surface,
           borderBottomColor: colors.border,
           shadowColor: "#000",

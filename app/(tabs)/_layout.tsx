@@ -198,6 +198,13 @@ export default function TabLayout() {
           },
         }}
       />
+      {/* Route cachée - accessible via navigation mais pas dans la tab bar */}
+      <Tabs.Screen
+        name="destination/[id]"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
