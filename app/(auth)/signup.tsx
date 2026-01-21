@@ -12,8 +12,9 @@ import {
   Animated,
   Dimensions,
 } from "react-native";
-import { useAuth } from "../src/contexts/AuthContext";
-import { useTheme } from "../src/contexts/ThemeContext";
+import { useAuth } from "../../src/contexts/AuthContext"; // Adjusted path
+import { useTheme } from "../../src/contexts/ThemeContext"; // Adjusted path
+import { router } from "expo-router"; // Added router for navigation
 import {
   Globe,
   Mail,
@@ -30,15 +31,14 @@ import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get("window");
 
-export default function AuthScreen() {
-  const [isLogin, setIsLogin] = useState(true);
+export default function SignupScreen() { // Renamed component
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
-  const { signIn, signUp } = useAuth();
+  const { signUp } = useAuth(); // Removed signIn
   const { theme, colors } = useTheme();
 
   // Animations
@@ -93,51 +93,30 @@ export default function AuthScreen() {
     createFloatAnimation(floatAnim3, 3000).start();
   }, []);
 
-  // Animation de transition entre login et signup
-  const switchMode = () => {
-    Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 0.5,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }),
-    ]).start();
-    setIsLogin(!isLogin);
-    setConfirmPassword("");
-  };
-
-  const handleAuth = async () => {
-    if (!email || !password) {
+  const handleAuth = async () => { // Renamed to handleSignup
+    if (!email || !password || !confirmPassword) {
       Alert.alert("Erreur", "Veuillez remplir tous les champs");
       return;
     }
 
-    if (!isLogin && password !== confirmPassword) {
+    if (password !== confirmPassword) {
       Alert.alert("Erreur", "Les mots de passe ne correspondent pas");
       return;
     }
 
-    if (!isLogin && password.length < 6) {
+    if (password.length < 6) {
       Alert.alert("Erreur", "Le mot de passe doit contenir au moins 6 caractères");
       return;
     }
 
     try {
       setLoading(true);
-      if (isLogin) {
-        await signIn(email, password);
-      } else {
-        await signUp(email, password);
-        Alert.alert(
-          "Inscription réussie",
-          "Vérifiez votre email pour confirmer votre compte"
-        );
-      }
+      await signUp(email, password);
+      Alert.alert(
+        "Inscription réussie",
+        "Vérifiez votre email pour confirmer votre compte",
+        [{ text: "OK", onPress: () => router.replace("/(auth)/login") }] // Redirect to login after signup
+      );
     } catch (error: any) {
       Alert.alert("Erreur", error.message);
     } finally {
@@ -159,10 +138,6 @@ export default function AuthScreen() {
     inputRange: [0, 1],
     outputRange: [0, -12],
   });
-
-  const gradientColors = theme === "dark"
-    ? ["#1a1a2e", "#16213e", "#0f0f1a"]
-    : ["#fff7ed", "#ffedd5", "#fed7aa"];
 
   return (
     <View className="flex-1">
@@ -280,9 +255,7 @@ export default function AuthScreen() {
               className="text-sm text-center text-white/80"
               style={{ fontFamily: "Ubuntu-Regular" }}
             >
-              {isLogin
-                ? "Bon retour parmi nous !"
-                : "Commencez l'aventure"}
+              Commencez l'aventure
             </Text>
           </Animated.View>
 
@@ -312,7 +285,7 @@ export default function AuthScreen() {
                 className="text-xl font-bold mb-4 text-center"
                 style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
               >
-                {isLogin ? "Connexion" : "Créer un compte"}
+                Créer un compte
               </Text>
 
               {/* Champ Email */}
@@ -408,66 +381,50 @@ export default function AuthScreen() {
               </View>
 
               {/* Champ Confirmation mot de passe (signup only) */}
-              {!isLogin && (
-                <View className="mb-3">
-                  <Text
-                    className="text-xs font-medium mb-1.5 ml-1"
-                    style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
-                  >
-                    Confirmer le mot de passe
-                  </Text>
-                  <View
-                    className="flex-row items-center rounded-xl border-2 overflow-hidden"
-                    style={{
-                      backgroundColor: colors.input,
-                      borderColor: focusedField === "confirmPassword" ? colors.primary : colors.inputBorder,
-                    }}
-                  >
-                    <View className="pl-3 pr-2">
-                      <Lock
-                        size={18}
-                        color={focusedField === "confirmPassword" ? colors.primary : colors.textSecondary}
-                      />
-                    </View>
-                    <TextInput
-                      className="flex-1 py-3 pr-3 text-sm"
-                      style={{
-                        color: colors.text,
-                        fontFamily: "Ubuntu-Regular",
-                      }}
-                      placeholder="••••••••"
-                      placeholderTextColor={colors.textSecondary + "80"}
-                      value={confirmPassword}
-                      onChangeText={setConfirmPassword}
-                      onFocus={() => setFocusedField("confirmPassword")}
-                      onBlur={() => setFocusedField(null)}
-                      secureTextEntry={!showPassword}
-                      autoCapitalize="none"
+              <View className="mb-3">
+                <Text
+                  className="text-xs font-medium mb-1.5 ml-1"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Medium" }}
+                >
+                  Confirmer le mot de passe
+                </Text>
+                <View
+                  className="flex-row items-center rounded-xl border-2 overflow-hidden"
+                  style={{
+                    backgroundColor: colors.input,
+                    borderColor: focusedField === "confirmPassword" ? colors.primary : colors.inputBorder,
+                  }}
+                >
+                  <View className="pl-3 pr-2">
+                    <Lock
+                      size={18}
+                      color={focusedField === "confirmPassword" ? colors.primary : colors.textSecondary}
                     />
                   </View>
+                  <TextInput
+                    className="flex-1 py-3 pr-3 text-sm"
+                    style={{
+                      color: colors.text,
+                      fontFamily: "Ubuntu-Regular",
+                    }}
+                    placeholder="••••••••"
+                    placeholderTextColor={colors.textSecondary + "80"}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    onFocus={() => setFocusedField("confirmPassword")}
+                    onBlur={() => setFocusedField(null)}
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+                  />
                 </View>
-              )}
+              </View>
 
-              {/* Mot de passe oublié (login only) */}
-              {isLogin && (
-                <TouchableOpacity
-                  className="self-end mb-4"
-                  activeOpacity={0.7}
-                >
-                  <Text
-                    className="text-xs"
-                    style={{ color: colors.primary, fontFamily: "Ubuntu-Medium" }}
-                  >
-                    Mot de passe oublié ?
-                  </Text>
-                </TouchableOpacity>
-              )}
 
               {/* Bouton principal */}
               <TouchableOpacity
-                className={`rounded-xl py-3.5 flex-row items-center justify-center ${
+                className={`rounded-xl py-3.5 flex-row items-center justify-center mt-1 ${
                   loading ? "opacity-70" : ""
-                } ${!isLogin ? "mt-1" : ""}`}
+                }`}
                 style={{
                   backgroundColor: colors.primary,
                   shadowColor: colors.primary,
@@ -476,7 +433,7 @@ export default function AuthScreen() {
                   shadowRadius: 12,
                   elevation: 8,
                 }}
-                onPress={handleAuth}
+                onPress={handleAuth} // This calls signUp
                 disabled={loading}
                 activeOpacity={0.85}
               >
@@ -488,7 +445,7 @@ export default function AuthScreen() {
                       className="text-white text-base font-bold mr-2"
                       style={{ fontFamily: "Ubuntu-Bold" }}
                     >
-                      {isLogin ? "Se connecter" : "Créer mon compte"}
+                      Créer mon compte
                     </Text>
                     <ArrowRight size={18} color="white" />
                   </>
@@ -511,14 +468,14 @@ export default function AuthScreen() {
               <TouchableOpacity
                 className="py-2.5 rounded-xl border-2"
                 style={{ borderColor: colors.border }}
-                onPress={switchMode}
+                onPress={() => router.push("/(auth)/login")} // Navigates to login
                 activeOpacity={0.7}
               >
                 <Text
                   className="text-center text-sm"
                   style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
                 >
-                  {isLogin ? "Créer un nouveau compte" : "J'ai déjà un compte"}
+                  J'ai déjà un compte
                 </Text>
               </TouchableOpacity>
             </View>

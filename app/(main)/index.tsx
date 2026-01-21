@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StatusBar, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import TripList from "@/components/TripList";
-import AuthScreen from "@/components/AuthScreen";
 import { useAuth } from "@/src/contexts/AuthContext";
 import { useTrip } from "@/src/contexts/TripContext";
 import { useTheme } from "@/src/contexts/ThemeContext";
@@ -81,10 +80,6 @@ export default function MainScreen() {
         </Text>
       </View>
     );
-  }
-
-  if (!user) {
-    return <AuthScreen />;
   }
 
   return (

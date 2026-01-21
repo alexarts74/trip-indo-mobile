@@ -8,8 +8,6 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "build:dev": "eas build --profile development --platform ios",
-    "build:preview": "eas build --profile preview --platform ios",
     "build:prod": "eas build --profile production --platform ios",
     "submit:ios": "eas submit --platform ios",
     "deploy:testflight": "eas build --profile preview --platform ios --auto-submit"
