@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import { supabase } from "../../src/lib/supabaseClient";
 import { useTheme } from "../../src/contexts/ThemeContext";
-import { AlertTriangle } from "lucide-react-native";
+import { AlertTriangle, Trophy, Medal, Award } from "lucide-react-native";
 
 interface Place {
   id: string;
@@ -50,7 +50,7 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
 
   useEffect(() => {
     fetchData();
@@ -464,65 +464,180 @@ export default function TripStats({ tripId, tripBudget }: TripStatsProps) {
             elevation: 4,
           }}
         >
-          <Text
-            className="text-lg font-bold mb-4"
-            style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
-          >
-            Top 5 dépenses
-          </Text>
-          <View className="gap-3">
+          <View className="flex-row items-center mb-5">
+            <View
+              className="w-10 h-10 rounded-full justify-center items-center mr-3"
+              style={{ backgroundColor: colors.primary + "20" }}
+            >
+              <Trophy size={20} color={colors.primary} />
+            </View>
+            <Text
+              className="text-lg font-bold"
+              style={{ color: colors.text, fontFamily: "Ubuntu-Bold" }}
+            >
+              Top 5 dépenses
+            </Text>
+          </View>
+          <View className="gap-1">
             {topExpenses.length > 0 ? (
               topExpenses.map((expense, index) => {
                 const name = "name" in expense ? expense.name : expense.title;
                 const price = "price" in expense ? expense.price : expense.amount;
+                const maxPrice = topExpenses[0] ? ("price" in topExpenses[0] ? topExpenses[0].price : topExpenses[0].amount) : 1;
+                const percentage = (price / maxPrice) * 100;
+
+                // Couleurs et icônes pour les médailles (adaptées au thème)
+                const getRankStyle = (rank: number) => {
+                  const isDark = theme === "dark";
+                  switch (rank) {
+                    case 0: // Or
+                      return {
+                        bgColor: isDark ? "#78350F" : "#FEF3C7",
+                        iconColor: isDark ? "#FBBF24" : "#D97706",
+                        borderColor: isDark ? "#B45309" : "#F59E0B",
+                        iconBgColor: isDark ? "#292524" : "white",
+                        icon: Trophy,
+                      };
+                    case 1: // Argent
+                      return {
+                        bgColor: isDark ? "#374151" : "#F3F4F6",
+                        iconColor: isDark ? "#D1D5DB" : "#6B7280",
+                        borderColor: isDark ? "#6B7280" : "#9CA3AF",
+                        iconBgColor: isDark ? "#1F2937" : "white",
+                        icon: Medal,
+                      };
+                    case 2: // Bronze
+                      return {
+                        bgColor: isDark ? "#7C2D12" : "#FED7AA",
+                        iconColor: isDark ? "#FB923C" : "#C2410C",
+                        borderColor: isDark ? "#C2410C" : "#EA580C",
+                        iconBgColor: isDark ? "#292524" : "white",
+                        icon: Award,
+                      };
+                    default:
+                      return {
+                        bgColor: colors.background,
+                        iconColor: colors.textSecondary,
+                        borderColor: colors.border,
+                        iconBgColor: colors.card,
+                        icon: null,
+                      };
+                  }
+                };
+
+                const rankStyle = getRankStyle(index);
+                const IconComponent = rankStyle.icon;
 
                 return (
-                  <View key={expense.id} className="flex-row items-center py-2">
-                    <View
-                      className="w-7 h-7 rounded-full justify-center items-center mr-3"
-                      style={{ backgroundColor: colors.card }}
-                    >
-                      <Text
-                        className="text-xs font-bold"
-                        style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Bold" }}
+                  <View
+                    key={expense.id}
+                    className="rounded-xl p-3 mb-2"
+                    style={{
+                      backgroundColor: index < 3 ? rankStyle.bgColor : colors.background,
+                      borderWidth: index < 3 ? 1 : 0,
+                      borderColor: rankStyle.borderColor,
+                    }}
+                  >
+                    <View className="flex-row items-center">
+                      {/* Rang / Médaille */}
+                      <View
+                        className="w-9 h-9 rounded-full justify-center items-center mr-3"
+                        style={{
+                          backgroundColor: rankStyle.iconBgColor,
+                          shadowColor: index < 3 ? rankStyle.iconColor : "transparent",
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.2,
+                          shadowRadius: 4,
+                          elevation: index < 3 ? 2 : 0,
+                        }}
                       >
-                        {index + 1}
-                      </Text>
-                    </View>
-                    <View className="flex-1 mr-2">
-                      <Text
-                        className="text-sm font-semibold mb-0.5"
-                        style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
-                        numberOfLines={1}
-                      >
-                        {name}
-                      </Text>
-                      {"paid_by_user_id" in expense && (
+                        {IconComponent ? (
+                          <IconComponent size={18} color={rankStyle.iconColor} />
+                        ) : (
+                          <Text
+                            className="text-sm font-bold"
+                            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Bold" }}
+                          >
+                            {index + 1}
+                          </Text>
+                        )}
+                      </View>
+
+                      {/* Nom et description */}
+                      <View className="flex-1 mr-3">
                         <Text
-                          className="text-[11px]"
-                          style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                          className="text-[15px] font-semibold"
+                          style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
                           numberOfLines={1}
                         >
-                          {getExpenseDescription(expense)}
+                          {name}
                         </Text>
-                      )}
+                        {"paid_by_user_id" in expense && (
+                          <Text
+                            className="text-[11px] mt-0.5"
+                            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                            numberOfLines={1}
+                          >
+                            {getExpenseDescription(expense)}
+                          </Text>
+                        )}
+                      </View>
+
+                      {/* Prix */}
+                      <View className="items-end">
+                        <Text
+                          className="text-base font-bold"
+                          style={{
+                            color: index < 3 ? rankStyle.iconColor : colors.primary,
+                            fontFamily: "Ubuntu-Bold",
+                          }}
+                        >
+                          {price}€
+                        </Text>
+                      </View>
                     </View>
-                    <Text
-                      className="text-[15px] font-bold"
-                      style={{ color: colors.primary, fontFamily: "Ubuntu-Bold" }}
+
+                    {/* Barre de progression */}
+                    <View
+                      className="h-1.5 rounded-full mt-3 overflow-hidden"
+                      style={{
+                        backgroundColor: index < 3
+                          ? (theme === "dark" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)")
+                          : colors.border,
+                      }}
                     >
-                      {price}€
-                    </Text>
+                      <View
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${percentage}%`,
+                          backgroundColor: index < 3 ? rankStyle.iconColor : colors.primary,
+                        }}
+                      />
+                    </View>
                   </View>
                 );
               })
             ) : (
-              <Text
-                className="text-sm italic text-center py-5"
-                style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
-              >
-                Aucune dépense
-              </Text>
+              <View className="py-8 items-center">
+                <View
+                  className="w-16 h-16 rounded-full justify-center items-center mb-3"
+                  style={{ backgroundColor: colors.background }}
+                >
+                  <Trophy size={28} color={colors.textSecondary} />
+                </View>
+                <Text
+                  className="text-sm text-center"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                >
+                  Aucune dépense enregistrée
+                </Text>
+                <Text
+                  className="text-xs text-center mt-1"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                >
+                  Ajoutez des dépenses pour voir le classement
+                </Text>
+              </View>
             )}
           </View>
         </View>

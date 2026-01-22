@@ -18,8 +18,6 @@ interface PushMessage {
 }
 
 serve(async (req) => {
-  console.log("Push notification request received - Method:", req.method);
-
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -28,13 +26,6 @@ serve(async (req) => {
   try {
     const body = await req.json();
     const { tokens, title, body: notificationBody, data } = body;
-
-    console.log("Notification data:", {
-      tokensCount: tokens?.length || 0,
-      title,
-      body: notificationBody,
-      data,
-    });
 
     // Validation
     if (!tokens || !Array.isArray(tokens) || tokens.length === 0) {
@@ -86,8 +77,6 @@ serve(async (req) => {
       priority: "high",
     }));
 
-    console.log(`Sending ${messages.length} push notification(s)...`);
-
     // Send to Expo Push API
     const response = await fetch(EXPO_PUSH_API_URL, {
       method: "POST",
@@ -101,10 +90,7 @@ serve(async (req) => {
 
     const result = await response.json();
 
-    console.log("Expo Push API response:", result);
-
     if (!response.ok) {
-      console.error("Expo Push API error:", result);
       return new Response(
         JSON.stringify({
           error: "Failed to send notifications",
@@ -120,10 +106,6 @@ serve(async (req) => {
     // Check for individual ticket errors
     const tickets = result.data || [];
     const errors = tickets.filter((ticket: { status: string }) => ticket.status === "error");
-
-    if (errors.length > 0) {
-      console.warn("Some notifications failed:", errors);
-    }
 
     const successCount = tickets.filter(
       (ticket: { status: string }) => ticket.status === "ok"
@@ -144,7 +126,6 @@ serve(async (req) => {
     );
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    console.error("Error sending push notification:", error);
     return new Response(
       JSON.stringify({
         error: "Internal server error",

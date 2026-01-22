@@ -71,7 +71,6 @@ export default function CreateTripModal() {
       // Fermer le modal et retourner à la liste
       router.back();
     } catch (error: any) {
-      console.error("Erreur création voyage:", error);
       setError(error.message || "Une erreur est survenue");
     } finally {
       setIsLoading(false);

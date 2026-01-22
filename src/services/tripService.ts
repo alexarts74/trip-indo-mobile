@@ -49,7 +49,6 @@ export const tripService = {
 
       return data || [];
     } catch (error: any) {
-      console.error("Erreur lors de la récupération des voyages:", error);
       throw error;
     }
   },
@@ -75,7 +74,6 @@ export const tripService = {
 
       return data;
     } catch (error: any) {
-      console.error("Erreur lors de la création du voyage:", error);
       throw error;
     }
   },
@@ -93,7 +91,6 @@ export const tripService = {
 
       return data[0] as Trip;
     } catch (error: any) {
-      console.error("Erreur lors de la récupération du voyage:", error);
       throw error;
     }
   },

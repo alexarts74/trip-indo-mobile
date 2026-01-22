@@ -31,7 +31,7 @@ export async function registerForPushNotifications(
 ): Promise<string | null> {
   // Vérifier que c'est un appareil physique
   if (!Device.isDevice) {
-    console.log("Les notifications push nécessitent un appareil physique");
+    // Log removed("Les notifications push nécessitent un appareil physique");
     return null;
   }
 
@@ -46,7 +46,7 @@ export async function registerForPushNotifications(
   }
 
   if (finalStatus !== "granted") {
-    console.log("Permission de notification refusée");
+    // Log removed("Permission de notification refusée");
     return null;
   }
 
@@ -67,8 +67,8 @@ export async function registerForPushNotifications(
 
     // Si pas de projectId, on ne peut pas obtenir de token push
     if (!projectId) {
-      console.log("Pas de projectId EAS configuré - notifications push désactivées");
-      console.log("Pour activer les notifications, exécutez: npx eas build:configure");
+      // Log removed("Pas de projectId EAS configuré - notifications push désactivées");
+      // Log removed("Pour activer les notifications, exécutez: npx eas build:configure");
       return null;
     }
 
@@ -81,7 +81,7 @@ export async function registerForPushNotifications(
 
     return token.data;
   } catch (error) {
-    console.error("Erreur lors de la récupération du token push:", error);
+    // Error removed("Erreur lors de la récupération du token push:", error);
     return null;
   }
 }
@@ -102,11 +102,11 @@ export async function savePushToken(
     .eq("id", userId);
 
   if (error) {
-    console.error("Erreur lors de la sauvegarde du token push:", error);
+    // Error removed("Erreur lors de la sauvegarde du token push:", error);
     throw error;
   }
 
-  console.log("Token push sauvegardé avec succès");
+  // Log removed("Token push sauvegardé avec succès");
 }
 
 /**
@@ -122,11 +122,11 @@ export async function disablePushNotifications(userId: string): Promise<void> {
     .eq("id", userId);
 
   if (error) {
-    console.error("Erreur lors de la désactivation des notifications:", error);
+    // Error removed("Erreur lors de la désactivation des notifications:", error);
     throw error;
   }
 
-  console.log("Notifications désactivées avec succès");
+  // Log removed("Notifications désactivées avec succès");
 }
 
 /**
@@ -144,7 +144,7 @@ export async function getTripParticipantTokens(
     .neq("user_id", excludeUserId);
 
   if (participantsError) {
-    console.error("Erreur récupération participants:", participantsError);
+    // Error removed("Erreur récupération participants:", participantsError);
     return [];
   }
 
@@ -163,7 +163,7 @@ export async function getTripParticipantTokens(
     .not("push_token", "is", null);
 
   if (profilesError) {
-    console.error("Erreur récupération tokens:", profilesError);
+    // Error removed("Erreur récupération tokens:", profilesError);
     return [];
   }
 
@@ -204,7 +204,7 @@ export async function sendPushNotification(
   );
 
   if (validTokens.length === 0) {
-    console.log("Aucun token valide pour envoyer la notification");
+    // Log removed("Aucun token valide pour envoyer la notification");
     return;
   }
 
@@ -219,13 +219,13 @@ export async function sendPushNotification(
     });
 
     if (error) {
-      console.error("Erreur envoi notification via Edge Function:", error);
+      // Error removed("Erreur envoi notification via Edge Function:", error);
       throw error;
     }
 
-    console.log(`Notification envoyée à ${validTokens.length} appareil(s)`);
+    // Log removed(`Notification envoyée à ${validTokens.length} appareil(s)`);
   } catch (error) {
-    console.error("Erreur lors de l'envoi de la notification:", error);
+    // Error removed("Erreur lors de l'envoi de la notification:", error);
     // On ne throw pas pour ne pas bloquer le flow principal
   }
 }

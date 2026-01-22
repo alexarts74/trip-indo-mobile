@@ -43,7 +43,7 @@ async function fetchTripParticipants(tripId: string): Promise<ParticipantInfo[]>
             profile = profileData;
           }
         } catch (profileError) {
-          console.log("Could not fetch profile for participant:", profileError);
+          // Log removed("Could not fetch profile for participant:", profileError);
         }
 
         return {
@@ -62,7 +62,7 @@ async function fetchTripParticipants(tripId: string): Promise<ParticipantInfo[]>
 
     return participantsWithProfiles;
   } catch (error) {
-    console.error("Error fetching participants:", error);
+    // Error removed("Error fetching participants:", error);
     return [];
   }
 }

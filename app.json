@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "TripMate",
-    "slug": "trip-mate",
+    "slug": "tripmate",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,12 +15,13 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.tripmate.app",
+      "bundleIdentifier": "com.alexarts74.tripmate",
       "buildNumber": "1",
       "infoPlist": {
         "NSCameraUsageDescription": "TripMate a besoin d'accéder à la caméra pour prendre des photos de voyage.",
         "NSPhotoLibraryUsageDescription": "TripMate a besoin d'accéder à vos photos pour les ajouter à votre journal de voyage.",
-        "NSPhotoLibraryAddUsageDescription": "TripMate a besoin d'enregistrer des photos dans votre bibliothèque."
+        "NSPhotoLibraryAddUsageDescription": "TripMate a besoin d'enregistrer des photos dans votre bibliothèque.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -30,7 +31,7 @@
       },
       "edgeToEdgeEnabled": true,
       "useNextNotificationsApi": true,
-      "package": "com.tripmate.app",
+      "package": "com.alexarts74.tripmate",
       "versionCode": 1
     },
     "web": {
@@ -52,9 +53,10 @@
     },
     "extra": {
       "eas": {
-        "projectId": "AUTO_GENERATED"
-      }
+        "projectId": "119a8cca-ba44-4ebc-98dd-380d1c0739f1"
+      },
+      "router": {}
     },
-    "owner": "TON_USERNAME_EXPO"
+    "owner": "alexarts74"
   }
 }

@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Gérer les deep links pour la confirmation d'email
     const handleDeepLink = async (event: { url: string }) => {
       const url = event.url;
-      console.log("Deep link received:", url);
+      // Log removed("Deep link received:", url);
 
       // Vérifier si c'est un callback d'authentification
       if (url.includes("auth/callback")) {
@@ -57,9 +57,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           });
 
           if (error) {
-            console.error("Erreur lors de la définition de la session:", error);
+            // Error removed("Erreur lors de la définition de la session:", error);
           } else {
-            console.log("Session définie avec succès via deep link");
+            // Log removed("Session définie avec succès via deep link");
           }
         }
       }
@@ -96,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       path: "auth/callback",
     });
 
-    console.log("Redirect URL for email confirmation:", redirectUrl);
+    // Log removed("Redirect URL for email confirmation:", redirectUrl);
 
     const { error } = await supabase.auth.signUp({
       email,

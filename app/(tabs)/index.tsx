@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView, StatusBar, Alert, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ArrowLeft, Sun, Moon, FilePlus, Inbox, FileDown } from "lucide-react-native";
+import { ArrowLeft, Sun, Moon, Inbox, FileDown } from "lucide-react-native";
 import { router } from "expo-router";
 import TripOverview from "@/components/trip/TripOverview";
 import { useAuth } from "@/src/contexts/AuthContext";
@@ -25,14 +25,9 @@ export default function OverviewScreen() {
 
   useEffect(() => {
     if (!selectedTrip) {
-      console.log(
-        "⚠️ Overview - selectedTrip est undefined, redirection vers l'écran principal"
-      );
       router.replace("/(main)");
     } else {
-      console.log("✅ Overview - selectedTrip trouvé:", selectedTrip.title);
       setTrip(selectedTrip);
-      // Charger les destinations directement
       fetchDestinations(selectedTrip.id);
     }
   }, [selectedTrip]);
@@ -40,12 +35,6 @@ export default function OverviewScreen() {
   const fetchDestinations = async (tripId: string) => {
     try {
       setIsLoading(true);
-      // TODO: Implémenter l'appel au service des destinations
-      console.log(
-        "🔄 Overview - Chargement des destinations pour le voyage:",
-        tripId
-      );
-      // Pour l'instant, on met un tableau vide
       setDestinations([]);
       setError("");
     } catch (error: any) {
@@ -56,7 +45,6 @@ export default function OverviewScreen() {
   };
 
   const handleBackToTrips = () => {
-    console.log("handleBackToTrips");
     router.replace("/(main)");
   };
 
@@ -66,7 +54,6 @@ export default function OverviewScreen() {
     try {
       await pdfExportService.exportTripToPDF(trip);
     } catch (error: any) {
-      console.error("Error exporting PDF:", error);
       Alert.alert("Erreur", "Impossible d'exporter le voyage en PDF");
     } finally {
       setIsExporting(false);
@@ -121,7 +108,6 @@ export default function OverviewScreen() {
   }
 
   if (!trip) {
-    console.log("trip", trip);
     return (
       <View
         className="flex-1 justify-center items-center"
@@ -189,13 +175,6 @@ export default function OverviewScreen() {
           <View className="flex-row items-center gap-3">
             <TouchableOpacity
               className="p-0.5 justify-center items-center"
-              onPress={() => router.push("/modal")}
-              activeOpacity={0.6}
-            >
-              <FilePlus size={20} color={colors.text} strokeWidth={2} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="p-0.5 justify-center items-center"
               onPress={() => router.push("/(main)/invitations")}
               activeOpacity={0.6}
             >
@@ -254,7 +233,7 @@ export default function OverviewScreen() {
 
       <ScrollView
         className="flex-1 px-4 pt-5 pb-4"
-        contentContainerStyle={{ paddingBottom: 16 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
         <TripOverview

@@ -13,7 +13,6 @@ import {
   ArrowLeft,
   Sun,
   Moon,
-  FilePlus,
   Inbox,
   MapPin,
   Globe,
@@ -82,7 +81,7 @@ export default function DestinationDetailScreen() {
       const entries = await journalService.getDestinationJournalEntries(id);
       setJournalEntries(entries);
     } catch (err: any) {
-      console.error("Erreur lors de la récupération du journal:", err);
+      // Silently handle error
     } finally {
       setIsJournalLoading(false);
     }
@@ -107,7 +106,7 @@ export default function DestinationDetailScreen() {
       await journalService.deleteJournalEntry(entryId);
       fetchJournalEntries();
     } catch (err: any) {
-      console.error("Erreur lors de la suppression:", err);
+      // Silently handle error
     }
   };
 
@@ -215,13 +214,6 @@ export default function DestinationDetailScreen() {
             )}
           </View>
           <View className="flex-row items-center gap-3">
-            <TouchableOpacity
-              className="p-0.5 justify-center items-center"
-              onPress={() => router.push("/modal")}
-              activeOpacity={0.6}
-            >
-              <FilePlus size={20} color={colors.text} strokeWidth={2} />
-            </TouchableOpacity>
             <TouchableOpacity
               className="p-0.5 justify-center items-center"
               onPress={() => router.push("/(main)/invitations")}

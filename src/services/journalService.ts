@@ -41,10 +41,7 @@ export const journalService = {
                 user = profileData;
               }
             } catch (profileError) {
-              console.log(
-                "Impossible de récupérer le profil utilisateur:",
-                profileError
-              );
+              // Silently handle profile fetch error
             }
           }
           return { ...entry, user };
@@ -53,10 +50,6 @@ export const journalService = {
 
       return entriesWithUsers;
     } catch (error: any) {
-      console.error(
-        "Erreur lors de la récupération des entrées de journal:",
-        error
-      );
       throw error;
     }
   },
@@ -96,12 +89,11 @@ export const journalService = {
           user = profileData;
         }
       } catch (profileError) {
-        console.log("Impossible de récupérer le profil utilisateur:", profileError);
+        // Silently handle profile fetch error
       }
 
       return { ...newEntry, user };
     } catch (error: any) {
-      console.error("Erreur lors de la création de l'entrée de journal:", error);
       throw error;
     }
   },
@@ -145,16 +137,12 @@ export const journalService = {
             user = profileData;
           }
         } catch (profileError) {
-          console.log("Impossible de récupérer le profil utilisateur:", profileError);
+          // Silently handle profile fetch error
         }
       }
 
       return { ...updatedEntry, user };
     } catch (error: any) {
-      console.error(
-        "Erreur lors de la mise à jour de l'entrée de journal:",
-        error
-      );
       throw error;
     }
   },
@@ -190,10 +178,6 @@ export const journalService = {
 
       if (error) throw error;
     } catch (error: any) {
-      console.error(
-        "Erreur lors de la suppression de l'entrée de journal:",
-        error
-      );
       throw error;
     }
   },
@@ -248,10 +232,8 @@ export const journalService = {
         .from("journal-images")
         .getPublicUrl(uniqueFileName);
 
-      console.log("Image uploaded, public URL:", publicUrlData.publicUrl);
       return publicUrlData.publicUrl;
     } catch (error: any) {
-      console.error("Erreur lors de l'upload de l'image:", error);
       throw error;
     }
   },
@@ -264,7 +246,6 @@ export const journalService = {
       // Extraire le nom du fichier depuis l'URL
       const urlParts = imageUrl.split("/journal-images/");
       if (urlParts.length < 2) {
-        console.warn("URL d'image invalide:", imageUrl);
         return;
       }
 
@@ -276,7 +257,6 @@ export const journalService = {
 
       if (error) throw error;
     } catch (error: any) {
-      console.error("Erreur lors de la suppression de l'image:", error);
       // Ne pas propager l'erreur pour éviter de bloquer d'autres opérations
     }
   },

@@ -95,7 +95,7 @@ export default function AddExpenseModal({
         .eq("trip_id", tripId);
 
       if (error) {
-        console.error("Erreur récupération participants:", error);
+        // Error removed("Erreur récupération participants:", error);
         return;
       }
 
@@ -158,7 +158,7 @@ export default function AddExpenseModal({
         }));
       }
     } catch (error) {
-      console.error("Erreur récupération participants:", error);
+      // Error removed("Erreur récupération participants:", error);
     }
   };
 
@@ -210,7 +210,7 @@ export default function AddExpenseModal({
       onExpenseAdded();
       onClose();
     } catch (error: any) {
-      console.error("Erreur création dépense:", error);
+      // Error removed("Erreur création dépense:", error);
       setError(error.message);
     } finally {
       setIsLoading(false);

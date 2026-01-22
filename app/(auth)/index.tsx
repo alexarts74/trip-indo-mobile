@@ -143,10 +143,10 @@ export default function WelcomeScreen() {
         </View>
       </Animated.View>
 
-      <View className="flex-1 justify-between p-5">
+      <View className="flex-1 justify-between p-5 pb-10">
         {/* Header avec logo */}
         <Animated.View
-          className="items-center pt-16 px-6"
+          className="items-center pt-24 px-6"
           style={{
             opacity: fadeAnim,
             transform: [

@@ -55,7 +55,6 @@ export default function ProfileScreen() {
         });
       }
     } catch (error) {
-      console.log("Erreur récupération profil:", error);
       setUserProfile({
         email: user?.email,
         first_name: user?.user_metadata?.first_name || "",
@@ -102,7 +101,7 @@ export default function ProfileScreen() {
         totalDestinations: destinationsCount,
       });
     } catch (error) {
-      console.log("Erreur récupération stats:", error);
+      // Silently handle error
     }
   };
 
@@ -118,7 +117,7 @@ export default function ProfileScreen() {
           onPress: async () => {
             try {
               await signOut();
-              router.replace("/(main)");
+              router.replace("/(auth)");
             } catch (error: any) {
               Alert.alert("Erreur", "Impossible de se déconnecter");
             }

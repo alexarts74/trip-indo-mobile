@@ -24,7 +24,7 @@ async function notifyDestinationAdded(
       );
     }
   } catch (error) {
-    console.error("Erreur envoi notification destination:", error);
+    // Silently handle error
   }
 }
 
@@ -41,7 +41,6 @@ export const destinationsService = {
 
       return data;
     } catch (error: any) {
-      console.error("Erreur lors de la récupération des destinations:", error);
       throw error;
     }
   },

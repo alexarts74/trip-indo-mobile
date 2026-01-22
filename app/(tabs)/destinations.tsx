@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ArrowLeft, Sun, Moon, FilePlus, Inbox } from "lucide-react-native";
+import { ArrowLeft, Sun, Moon, Inbox } from "lucide-react-native";
 import { router } from "expo-router";
 import TripDestinations from "@/components/trip/TripDestinations";
 import { useTrip } from "@/src/contexts/TripContext";
@@ -23,17 +23,10 @@ export default function DestinationsScreen() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    console.log("🔄 useEffect - selectedTrip:", selectedTrip?.title);
     if (selectedTrip) {
-      console.log(
-        "✅ useEffect - selectedTrip trouvé, chargement des destinations"
-      );
       setTrip(selectedTrip);
       fetchDestinations(selectedTrip.id);
     } else {
-      console.log(
-        "⚠️ useEffect - selectedTrip est undefined, redirection vers l'écran principal"
-      );
       router.replace("/(main)");
     }
   }, [selectedTrip]);
@@ -41,13 +34,10 @@ export default function DestinationsScreen() {
   const fetchDestinations = async (tripId: string) => {
     try {
       setIsLoading(true);
-      console.log("🔄 fetchDestinations - Début pour le voyage:", tripId);
       const destinations = await destinationsService.fetchDestinations(tripId);
       setDestinations(destinations);
-      console.log("✅ fetchDestinations - Succès:", destinations);
       setError("");
     } catch (error: any) {
-      console.error("❌ fetchDestinations - Erreur:", error);
       setError(error.message);
     } finally {
       setIsLoading(false);
@@ -74,7 +64,6 @@ export default function DestinationsScreen() {
   };
 
   if (isLoading) {
-    console.log("🔄 Rendu - isLoading = true, affichage du loading");
     return (
       <View
         className="flex-1 justify-center items-center"
@@ -91,7 +80,6 @@ export default function DestinationsScreen() {
   }
 
   if (!trip) {
-    console.log("🔄 Rendu - trip = null, affichage 'Voyage non trouvé'");
     return (
       <View
         className="flex-1 justify-center items-center"
@@ -107,12 +95,6 @@ export default function DestinationsScreen() {
     );
   }
 
-  console.log(
-    "🔄 Rendu - Affichage du contenu principal, trip:",
-    trip?.title,
-    "destinations:",
-    destinations.length
-  );
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
       <StatusBar 
@@ -165,13 +147,6 @@ export default function DestinationsScreen() {
           <View className="flex-row items-center gap-3">
             <TouchableOpacity
               className="p-0.5 justify-center items-center"
-              onPress={() => router.push("/modal")}
-              activeOpacity={0.6}
-            >
-              <FilePlus size={20} color={colors.text} strokeWidth={2} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="p-0.5 justify-center items-center"
               onPress={() => router.push("/(main)/invitations")}
               activeOpacity={0.6}
             >
@@ -218,7 +193,7 @@ export default function DestinationsScreen() {
 
       <ScrollView
         className="flex-1 px-4 pt-5 pb-4"
-        contentContainerStyle={{ paddingBottom: 16 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
         <TripDestinations

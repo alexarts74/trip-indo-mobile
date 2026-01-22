@@ -16,41 +16,17 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  console.log("📧 [Edge Function] Requête reçue - Méthode:", req.method);
-  console.log("📧 [Edge Function] Headers:", Object.fromEntries(req.headers.entries()));
-
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    console.log("📧 [Edge Function] CORS preflight - Retour OK");
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    console.log("📧 [Edge Function] Parsing du body...");
     const body = await req.json();
-    console.log("📧 [Edge Function] Body parsé:", body);
-
     const { tripName, inviterEmail, inviteeEmail, tripId } = body;
-
-    console.log("📧 [Edge Function] Données extraites:", {
-      tripName,
-      inviterEmail,
-      inviteeEmail,
-      tripId,
-      hasTripName: !!tripName,
-      hasInviterEmail: !!inviterEmail,
-      hasInviteeEmail: !!inviteeEmail,
-      hasTripId: !!tripId,
-    });
 
     // Validation des données
     if (!tripName || !inviterEmail || !inviteeEmail || !tripId) {
-      console.error("❌ [Edge Function] Données manquantes:", {
-        tripName: !!tripName,
-        inviterEmail: !!inviterEmail,
-        inviteeEmail: !!inviteeEmail,
-        tripId: !!tripId,
-      });
       return new Response(
         JSON.stringify({ error: "Données manquantes" }),
         {
@@ -60,12 +36,7 @@ serve(async (req) => {
       );
     }
 
-    console.log("📧 [Edge Function] Vérification de RESEND_API_KEY...");
-    console.log("📧 [Edge Function] RESEND_API_KEY configurée:", !!RESEND_API_KEY);
-    console.log("📧 [Edge Function] RESEND_API_KEY length:", RESEND_API_KEY?.length || 0);
-
     if (!RESEND_API_KEY) {
-      console.warn("⚠️ [Edge Function] RESEND_API_KEY non configurée");
       return new Response(
         JSON.stringify({
           error: "Configuration email requise",
@@ -79,8 +50,6 @@ serve(async (req) => {
       );
     }
 
-    console.log("✅ [Edge Function] RESEND_API_KEY trouvée, initialisation de Resend...");
-
     // Template d'email HTML professionnel
     const htmlContent = `
       <!DOCTYPE html>
@@ -90,24 +59,24 @@ serve(async (req) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Invitation au voyage - ${tripName}</title>
         <style>
-          body { 
+          body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6; 
-            color: #333; 
+            line-height: 1.6;
+            color: #333;
             margin: 0;
             padding: 0;
             background-color: #f5f5f5;
           }
-          .container { 
-            max-width: 600px; 
-            margin: 0 auto; 
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
             background-color: #ffffff;
           }
-          .header { 
-            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); 
-            color: white; 
-            padding: 40px 30px; 
-            text-align: center; 
+          .header {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
           }
           .header h1 {
             margin: 0;
@@ -120,8 +89,8 @@ serve(async (req) => {
             font-weight: 400;
             opacity: 0.9;
           }
-          .content { 
-            padding: 40px 30px; 
+          .content {
+            padding: 40px 30px;
           }
           .content p {
             margin: 0 0 16px 0;
@@ -139,26 +108,26 @@ serve(async (req) => {
             text-align: center;
             margin: 40px 0;
           }
-          .button { 
-            display: inline-block; 
-            padding: 16px 32px; 
-            background: #f97316; 
-            color: white; 
-            text-decoration: none; 
-            border-radius: 8px; 
+          .button {
+            display: inline-block;
+            padding: 16px 32px;
+            background: #f97316;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
             font-weight: 600;
             font-size: 16px;
           }
           .button:hover {
             background: #ea580c;
           }
-          .footer { 
-            text-align: center; 
-            margin-top: 40px; 
+          .footer {
+            text-align: center;
+            margin-top: 40px;
             padding-top: 30px;
             border-top: 1px solid #e5e5e5;
-            color: #666; 
-            font-size: 14px; 
+            color: #666;
+            font-size: 14px;
           }
           .note {
             background-color: #fff7ed;
@@ -211,20 +180,7 @@ serve(async (req) => {
       </html>
     `;
 
-    console.log("📧 [Edge Function] Préparation de l'email Resend...");
-    console.log("📧 [Edge Function] Destinataire:", inviteeEmail);
-    console.log("📧 [Edge Function] Expéditeur: TripMate <onboarding@resend.dev>");
-    console.log("📧 [Edge Function] Sujet:", `✈️ Invitation au voyage : ${tripName}`);
-
     // Envoyer l'email
-    console.log("📧 [Edge Function] Appel à resend.emails.send()...");
-    
-    console.log("📧 [Edge Function] Configuration email:", {
-      from: RESEND_FROM_EMAIL,
-      to: inviteeEmail,
-      subject: `✈️ Invitation au voyage : ${tripName}`,
-    });
-    
     const { data, error } = await resend.emails.send({
       from: RESEND_FROM_EMAIL,
       to: [inviteeEmail],
@@ -232,29 +188,12 @@ serve(async (req) => {
       html: htmlContent,
     });
 
-    console.log("📧 [Edge Function] Réponse de Resend:", {
-      hasData: !!data,
-      hasError: !!error,
-      dataKeys: data ? Object.keys(data) : null,
-      errorType: error?.constructor?.name,
-      errorMessage: error?.message,
-    });
-
     if (error) {
-      console.error("❌ [Edge Function] Erreur Resend:", {
-        message: error.message,
-        name: error.name,
-        code: (error as any)?.code,
-        statusCode: (error as any)?.statusCode,
-        fullError: error,
-      });
-      
       // Gestion spécifique de l'erreur de validation Resend (domaine non vérifié)
       if ((error as any)?.statusCode === 403 && error.message?.includes("testing emails")) {
-        console.error("❌ [Edge Function] Resend en mode test - Domaine non vérifié");
         return new Response(
-          JSON.stringify({ 
-            error: "Configuration Resend requise", 
+          JSON.stringify({
+            error: "Configuration Resend requise",
             details: "Resend est en mode test. Pour envoyer à d'autres destinataires, vous devez vérifier un domaine dans Resend et utiliser une adresse 'from' avec ce domaine.",
             errorType: "resend_domain_required",
             resendMessage: error.message,
@@ -265,10 +204,10 @@ serve(async (req) => {
           }
         );
       }
-      
+
       return new Response(
-        JSON.stringify({ 
-          error: "Erreur lors de l'envoi de l'email", 
+        JSON.stringify({
+          error: "Erreur lors de l'envoi de l'email",
           details: error.message,
           errorType: error?.constructor?.name,
         }),
@@ -278,9 +217,6 @@ serve(async (req) => {
         }
       );
     }
-
-    console.log("✅ [Edge Function] Email envoyé avec succès!");
-    console.log("✅ [Edge Function] Données de réponse:", data);
 
     return new Response(
       JSON.stringify({
@@ -294,16 +230,9 @@ serve(async (req) => {
       }
     );
   } catch (error: any) {
-    console.error("💥 [Edge Function] Erreur catch globale:", {
-      message: error?.message,
-      name: error?.name,
-      stack: error?.stack,
-      type: typeof error,
-      fullError: error,
-    });
     return new Response(
-      JSON.stringify({ 
-        error: "Erreur interne du serveur", 
+      JSON.stringify({
+        error: "Erreur interne du serveur",
         details: error?.message || "Erreur inconnue",
         errorType: error?.constructor?.name,
       }),

@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
+  Keyboard,
 } from "react-native";
 import { useAuth } from "../../src/contexts/AuthContext"; // Adjusted path
 import { useTheme } from "../../src/contexts/ThemeContext"; // Adjusted path
@@ -22,6 +23,7 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
+  ArrowLeft,
   Sparkles,
   MapPin,
   Plane,
@@ -47,6 +49,41 @@ export default function LoginScreen() { // Renamed component
   const floatAnim1 = useRef(new Animated.Value(0)).current;
   const floatAnim2 = useRef(new Animated.Value(0)).current;
   const floatAnim3 = useRef(new Animated.Value(0)).current;
+
+  // Animation pour le clavier
+  const keyboardAnim = useRef(new Animated.Value(1)).current;
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  // Gestion du clavier
+  useEffect(() => {
+    const keyboardWillShow = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+        Animated.timing(keyboardAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      }
+    );
+    const keyboardWillHide = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+        Animated.timing(keyboardAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      }
+    );
+
+    return () => {
+      keyboardWillShow.remove();
+      keyboardWillHide.remove();
+    };
+  }, []);
 
   useEffect(() => {
     // Animation d'entrée
@@ -141,14 +178,37 @@ export default function LoginScreen() { // Renamed component
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       />
 
-      {/* Éléments décoratifs flottants */}
+      {/* Bouton retour */}
+      <TouchableOpacity
+        style={{
+          position: "absolute",
+          top: 50,
+          left: 20,
+          zIndex: 10,
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          backgroundColor: "rgba(255, 255, 255, 0.2)",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={() => router.back()}
+        activeOpacity={0.7}
+      >
+        <ArrowLeft size={22} color="white" />
+      </TouchableOpacity>
+
+      {/* Éléments décoratifs flottants - masqués quand clavier visible */}
       <Animated.View
         style={{
           position: "absolute",
           top: height * 0.12,
           left: width * 0.1,
           transform: [{ translateY: float1 }],
-          opacity: 0.6,
+          opacity: keyboardAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 0.6],
+          }),
         }}
       >
         <View className="w-12 h-12 rounded-full bg-white/20 items-center justify-center">
@@ -162,7 +222,10 @@ export default function LoginScreen() { // Renamed component
           top: height * 0.18,
           right: width * 0.12,
           transform: [{ translateY: float2 }],
-          opacity: 0.5,
+          opacity: keyboardAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 0.5],
+          }),
         }}
       >
         <View className="w-10 h-10 rounded-full bg-white/15 items-center justify-center">
@@ -176,7 +239,10 @@ export default function LoginScreen() { // Renamed component
           top: height * 0.25,
           left: width * 0.75,
           transform: [{ translateY: float3 }],
-          opacity: 0.4,
+          opacity: keyboardAnim.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 0.4],
+          }),
         }}
       >
         <View className="w-8 h-8 rounded-full bg-white/10 items-center justify-center">
@@ -189,14 +255,16 @@ export default function LoginScreen() { // Renamed component
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <View className="flex-1 justify-between">
-          {/* Header avec logo */}
+          {/* Header avec logo - masqué quand clavier visible */}
           <Animated.View
             className="items-center pt-16 px-6"
             style={{
-              opacity: fadeAnim,
+              opacity: keyboardAnim,
+              height: keyboardVisible ? 0 : undefined,
+              overflow: "hidden",
               transform: [
                 { translateY: slideAnim },
-                { scale: scaleAnim }
+                { scale: scaleAnim },
               ],
             }}
           >
@@ -440,15 +508,23 @@ export default function LoginScreen() { // Renamed component
             </View>
           </Animated.View>
 
-          {/* Footer */}
-          <View className="pb-8 px-8">
+          {/* Footer - masqué quand clavier visible */}
+          <Animated.View
+            className="px-8"
+            style={{
+              opacity: keyboardAnim,
+              height: keyboardVisible ? 0 : undefined,
+              paddingBottom: keyboardVisible ? 0 : 32,
+              overflow: "hidden",
+            }}
+          >
             <Text
               className="text-center text-xs"
               style={{ color: "rgba(255, 255, 255, 0.6)", fontFamily: "Ubuntu-Regular" }}
             >
               En continuant, vous acceptez nos conditions d'utilisation et notre politique de confidentialité
             </Text>
-          </View>
+          </Animated.View>
         </View>
       </KeyboardAvoidingView>
     </View>

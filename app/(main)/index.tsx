@@ -16,13 +16,6 @@ export default function MainScreen() {
   const insets = useSafeAreaInsets();
 
   const handleTripSelect = (trip: Trip) => {
-    console.log(
-      "🔄 MainScreen - handleTripSelect appelé avec:",
-      trip.title,
-      "ID:",
-      trip.id
-    );
-    // Sauvegarder le voyage dans le contexte et naviguer
     setSelectedTrip(trip);
     router.replace("/(tabs)");
   };
@@ -42,8 +35,9 @@ export default function MainScreen() {
           onPress: async () => {
             try {
               await signOut();
+              router.replace("/(auth)");
             } catch (error) {
-              console.error("Erreur lors de la déconnexion:", error);
+              // Silently handle error
             }
           },
         },

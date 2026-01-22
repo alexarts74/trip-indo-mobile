@@ -74,7 +74,7 @@ export default function InvitationsScreen() {
         setSelectedTrip(userTrips[0]);
       }
     } catch (err: any) {
-      console.error("Erreur chargement voyages:", err);
+      // Silently handle error
     } finally {
       setLoadingTrips(false);
     }
@@ -108,7 +108,7 @@ export default function InvitationsScreen() {
       const data = await invitationService.getPendingInvitations(user.email);
       setInvitations(data);
     } catch (error: any) {
-      console.error("Erreur rafraîchissement invitations:", error);
+      // Silently handle error
     }
   };
 

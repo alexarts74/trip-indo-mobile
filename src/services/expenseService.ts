@@ -62,7 +62,7 @@ async function notifyExpenseAdded(
       );
     }
   } catch (error) {
-    console.error("Erreur envoi notification dépense:", error);
+    // Silently handle error
   }
 }
 
@@ -111,7 +111,7 @@ export const expenseService = {
             }, {});
           }
         } catch (catError) {
-          console.log("Impossible de récupérer les catégories:", catError);
+          // Silently handle error
         }
       }
 
@@ -132,8 +132,7 @@ export const expenseService = {
                 paidByUser = profileData;
               }
             } catch (profileError) {
-              // Si la table profiles n'existe pas, on continue sans
-              console.log("Impossible de récupérer le profil utilisateur:", profileError);
+              // Silently handle error
             }
           }
 
@@ -158,7 +157,7 @@ export const expenseService = {
                     user = profileData;
                   }
                 } catch (profileError) {
-                  console.log("Impossible de récupérer le profil pour le share:", profileError);
+                  // Silently handle error
                 }
               }
               return { ...share, user };
@@ -181,7 +180,6 @@ export const expenseService = {
 
       return expensesWithDetails;
     } catch (error: any) {
-      console.error("Erreur lors de la récupération des dépenses:", error);
       throw error;
     }
   },
@@ -205,7 +203,6 @@ export const expenseService = {
 
       if (expenseError) throw expenseError;
     } catch (error: any) {
-      console.error("Erreur lors de la suppression de la dépense:", error);
       throw error;
     }
   },

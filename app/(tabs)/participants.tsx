@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, TouchableOpacity, StatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ArrowLeft, Sun, Moon, FilePlus, Inbox } from "lucide-react-native";
+import { ArrowLeft, Sun, Moon, Inbox } from "lucide-react-native";
 import { router } from "expo-router";
 import TripParticipants from "@/components/trip/TripParticipants";
 import { useTrip } from "@/src/contexts/TripContext";
@@ -17,14 +17,9 @@ export default function ParticipantsScreen() {
   const [trip, setTrip] = useState<Trip | null>(null);
 
   useEffect(() => {
-    console.log("🔄 useEffect - selectedTrip:", selectedTrip?.title);
     if (selectedTrip) {
-      console.log("✅ useEffect - selectedTrip trouvé");
       setTrip(selectedTrip);
     } else {
-      console.log(
-        "⚠️ useEffect - selectedTrip est undefined, redirection vers l'écran principal"
-      );
       router.replace("/(main)");
     }
   }, [selectedTrip]);
@@ -116,13 +111,6 @@ export default function ParticipantsScreen() {
           <View className="flex-row items-center gap-3">
             <TouchableOpacity
               className="p-0.5 justify-center items-center"
-              onPress={() => router.push("/modal")}
-              activeOpacity={0.6}
-            >
-              <FilePlus size={20} color={colors.text} strokeWidth={2} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="p-0.5 justify-center items-center"
               onPress={() => router.push("/(main)/invitations")}
               activeOpacity={0.6}
             >
@@ -169,7 +157,7 @@ export default function ParticipantsScreen() {
 
       <ScrollView
         className="flex-1 px-4 pt-5 pb-4"
-        contentContainerStyle={{ paddingBottom: 16 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
         <TripParticipants

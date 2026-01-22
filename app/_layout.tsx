@@ -7,9 +7,14 @@ import { AuthProvider } from "../src/contexts/AuthContext";
 import { TripProvider } from "../src/contexts/TripContext";
 import { ThemeProvider } from "../src/contexts/ThemeContext";
 import { NotificationProvider } from "../src/contexts/NotificationContext";
+import { ErrorBoundary } from "../src/components/ErrorBoundary";
+import { setupGlobalErrorHandler } from "../src/utils/errorHandler";
 
 // Empêcher le splash screen de se fermer automatiquement
 SplashScreen.preventAutoHideAsync();
+
+// Configurer le gestionnaire d'erreurs global
+setupGlobalErrorHandler();
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -34,19 +39,22 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <NotificationProvider>
-          <TripProvider>
-            <Stack>
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(main)" options={{ headerShown: false }} />
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="modal" options={{ presentation: "modal", headerShown: false }} />
-            </Stack>
-          </TripProvider>
-        </NotificationProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <NotificationProvider>
+            <TripProvider>
+              <Stack>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(main)" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="modal" options={{ presentation: "modal", headerShown: false }} />
+              </Stack>
+            </TripProvider>
+          </NotificationProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

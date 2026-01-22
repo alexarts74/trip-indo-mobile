@@ -120,7 +120,7 @@ export default function AddJournalEntryModal({
         setSelectedImages(totalImages);
       }
     } catch (err) {
-      console.error("Erreur lors de la sélection des images:", err);
+      // Error removed("Erreur lors de la sélection des images:", err);
       setError("Erreur lors de la sélection des images");
     }
   };
@@ -151,7 +151,7 @@ export default function AddJournalEntryModal({
         }
       }
     } catch (err) {
-      console.error("Erreur lors de la prise de photo:", err);
+      // Error removed("Erreur lors de la prise de photo:", err);
       setError("Erreur lors de la prise de photo");
     }
   };
@@ -199,7 +199,7 @@ export default function AddJournalEntryModal({
       onEntryAdded();
       onClose();
     } catch (err: any) {
-      console.error("Erreur lors de la création de l'entrée:", err);
+      // Error removed("Erreur lors de la création de l'entrée:", err);
       setError(err.message || "Une erreur est survenue");
     } finally {
       setIsLoading(false);

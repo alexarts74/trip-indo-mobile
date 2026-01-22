@@ -63,7 +63,7 @@ async function notifyInvitationCreated(
       );
     }
   } catch (error) {
-    console.error("Erreur envoi notification invitation:", error);
+    // Silently handle error
   }
 }
 
@@ -87,7 +87,6 @@ export async function createInvitation(
     .single();
 
   if (error) {
-    console.error("❌ Erreur création invitation:", error);
     throw error;
   }
 
@@ -118,7 +117,6 @@ export async function fetchReceivedInvitations(
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("❌ Erreur récupération invitations reçues:", error);
     throw error;
   }
 
@@ -149,7 +147,6 @@ export async function fetchSentInvitations(
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("❌ Erreur récupération invitations envoyées:", error);
     throw error;
   }
 
@@ -169,7 +166,6 @@ export async function updateInvitationStatus(
     .eq("id", invitationId);
 
   if (error) {
-    console.error("❌ Erreur mise à jour invitation:", error);
     throw error;
   }
 }
@@ -201,7 +197,6 @@ export async function getPendingInvitations(userEmail: string): Promise<Invitati
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("❌ Erreur récupération invitations en attente:", error);
     throw error;
   }
 
@@ -231,7 +226,6 @@ export async function acceptInvitation(
   if (participantError) {
     // Si l'utilisateur est déjà participant, ce n'est pas une erreur critique
     if (participantError.code !== "23505") {
-      console.error("❌ Erreur ajout participant:", participantError);
       throw participantError;
     }
   }
@@ -254,14 +248,6 @@ export async function sendInvitationEmail(
   tripId: string
 ): Promise<void> {
   try {
-    console.log("📧 [sendInvitationEmail] Début - Préparation de l'appel à la Edge Function");
-    console.log("📧 [sendInvitationEmail] Paramètres:", {
-      tripName,
-      inviterEmail,
-      inviteeEmail: inviteeEmail.toLowerCase().trim(),
-      tripId,
-    });
-
     const { data, error } = await supabase.functions.invoke("send-invitation", {
       body: {
         tripName,
@@ -271,89 +257,12 @@ export async function sendInvitationEmail(
       },
     });
 
-    console.log("📧 [sendInvitationEmail] Réponse de la Edge Function:", {
-      hasData: !!data,
-      hasError: !!error,
-      errorType: error?.constructor?.name,
-      errorMessage: error?.message,
-      errorDetails: error,
-    });
-
     if (error) {
-      const errorContext = (error as any)?.context;
-      const status = errorContext?.status;
-      
-      // Essayer de récupérer le body de l'erreur pour voir le message détaillé
-      let errorBodyMessage = null;
-      try {
-        if (errorContext?._bodyBlob && typeof errorContext._bodyBlob.text === 'function') {
-          const errorText = await errorContext._bodyBlob.text();
-          const errorBody = JSON.parse(errorText);
-          errorBodyMessage = errorBody.error || errorBody.details || errorBody.message;
-          console.error("📧 [sendInvitationEmail] Message d'erreur depuis le body:", errorBodyMessage);
-          console.error("📧 [sendInvitationEmail] Body complet de l'erreur:", errorBody);
-        }
-      } catch (parseError) {
-        console.warn("⚠️ [sendInvitationEmail] Impossible de parser le body d'erreur:", parseError);
-      }
-      
-      console.error("❌ [sendInvitationEmail] Erreur détectée:", {
-        message: error.message,
-        name: error.name,
-        status: status,
-        statusText: errorContext?.statusText,
-        url: errorContext?.url,
-        errorBodyMessage: errorBodyMessage,
-      });
-
-      // Si c'est une erreur 500, 403 ou 400, afficher des messages spécifiques
-      if (status === 500) {
-        console.error("❌ [sendInvitationEmail] Erreur HTTP 500 - La fonction a une erreur interne");
-        if (errorBodyMessage) {
-          console.error("❌ [sendInvitationEmail] Message d'erreur:", errorBodyMessage);
-        }
-        console.error("❌ [sendInvitationEmail] Vérifiez les logs dans Supabase Dashboard > Edge Functions > send-invitation > Logs");
-        console.error("❌ [sendInvitationEmail] Causes possibles: RESEND_API_KEY invalide, problème avec Resend, ou erreur dans le code");
-      } else if (status === 403) {
-        console.error("❌ [sendInvitationEmail] Erreur HTTP 403 - RESEND_API_KEY non configurée ou invalide");
-        if (errorBodyMessage) {
-          console.error("❌ [sendInvitationEmail] Message:", errorBodyMessage);
-        }
-      } else if (status === 400) {
-        console.error("❌ [sendInvitationEmail] Erreur HTTP 400 - Données manquantes ou invalides");
-        if (errorBodyMessage) {
-          console.error("❌ [sendInvitationEmail] Message:", errorBodyMessage);
-        }
-      }
-
       throw error;
     }
 
-    console.log("✅ [sendInvitationEmail] Email envoyé avec succès:", data);
     return data;
   } catch (error: any) {
-    const status = (error as any)?.context?.status;
-    console.warn("⚠️ [sendInvitationEmail] Catch - Edge Function send-invitation a renvoyé une erreur");
-    console.warn("⚠️ [sendInvitationEmail] Détails de l'erreur:", {
-      message: error?.message,
-      name: error?.name,
-      code: error?.code,
-      status: status,
-      statusCode: status,
-      isFunctionsHttpError: error?.constructor?.name === "FunctionsHttpError",
-    });
-    
-    if (status === 500) {
-      console.warn("⚠️ [sendInvitationEmail] Erreur 500 - La fonction a une erreur interne");
-      console.warn("⚠️ [sendInvitationEmail] Vérifiez les logs dans Supabase Dashboard > Edge Functions > send-invitation > Logs");
-      console.warn("⚠️ [sendInvitationEmail] Causes possibles: RESEND_API_KEY invalide, problème avec Resend, ou erreur dans le code");
-    } else if (status === 403) {
-      console.warn("⚠️ [sendInvitationEmail] Erreur 403 - RESEND_API_KEY non configurée, invalide, ou domaine non vérifié");
-      console.warn("⚠️ [sendInvitationEmail] Si vous voyez 'testing emails', vous devez vérifier un domaine dans Resend");
-    } else if (status === 400) {
-      console.warn("⚠️ [sendInvitationEmail] Erreur 400 - Données manquantes ou invalides");
-    }
-    
     // On ne throw pas pour permettre de créer l'invitation même sans email
     // Mais on retourne undefined pour indiquer que l'email n'a pas été envoyé
     return undefined;

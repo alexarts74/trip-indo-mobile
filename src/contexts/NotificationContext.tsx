@@ -93,7 +93,7 @@ export function NotificationProvider({
     notificationListener.current = addNotificationReceivedListener(
       (notification) => {
         setLastNotification(notification);
-        console.log("Notification reçue:", notification);
+        // Log removed("Notification reçue:", notification);
       }
     );
 

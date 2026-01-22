@@ -29,6 +29,13 @@ export default function TripList({ onTripSelect }: TripListProps) {
   const { user } = useAuth();
 
   useEffect(() => {
+    // Ne pas fetch si l'utilisateur n'est pas connecté
+    if (!user) {
+      setTrips([]);
+      setIsLoading(false);
+      return;
+    }
+
     fetchTrips();
 
     // Subscription pour les changements de voyages en temps réel
@@ -69,6 +76,7 @@ export default function TripList({ onTripSelect }: TripListProps) {
   }, [user]);
 
   const fetchTrips = async () => {
+    if (!user) return;
     try {
       setIsLoading(true);
       const data = await tripService.getUserTrips();
@@ -83,16 +91,18 @@ export default function TripList({ onTripSelect }: TripListProps) {
 
   // Version silencieuse pour les updates en temps réel (sans loader)
   const fetchTripsQuietly = async () => {
+    if (!user) return;
     try {
       const data = await tripService.getUserTrips();
       setTrips(data);
     } catch (error: any) {
-      console.error("Erreur rafraîchissement voyages:", error);
+      // Silently handle error
     }
   };
 
   // Pull-to-refresh
   const onRefresh = useCallback(async () => {
+    if (!user) return;
     setRefreshing(true);
     try {
       const data = await tripService.getUserTrips();
@@ -103,7 +113,7 @@ export default function TripList({ onTripSelect }: TripListProps) {
     } finally {
       setRefreshing(false);
     }
-  }, []);
+  }, [user]);
 
   const openCreateTripPage = () => {
     router.push("/modal");
@@ -271,15 +281,7 @@ export default function TripList({ onTripSelect }: TripListProps) {
               shadowRadius: 8,
               elevation: 3,
             }}
-            onPress={() => {
-              console.log(
-                "🔄 TripList - Clic sur voyage:",
-                trip.title,
-                "ID:",
-                trip.id
-              );
-              onTripSelect(trip);
-            }}
+            onPress={() => onTripSelect(trip)}
             activeOpacity={0.7}
           >
             <View className="flex-row justify-between items-start mb-4">
