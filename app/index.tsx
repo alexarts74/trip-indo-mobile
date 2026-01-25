@@ -4,219 +4,84 @@ import {
   Text,
   StatusBar,
   Animated,
-  Dimensions,
+  useWindowDimensions,
   Easing,
 } from "react-native";
 import { router } from "expo-router";
 import { useAuth } from "../src/contexts/AuthContext";
 import { useTheme } from "../src/contexts/ThemeContext";
-import {
-  Globe,
-  Sparkles,
-  MapPin,
-  Plane,
-  Users,
-  Compass,
-  Map,
-} from "lucide-react-native";
+import { Globe, Sparkles } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-
-const { width, height } = Dimensions.get("window");
 
 export default function SplashScreen() {
   const { user, loading } = useAuth();
   const { theme } = useTheme();
+  const { width, height } = useWindowDimensions();
 
-  // Animations
-  const logoScale = useRef(new Animated.Value(0.3)).current;
+  // Animations simplifiees pour stabilite iPad
+  const logoScale = useRef(new Animated.Value(0.5)).current;
   const logoOpacity = useRef(new Animated.Value(0)).current;
-  const logoRotate = useRef(new Animated.Value(0)).current;
   const textOpacity = useRef(new Animated.Value(0)).current;
-  const textSlide = useRef(new Animated.Value(20)).current;
   const taglineOpacity = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  const sparkleRotate = useRef(new Animated.Value(0)).current;
-
-  // Animations flottantes pour les icônes décoratives
-  const floatAnim1 = useRef(new Animated.Value(0)).current;
-  const floatAnim2 = useRef(new Animated.Value(0)).current;
-  const floatAnim3 = useRef(new Animated.Value(0)).current;
-  const floatAnim4 = useRef(new Animated.Value(0)).current;
-  const floatAnim5 = useRef(new Animated.Value(0)).current;
-
-  // Opacité des icônes
-  const iconsOpacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Animation séquencée
+    // Animation sequencee simple
     const sequence = Animated.sequence([
-      // 1. Logo apparaît avec scale et rotation
+      // 1. Logo apparait
       Animated.parallel([
         Animated.spring(logoScale, {
           toValue: 1,
-          tension: 50,
-          friction: 7,
+          tension: 40,
+          friction: 8,
           useNativeDriver: true,
         }),
         Animated.timing(logoOpacity, {
           toValue: 1,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-        Animated.timing(logoRotate, {
-          toValue: 1,
-          duration: 800,
-          easing: Easing.out(Easing.back(1.5)),
+          duration: 500,
           useNativeDriver: true,
         }),
       ]),
-      // 2. Texte apparaît
-      Animated.parallel([
-        Animated.timing(textOpacity, {
-          toValue: 1,
-          duration: 400,
-          useNativeDriver: true,
-        }),
-        Animated.timing(textSlide, {
-          toValue: 0,
-          duration: 400,
-          easing: Easing.out(Easing.cubic),
-          useNativeDriver: true,
-        }),
-      ]),
-      // 3. Tagline apparaît
+      // 2. Texte apparait
+      Animated.timing(textOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      // 3. Tagline apparait
       Animated.timing(taglineOpacity, {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
       }),
-      // 4. Icônes flottantes apparaissent
-      Animated.timing(iconsOpacity, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
     ]);
 
     sequence.start();
-
-    // Animation de pulse continue sur le logo
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.05,
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1500,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-
-    // Animation de rotation du sparkle
-    Animated.loop(
-      Animated.timing(sparkleRotate, {
-        toValue: 1,
-        duration: 3000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
-
-    // Animations flottantes pour les icônes décoratives
-    const createFloatAnimation = (anim: Animated.Value, duration: number, delay: number = 0) => {
-      return Animated.loop(
-        Animated.sequence([
-          Animated.delay(delay),
-          Animated.timing(anim, {
-            toValue: 1,
-            duration: duration,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-          Animated.timing(anim, {
-            toValue: 0,
-            duration: duration,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-        ])
-      );
-    };
-
-    createFloatAnimation(floatAnim1, 2000, 0).start();
-    createFloatAnimation(floatAnim2, 2500, 200).start();
-    createFloatAnimation(floatAnim3, 3000, 400).start();
-    createFloatAnimation(floatAnim4, 2200, 300).start();
-    createFloatAnimation(floatAnim5, 2800, 100).start();
   }, []);
 
-  // Redirection après le chargement
+  // Redirection apres le chargement
   useEffect(() => {
     if (!loading) {
-      // Attendre un peu pour laisser les animations se jouer
       const timer = setTimeout(() => {
         if (user) {
           router.replace("/(main)");
         } else {
           router.replace("/(auth)");
         }
-      }, 2000);
+      }, 1500);
 
       return () => clearTimeout(timer);
     }
   }, [user, loading]);
 
-  // Interpolations
-  const logoRotation = logoRotate.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["-180deg", "0deg"],
-  });
-
-  const sparkleRotation = sparkleRotate.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
-  });
-
-  const float1 = floatAnim1.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -20],
-  });
-
-  const float2 = floatAnim2.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -25],
-  });
-
-  const float3 = floatAnim3.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -15],
-  });
-
-  const float4 = floatAnim4.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -18],
-  });
-
-  const float5 = floatAnim5.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -22],
-  });
-
   return (
-    <View className="flex-1">
+    <View style={{ flex: 1 }}>
       <StatusBar
         barStyle="light-content"
         backgroundColor="transparent"
         translucent
       />
 
-      {/* Fond avec dégradé */}
+      {/* Fond avec degrade */}
       <LinearGradient
         colors={
           theme === "dark"
@@ -228,7 +93,7 @@ export default function SplashScreen() {
         style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
       />
 
-      {/* Cercles décoratifs en arrière-plan */}
+      {/* Cercles decoratifs en arriere-plan */}
       <View
         style={{
           position: "absolute",
@@ -252,136 +117,13 @@ export default function SplashScreen() {
         }}
       />
 
-      {/* Icônes flottantes décoratives */}
-      <Animated.View
-        style={{
-          position: "absolute",
-          top: height * 0.15,
-          left: width * 0.08,
-          transform: [{ translateY: float1 }],
-          opacity: iconsOpacity,
-        }}
-      >
-        <View
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: 28,
-            backgroundColor: "rgba(255, 255, 255, 0.15)",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Plane
-            size={28}
-            color="white"
-            style={{ transform: [{ rotate: "-45deg" }] }}
-          />
-        </View>
-      </Animated.View>
-
-      <Animated.View
-        style={{
-          position: "absolute",
-          top: height * 0.22,
-          right: width * 0.1,
-          transform: [{ translateY: float2 }],
-          opacity: iconsOpacity,
-        }}
-      >
-        <View
-          style={{
-            width: 48,
-            height: 48,
-            borderRadius: 24,
-            backgroundColor: "rgba(255, 255, 255, 0.12)",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <MapPin size={24} color="white" />
-        </View>
-      </Animated.View>
-
-      <Animated.View
-        style={{
-          position: "absolute",
-          top: height * 0.35,
-          left: width * 0.85,
-          transform: [{ translateY: float3 }],
-          opacity: iconsOpacity,
-        }}
-      >
-        <View
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Users size={20} color="white" />
-        </View>
-      </Animated.View>
-
-      <Animated.View
-        style={{
-          position: "absolute",
-          bottom: height * 0.25,
-          left: width * 0.05,
-          transform: [{ translateY: float4 }],
-          opacity: iconsOpacity,
-        }}
-      >
-        <View
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 22,
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Compass size={22} color="white" />
-        </View>
-      </Animated.View>
-
-      <Animated.View
-        style={{
-          position: "absolute",
-          bottom: height * 0.18,
-          right: width * 0.12,
-          transform: [{ translateY: float5 }],
-          opacity: iconsOpacity,
-        }}
-      >
-        <View
-          style={{
-            width: 52,
-            height: 52,
-            borderRadius: 26,
-            backgroundColor: "rgba(255, 255, 255, 0.08)",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Map size={26} color="white" />
-        </View>
-      </Animated.View>
-
-      {/* Contenu principal centré */}
-      <View className="flex-1 justify-center items-center px-8">
-        {/* Logo animé */}
+      {/* Contenu principal centre */}
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 32 }}>
+        {/* Logo anime */}
         <Animated.View
           style={{
             opacity: logoOpacity,
-            transform: [
-              { scale: Animated.multiply(logoScale, pulseAnim) },
-              { rotate: logoRotation },
-            ],
+            transform: [{ scale: logoScale }],
             marginBottom: 24,
           }}
         >
@@ -405,8 +147,8 @@ export default function SplashScreen() {
             <Globe size={64} color="white" />
           </View>
 
-          {/* Badge Sparkles animé */}
-          <Animated.View
+          {/* Badge Sparkles */}
+          <View
             style={{
               position: "absolute",
               bottom: -4,
@@ -422,11 +164,10 @@ export default function SplashScreen() {
               shadowOpacity: 0.5,
               shadowRadius: 8,
               elevation: 8,
-              transform: [{ rotate: sparkleRotation }],
             }}
           >
             <Sparkles size={20} color="#78350f" />
-          </Animated.View>
+          </View>
         </Animated.View>
 
         {/* Nom de l'app */}
@@ -441,7 +182,6 @@ export default function SplashScreen() {
             textShadowOffset: { width: 0, height: 3 },
             textShadowRadius: 6,
             opacity: textOpacity,
-            transform: [{ translateY: textSlide }],
             marginBottom: 8,
           }}
         >
@@ -462,7 +202,7 @@ export default function SplashScreen() {
           Vos aventures, simplifiees
         </Animated.Text>
 
-        {/* Points de chargement */}
+        {/* Points de chargement simplifies */}
         <Animated.View
           style={{
             flexDirection: "row",
@@ -471,8 +211,8 @@ export default function SplashScreen() {
           }}
         >
           <LoadingDot delay={0} />
-          <LoadingDot delay={200} />
-          <LoadingDot delay={400} />
+          <LoadingDot delay={150} />
+          <LoadingDot delay={300} />
         </Animated.View>
       </View>
 
@@ -498,54 +238,44 @@ export default function SplashScreen() {
   );
 }
 
-// Composant pour les points de chargement animés
+// Composant pour les points de chargement
 function LoadingDot({ delay }: { delay: number }) {
   const opacity = useRef(new Animated.Value(0.3)).current;
-  const scale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.loop(
+    const animation = Animated.loop(
       Animated.sequence([
         Animated.delay(delay),
-        Animated.parallel([
-          Animated.timing(opacity, {
-            toValue: 1,
-            duration: 400,
-            useNativeDriver: true,
-          }),
-          Animated.timing(scale, {
-            toValue: 1.2,
-            duration: 400,
-            useNativeDriver: true,
-          }),
-        ]),
-        Animated.parallel([
-          Animated.timing(opacity, {
-            toValue: 0.3,
-            duration: 400,
-            useNativeDriver: true,
-          }),
-          Animated.timing(scale, {
-            toValue: 1,
-            duration: 400,
-            useNativeDriver: true,
-          }),
-        ]),
-        Animated.delay(600 - delay),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 400,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0.3,
+          duration: 400,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.delay(300 - delay),
       ])
-    ).start();
-  }, []);
+    );
+
+    animation.start();
+
+    return () => animation.stop();
+  }, [delay]);
 
   return (
-    <Animated.View
+    <View
       style={{
         width: 10,
         height: 10,
         borderRadius: 5,
         backgroundColor: "white",
         marginHorizontal: 6,
-        opacity,
-        transform: [{ scale }],
+        opacity: opacity as any,
       }}
     />
   );
