@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.alexarts74.tripmate",
-      "buildNumber": "3",
+      "buildNumber": "4",
       "infoPlist": {
         "NSCameraUsageDescription": "TripMate a besoin d'accéder à la caméra pour prendre des photos de voyage.",
         "NSPhotoLibraryUsageDescription": "TripMate a besoin d'accéder à vos photos pour les ajouter à votre journal de voyage.",
