@@ -10,7 +10,7 @@
     "test": "jest --watchAll",
     "build:prod": "eas build --profile production --platform ios",
     "submit:ios": "eas submit --platform ios",
-    "deploy:testflight": "eas build --profile preview --platform ios --auto-submit"
+    "deploy:testflight": "eas build --profile preview --platform ios --auto-submit --clear-cache"
   },
   "jest": {
     "preset": "jest-expo"
