@@ -268,14 +268,14 @@ function LoadingDot({ delay }: { delay: number }) {
   }, [delay]);
 
   return (
-    <View
+    <Animated.View
       style={{
         width: 10,
         height: 10,
         borderRadius: 5,
         backgroundColor: "white",
         marginHorizontal: 6,
-        opacity: opacity as any,
+        opacity: opacity,
       }}
     />
   );
