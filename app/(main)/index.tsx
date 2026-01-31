@@ -8,6 +8,7 @@ import { useTrip } from "@/src/contexts/TripContext";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { Trip } from "@/src/types/trip";
 import { Sun, Moon, FilePlus, Inbox } from "lucide-react-native";
+import { ResponsiveContainer } from "@/src/components/ResponsiveContainer";
 
 export default function MainScreen() {
   const { user, loading, signOut } = useAuth();
@@ -77,103 +78,105 @@ export default function MainScreen() {
   }
 
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.background }}>
-      <StatusBar 
-        barStyle={theme === "dark" ? "light-content" : "dark-content"} 
-        backgroundColor={colors.surface} 
-      />
-      
-      {/* Header moderne avec profil */}
-      <View
-        className="pb-3 px-5 rounded-b-[20px] border-b"
-        style={{
-          paddingTop: insets.top + 10,
-          backgroundColor: colors.surface,
-          borderBottomColor: colors.border,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 8,
-          elevation: 3,
-          zIndex: 1000,
-        }}
-      >
-        <View className="flex-row items-center gap-3">
-          <View className="flex-1 mr-2">
-            <Text
-              className="text-2xl font-bold leading-7"
-              style={{
-                color: colors.text,
-                fontFamily: "Ubuntu-Bold",
-                letterSpacing: -0.3,
-              }}
-            >
-              Bonjour,{" "}
-              <Text
-                className="text-base font-normal"
-                style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {getUserDisplayName()}!
-              </Text>
-            </Text>
-          </View>
+    <ResponsiveContainer containerStyle={{ backgroundColor: colors.background }}>
+      <View className="flex-1" style={{ backgroundColor: colors.background }}>
+        <StatusBar
+          barStyle={theme === "dark" ? "light-content" : "dark-content"}
+          backgroundColor={colors.surface}
+        />
+
+        {/* Header moderne avec profil */}
+        <View
+          className="pb-3 px-5 rounded-b-[20px] border-b"
+          style={{
+            paddingTop: insets.top + 10,
+            backgroundColor: colors.surface,
+            borderBottomColor: colors.border,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.05,
+            shadowRadius: 8,
+            elevation: 3,
+            zIndex: 1000,
+          }}
+        >
           <View className="flex-row items-center gap-3">
-            <TouchableOpacity
-              className="p-0.5 justify-center items-center"
-              onPress={() => router.push("/modal")}
-              activeOpacity={0.6}
-            >
-              <FilePlus size={20} color={colors.text} strokeWidth={2} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="p-0.5 justify-center items-center"
-              onPress={() => router.push("/(main)/invitations")}
-              activeOpacity={0.6}
-            >
-              <Inbox size={20} color={colors.text} strokeWidth={2} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="p-0.5 justify-center items-center"
-              onPress={toggleTheme}
-              activeOpacity={0.6}
-            >
-              {theme === "dark" ? (
-                <Sun size={20} color={colors.text} strokeWidth={2} />
-              ) : (
-                <Moon size={20} color={colors.text} strokeWidth={2} />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="p-0.5 justify-center items-center"
-              onPress={() => router.push("/(main)/profile")}
-              activeOpacity={0.6}
-            >
-              <View
-                className="w-9 h-9 rounded-full justify-center items-center"
+            <View className="flex-1 mr-2">
+              <Text
+                className="text-2xl font-bold leading-7"
                 style={{
-                  backgroundColor: colors.primary,
-                  shadowColor: "#f97316",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.2,
-                  shadowRadius: 4,
-                  elevation: 3,
+                  color: colors.text,
+                  fontFamily: "Ubuntu-Bold",
+                  letterSpacing: -0.3,
                 }}
               >
+                Bonjour,{" "}
                 <Text
-                  className="text-base font-bold text-white"
-                  style={{ fontFamily: "Ubuntu-Bold", letterSpacing: 0.5 }}
+                  className="text-base font-normal"
+                  style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
                 >
-                  {getInitials()}
+                  {getUserDisplayName()}!
                 </Text>
-              </View>
-            </TouchableOpacity>
+              </Text>
+            </View>
+            <View className="flex-row items-center gap-3">
+              <TouchableOpacity
+                className="p-0.5 justify-center items-center"
+                onPress={() => router.push("/modal")}
+                activeOpacity={0.6}
+              >
+                <FilePlus size={20} color={colors.text} strokeWidth={2} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="p-0.5 justify-center items-center"
+                onPress={() => router.push("/(main)/invitations")}
+                activeOpacity={0.6}
+              >
+                <Inbox size={20} color={colors.text} strokeWidth={2} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="p-0.5 justify-center items-center"
+                onPress={toggleTheme}
+                activeOpacity={0.6}
+              >
+                {theme === "dark" ? (
+                  <Sun size={20} color={colors.text} strokeWidth={2} />
+                ) : (
+                  <Moon size={20} color={colors.text} strokeWidth={2} />
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="p-0.5 justify-center items-center"
+                onPress={() => router.push("/(main)/profile")}
+                activeOpacity={0.6}
+              >
+                <View
+                  className="w-9 h-9 rounded-full justify-center items-center"
+                  style={{
+                    backgroundColor: colors.primary,
+                    shadowColor: "#f97316",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 4,
+                    elevation: 3,
+                  }}
+                >
+                  <Text
+                    className="text-base font-bold text-white"
+                    style={{ fontFamily: "Ubuntu-Bold", letterSpacing: 0.5 }}
+                  >
+                    {getInitials()}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
 
-      <TripList onTripSelect={handleTripSelect} />
-    </View>
+        <TripList onTripSelect={handleTripSelect} />
+      </View>
+    </ResponsiveContainer>
   );
 }

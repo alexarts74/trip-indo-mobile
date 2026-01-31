@@ -18,6 +18,7 @@ import { tripService } from "@/src/services/tripService";
 import { Trip } from "@/src/types/trip";
 import { supabase } from "@/src/lib/supabaseClient";
 import InvitationManager from "@/components/trip/InvitationManager";
+import { ResponsiveContainer } from "@/src/components/ResponsiveContainer";
 
 export default function InvitationsScreen() {
   const { theme, colors } = useTheme();
@@ -183,50 +184,51 @@ export default function InvitationsScreen() {
   }
 
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.background }}>
-      <StatusBar
-        barStyle={theme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.surface}
-      />
+    <ResponsiveContainer containerStyle={{ backgroundColor: colors.background }}>
+      <View className="flex-1" style={{ backgroundColor: colors.background }}>
+        <StatusBar
+          barStyle={theme === "dark" ? "light-content" : "dark-content"}
+          backgroundColor={colors.surface}
+        />
 
-      {/* Header */}
-      <View
-        className="pb-4 px-5 flex-row items-center border-b"
-        style={{
-          paddingTop: insets.top + 10,
-          backgroundColor: colors.surface,
-          borderBottomColor: colors.border,
-        }}
-      >
-        <TouchableOpacity
-          className="w-10 h-10 justify-center items-center rounded-full mr-3"
-          style={{ backgroundColor: colors.card }}
-          onPress={() => router.back()}
-          activeOpacity={0.7}
+        {/* Header */}
+        <View
+          className="pb-4 px-5 flex-row items-center border-b"
+          style={{
+            paddingTop: insets.top + 10,
+            backgroundColor: colors.surface,
+            borderBottomColor: colors.border,
+          }}
         >
-          <ArrowLeft size={20} color={colors.text} />
-        </TouchableOpacity>
-        <View className="flex-1">
-          <Text
-            className="text-[28px] font-bold mb-1"
-            style={{
-              color: colors.text,
-              fontFamily: "Ubuntu-Bold",
-              letterSpacing: -0.5,
-            }}
+          <TouchableOpacity
+            className="w-10 h-10 justify-center items-center rounded-full mr-3"
+            style={{ backgroundColor: colors.card }}
+            onPress={() => router.back()}
+            activeOpacity={0.7}
           >
-            Mes invitations
-          </Text>
-          <Text
-            className="text-sm"
-            style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
-          >
-            Gérez vos invitations aux voyages
-          </Text>
+            <ArrowLeft size={20} color={colors.text} />
+          </TouchableOpacity>
+          <View className="flex-1">
+            <Text
+              className="text-[28px] font-bold mb-1"
+              style={{
+                color: colors.text,
+                fontFamily: "Ubuntu-Bold",
+                letterSpacing: -0.5,
+              }}
+            >
+              Mes invitations
+            </Text>
+            <Text
+              className="text-sm"
+              style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+            >
+              Gérez vos invitations aux voyages
+            </Text>
+          </View>
         </View>
-      </View>
 
-      <ScrollView
+        <ScrollView
         className="flex-1 px-4 pt-5 pb-4"
         contentContainerStyle={{
           paddingBottom: 16,
@@ -642,7 +644,8 @@ export default function InvitationsScreen() {
             ))}
           </View>
         )}
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
+    </ResponsiveContainer>
   );
 }

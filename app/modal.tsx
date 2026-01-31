@@ -15,6 +15,7 @@ import { useTheme } from "@/src/contexts/ThemeContext";
 import { tripService } from "@/src/services/tripService";
 import { supabase } from "@/src/lib/supabaseClient";
 import { X } from "lucide-react-native";
+import { ResponsiveContainer } from "@/src/components/ResponsiveContainer";
 
 export default function CreateTripModal() {
   const { theme, colors } = useTheme();
@@ -86,21 +87,22 @@ export default function CreateTripModal() {
   };
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1"
-      style={{ backgroundColor: colors.background }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <StatusBar
-        barStyle={theme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.surface}
-      />
-
-      {/* Header */}
-      <View 
-        className="pt-[50px] pb-4 px-5 flex-row items-center border-b"
-        style={{ backgroundColor: colors.surface, borderBottomColor: colors.border }}
+    <ResponsiveContainer containerStyle={{ backgroundColor: colors.background }}>
+      <KeyboardAvoidingView
+        className="flex-1"
+        style={{ backgroundColor: colors.background }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
+        <StatusBar
+          barStyle={theme === "dark" ? "light-content" : "dark-content"}
+          backgroundColor={colors.surface}
+        />
+
+        {/* Header */}
+        <View
+          className="pt-[50px] pb-4 px-5 flex-row items-center border-b"
+          style={{ backgroundColor: colors.surface, borderBottomColor: colors.border }}
+        >
         <TouchableOpacity
           className="w-10 h-10 justify-center items-center mr-3"
           onPress={() => router.back()}
@@ -333,8 +335,9 @@ export default function CreateTripModal() {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ResponsiveContainer>
   );
 }
 

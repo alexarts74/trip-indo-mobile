@@ -3,7 +3,7 @@
     "name": "TripMate",
     "slug": "tripmate",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/travel-mate-icon.png",
     "scheme": "tripmate",
     "userInterfaceStyle": "automatic",

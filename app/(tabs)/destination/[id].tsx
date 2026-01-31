@@ -30,6 +30,7 @@ import { destinationsService } from "@/src/services/destinationsService";
 import { journalService } from "@/src/services/journalService";
 import JournalEntryList from "@/components/trip/JournalEntryList";
 import AddJournalEntryModal from "@/components/trip/AddJournalEntryModal";
+import { ResponsiveContainer } from "@/src/components/ResponsiveContainer";
 
 export default function DestinationDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -164,26 +165,27 @@ export default function DestinationDetailScreen() {
   }
 
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.background }}>
-      <StatusBar
-        barStyle={theme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.surface}
-      />
+    <ResponsiveContainer containerStyle={{ backgroundColor: colors.background }}>
+      <View className="flex-1" style={{ backgroundColor: colors.background }}>
+        <StatusBar
+          barStyle={theme === "dark" ? "light-content" : "dark-content"}
+          backgroundColor={colors.surface}
+        />
 
-      {/* Header identique aux autres pages */}
-      <View
-        className="pb-4 px-5 rounded-b-[20px]"
-        style={{
-          paddingTop: insets.top + 12,
-          backgroundColor: colors.surface,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 8,
-          elevation: 3,
-          zIndex: 1000,
-        }}
-      >
+        {/* Header identique aux autres pages */}
+        <View
+          className="pb-4 px-5 rounded-b-[20px]"
+          style={{
+            paddingTop: insets.top + 12,
+            backgroundColor: colors.surface,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.05,
+            shadowRadius: 8,
+            elevation: 3,
+            zIndex: 1000,
+          }}
+        >
         <View className="flex-row items-center gap-3">
           <TouchableOpacity
             className="p-1.5 -ml-1 justify-center items-center"
@@ -391,12 +393,13 @@ export default function DestinationDetailScreen() {
       )}
 
       {/* Modal d'ajout d'entrée */}
-      <AddJournalEntryModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        destinationId={id!}
-        onEntryAdded={handleJournalEntryAdded}
-      />
-    </View>
+        <AddJournalEntryModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          destinationId={id!}
+          onEntryAdded={handleJournalEntryAdded}
+        />
+      </View>
+    </ResponsiveContainer>
   );
 }

@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/src/contexts/ThemeContext';
 import { ArrowLeft, MessageCircle, Send, HelpCircle, Mail, Clock } from 'lucide-react-native';
 import { router } from 'expo-router';
+import { ResponsiveContainer } from '@/src/components/ResponsiveContainer';
 
 const SUPPORT_EMAIL = 'artusalexandre74@gmail.com';
 
@@ -28,49 +29,50 @@ export default function SupportScreen() {
   };
 
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.background }}>
-      <StatusBar
-        barStyle={theme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.surface}
-      />
+    <ResponsiveContainer containerStyle={{ backgroundColor: colors.background }}>
+      <View className="flex-1" style={{ backgroundColor: colors.background }}>
+        <StatusBar
+          barStyle={theme === "dark" ? "light-content" : "dark-content"}
+          backgroundColor={colors.surface}
+        />
 
-      {/* Header */}
-      <View
-        className="pb-5 px-5 flex-row items-center border-b"
-        style={{
-          paddingTop: insets.top + 10,
-          backgroundColor: colors.surface,
-          borderBottomColor: colors.border,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.03,
-          shadowRadius: 4,
-          elevation: 2,
-        }}
-      >
-        <TouchableOpacity
-          className="w-10 h-10 justify-center items-center rounded-full mr-3"
-          style={{ backgroundColor: colors.card }}
-          onPress={() => router.back()}
-          activeOpacity={0.7}
+        {/* Header */}
+        <View
+          className="pb-5 px-5 flex-row items-center border-b"
+          style={{
+            paddingTop: insets.top + 10,
+            backgroundColor: colors.surface,
+            borderBottomColor: colors.border,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.03,
+            shadowRadius: 4,
+            elevation: 2,
+          }}
         >
-          <ArrowLeft size={20} color={colors.text} />
-        </TouchableOpacity>
-        <View className="flex-1">
-          <Text
-            className="text-[28px] font-bold"
-            style={{
-              color: colors.text,
-              fontFamily: 'Ubuntu-Bold',
-              letterSpacing: -0.5,
-            }}
+          <TouchableOpacity
+            className="w-10 h-10 justify-center items-center rounded-full mr-3"
+            style={{ backgroundColor: colors.card }}
+            onPress={() => router.back()}
+            activeOpacity={0.7}
           >
-            Support
-          </Text>
+            <ArrowLeft size={20} color={colors.text} />
+          </TouchableOpacity>
+          <View className="flex-1">
+            <Text
+              className="text-[28px] font-bold"
+              style={{
+                color: colors.text,
+                fontFamily: 'Ubuntu-Bold',
+                letterSpacing: -0.5,
+              }}
+            >
+              Support
+            </Text>
+          </View>
         </View>
-      </View>
 
-      <KeyboardAvoidingView
+        <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
@@ -245,7 +247,8 @@ export default function SupportScreen() {
             </Text>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
-    </View>
+        </KeyboardAvoidingView>
+      </View>
+    </ResponsiveContainer>
   );
 }

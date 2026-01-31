@@ -1,10 +1,11 @@
 import { Tabs, useSegments } from "expo-router";
 import React, { useState, useRef, useEffect } from "react";
-import { View, StyleSheet, Animated, Dimensions } from "react-native";
+import { View, StyleSheet, Animated, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { useTheme } from "@/src/contexts/ThemeContext";
+import { useResponsiveLayout } from "@/src/hooks/useResponsiveLayout";
 
 export default function TabLayout() {
   const { theme, colors } = useTheme();
@@ -12,8 +13,11 @@ export default function TabLayout() {
   const segments = useSegments();
   const [activeTab, setActiveTab] = useState(0);
   const indicatorPosition = useRef(new Animated.Value(0)).current;
-  const screenWidth = Dimensions.get("window").width;
-  const tabBarWidth = screenWidth * 0.88;
+  const { width: screenWidth } = useWindowDimensions();
+  const { isTablet, maxWidth } = useResponsiveLayout();
+  // On tablet, limit the tab bar width to match the content container
+  const containerWidth = isTablet && maxWidth ? Math.min(screenWidth, maxWidth) : screenWidth;
+  const tabBarWidth = containerWidth * 0.88;
   const numberOfTabs = 4;
   const tabWidth = tabBarWidth / numberOfTabs;
 
@@ -86,6 +90,11 @@ export default function TabLayout() {
     </View>
   );
 
+  // Calculate tab bar horizontal positioning for tablets
+  const tabBarMarginHorizontal = isTablet && maxWidth
+    ? (screenWidth - tabBarWidth) / 2
+    : screenWidth * 0.06;
+
   return (
     <Tabs
       screenOptions={{
@@ -95,10 +104,10 @@ export default function TabLayout() {
         tabBarStyle: {
           position: "absolute",
           bottom: -5 + insets.bottom,
-          marginHorizontal: "6%",
+          left: tabBarMarginHorizontal,
+          right: tabBarMarginHorizontal,
           alignSelf: "center",
-          width: "88%",
-          maxWidth: "90%",
+          width: tabBarWidth,
           backgroundColor: "transparent",
           borderTopWidth: 0,
           borderBottomWidth: 0,

@@ -14,6 +14,7 @@ import { router } from "expo-router";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { useAuth } from "@/src/contexts/AuthContext";
 import { supabase } from "@/src/lib/supabaseClient";
+import { ResponsiveContainer } from "@/src/components/ResponsiveContainer";
 
 export default function ProfileScreen() {
   const { theme, colors, toggleTheme } = useTheme();
@@ -175,67 +176,68 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View className="flex-1" style={{ backgroundColor: colors.background }}>
-      <StatusBar
-        barStyle={theme === "dark" ? "light-content" : "dark-content"}
-        backgroundColor={colors.surface}
-      />
+    <ResponsiveContainer containerStyle={{ backgroundColor: colors.background }}>
+      <View className="flex-1" style={{ backgroundColor: colors.background }}>
+        <StatusBar
+          barStyle={theme === "dark" ? "light-content" : "dark-content"}
+          backgroundColor={colors.surface}
+        />
 
-      {/* Header */}
-      <View
-        className="pb-5 px-5 flex-row items-center border-b"
-        style={{
-          paddingTop: insets.top + 10,
-          backgroundColor: colors.surface,
-          borderBottomColor: colors.border,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.03,
-          shadowRadius: 4,
-          elevation: 2,
-        }}
-      >
-        <TouchableOpacity
-          className="w-10 h-10 justify-center items-center rounded-full mr-3"
-          style={{ backgroundColor: colors.card }}
-          onPress={() => router.back()}
-          activeOpacity={0.7}
+        {/* Header */}
+        <View
+          className="pb-5 px-5 flex-row items-center border-b"
+          style={{
+            paddingTop: insets.top + 10,
+            backgroundColor: colors.surface,
+            borderBottomColor: colors.border,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.03,
+            shadowRadius: 4,
+            elevation: 2,
+          }}
         >
-          <ArrowLeft size={20} color={colors.text} />
-        </TouchableOpacity>
-        <View className="flex-1">
-          <Text
-            className="text-[28px] font-bold"
-            style={{
-              color: colors.text,
-              fontFamily: "Ubuntu-Bold",
-              letterSpacing: -0.5,
-            }}
-          >
-            Mon profil
-          </Text>
-        </View>
-        <View className="flex-row items-center gap-2.5">
           <TouchableOpacity
-            className="w-10 h-10 justify-center items-center rounded-full"
+            className="w-10 h-10 justify-center items-center rounded-full mr-3"
             style={{ backgroundColor: colors.card }}
-            onPress={toggleTheme}
+            onPress={() => router.back()}
             activeOpacity={0.7}
           >
-            {theme === "dark" ? (
-              <Sun size={20} color={colors.text} />
-            ) : (
-              <Moon size={20} color={colors.text} />
-            )}
+            <ArrowLeft size={20} color={colors.text} />
           </TouchableOpacity>
+          <View className="flex-1">
+            <Text
+              className="text-[28px] font-bold"
+              style={{
+                color: colors.text,
+                fontFamily: "Ubuntu-Bold",
+                letterSpacing: -0.5,
+              }}
+            >
+              Mon profil
+            </Text>
+          </View>
+          <View className="flex-row items-center gap-2.5">
+            <TouchableOpacity
+              className="w-10 h-10 justify-center items-center rounded-full"
+              style={{ backgroundColor: colors.card }}
+              onPress={toggleTheme}
+              activeOpacity={0.7}
+            >
+              {theme === "dark" ? (
+                <Sun size={20} color={colors.text} />
+              ) : (
+                <Moon size={20} color={colors.text} />
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      <ScrollView
-        className="flex-1 px-4 pt-5 pb-4"
-        contentContainerStyle={{ paddingBottom: 16 }}
-        showsVerticalScrollIndicator={false}
-      >
+        <ScrollView
+          className="flex-1 px-4 pt-5 pb-4"
+          contentContainerStyle={{ paddingBottom: 16 }}
+          showsVerticalScrollIndicator={false}
+        >
         {/* Section Profil */}
         <View
           className="rounded-[20px] p-6 mb-6 border"
@@ -609,6 +611,7 @@ export default function ProfileScreen() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
-    </View>
+      </View>
+    </ResponsiveContainer>
   );
 }
