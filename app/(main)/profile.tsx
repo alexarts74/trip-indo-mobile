@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ArrowLeft, ChevronRight, Plane, Wallet, MapPin, Sun, Moon, Mail, LogOut } from "lucide-react-native";
+import { ArrowLeft, ChevronRight, Plane, Wallet, MapPin, Sun, Moon, Mail, LogOut, LifeBuoy } from "lucide-react-native";
 import { router } from "expo-router";
 import { useTheme } from "@/src/contexts/ThemeContext";
 import { useAuth } from "@/src/contexts/AuthContext";
@@ -487,6 +487,38 @@ export default function ProfileScreen() {
                     style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
                   >
                     Gérer mes invitations aux voyages
+                  </Text>
+                </View>
+              </View>
+              <ChevronRight size={20} color={colors.textSecondary} />
+            </TouchableOpacity>
+
+            <View className="h-[1px] mx-4" style={{ backgroundColor: colors.border }} />
+
+            <TouchableOpacity
+              className="flex-row items-center justify-between p-4"
+              onPress={() => router.push("/(main)/support")}
+              activeOpacity={0.7}
+            >
+              <View className="flex-row items-center flex-1">
+                <View
+                  className="w-10 h-10 rounded-full justify-center items-center mr-3"
+                  style={{ backgroundColor: colors.primary + "20" }}
+                >
+                  <LifeBuoy size={18} color={colors.primary} />
+                </View>
+                <View className="flex-1">
+                  <Text
+                    className="text-base font-semibold mb-0.5"
+                    style={{ color: colors.text, fontFamily: "Ubuntu-Medium" }}
+                  >
+                    Support
+                  </Text>
+                  <Text
+                    className="text-[13px]"
+                    style={{ color: colors.textSecondary, fontFamily: "Ubuntu-Regular" }}
+                  >
+                    Contacter le support ou poser une question
                   </Text>
                 </View>
               </View>
