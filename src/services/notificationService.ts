@@ -4,16 +4,28 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 import { supabase } from "../lib/supabaseClient";
 
-// Configuration des notifications
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+// Flag pour s'assurer que le handler n'est configuré qu'une seule fois
+let notificationHandlerConfigured = false;
+
+/**
+ * Configure le handler de notifications de manière lazy
+ * Doit être appelé avant d'utiliser les notifications
+ */
+export function configureNotificationHandler(): void {
+  if (notificationHandlerConfigured) return;
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+
+  notificationHandlerConfigured = true;
+}
 
 export interface NotificationData {
   type: "expense" | "destination" | "invitation";
@@ -257,6 +269,7 @@ export async function getLastNotificationResponse(): Promise<Notifications.Notif
 
 // Export du service comme objet pour compatibilité
 export const notificationService = {
+  configureNotificationHandler,
   registerForPushNotifications,
   savePushToken,
   disablePushNotifications,

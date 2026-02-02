@@ -15,6 +15,7 @@ import {
   addNotificationReceivedListener,
   addNotificationResponseListener,
   getLastNotificationResponse,
+  configureNotificationHandler,
   NotificationData,
 } from "../services/notificationService";
 
@@ -43,6 +44,11 @@ export function NotificationProvider({
   const responseListener = useRef<Notifications.Subscription | null>(null);
   const { user } = useAuth();
   const router = useRouter();
+
+  // Configure le handler de notifications au montage du provider
+  useEffect(() => {
+    configureNotificationHandler();
+  }, []);
 
   // Gérer la navigation basée sur les données de notification
   const handleNotificationNavigation = useCallback(
