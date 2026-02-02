@@ -7,7 +7,7 @@
     "icon": "./assets/images/travel-mate-icon.png",
     "scheme": "tripmate",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/images/travel-mate-icon.png",
       "resizeMode": "contain",
