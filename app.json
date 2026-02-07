@@ -7,16 +7,16 @@
     "icon": "./assets/images/travel-mate-icon.png",
     "scheme": "tripmate",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/images/travel-mate-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#F97316"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.alexarts74.tripmate",
-      "buildNumber": "6",
+      "buildNumber": "7",
       "infoPlist": {
         "NSCameraUsageDescription": "TripMate a besoin d'accéder à la caméra pour prendre des photos de voyage.",
         "NSPhotoLibraryUsageDescription": "TripMate a besoin d'accéder à vos photos pour les ajouter à votre journal de voyage.",
