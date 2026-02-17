@@ -7,14 +7,14 @@
     "icon": "./assets/images/travel-mate-icon.png",
     "scheme": "tripmate",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/travel-mate-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#F97316"
     },
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.alexarts74.tripmate",
       "buildNumber": "7",
       "infoPlist": {
